@@ -3,14 +3,13 @@ package com.ynov.vernet.to_dolist;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.EditText;
+import android.widget.ProgressBar;
+import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.HashMap;
@@ -18,8 +17,9 @@ import java.util.Map;
 
 public class AjoutTacheActivity extends AppCompatActivity {
 
-    EditText editTextTache;
     FirebaseFirestore db;
+    EditText editTextTache;
+    ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,29 +28,26 @@ public class AjoutTacheActivity extends AppCompatActivity {
 
         db = FirebaseFirestore.getInstance();
         editTextTache = findViewById(R.id.editTextTache);
+        progressBar = findViewById(R.id.progressBar);
 
         findViewById(R.id.btnValider).setOnClickListener(v -> {
+            progressBar.setVisibility(View.VISIBLE);
+
             // Ajouter la tâche saisie à la BDD
-            Map<String, Object> user = new HashMap<>();
-            user.put("tache", editTextTache.getText().toString());
+            Map<String, Object> tache = new HashMap<>();
+            tache.put("tache", editTextTache.getText().toString());
 
             db.collection("taches")
-                    .add(user)
-                    .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                        @Override
-                        public void onSuccess(DocumentReference documentReference) {
-                            startActivity(new Intent(getApplicationContext(), MainActivity.class));
-                            finish();
-                            Log.d("Ajout", "Tâche " + documentReference.getId() + " ajoutée");
-                        }
+                    .add(tache)
+                    .addOnSuccessListener(documentReference -> {
+                        startActivity(new Intent(getApplicationContext(), MainActivity.class));
+                        finish();
+                        Log.d("Ajout", "Tâche " + documentReference.getId() + " ajoutée");
                     })
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            Log.w("Erreur", "Erreur lors de l'ajout de la tâche", e);
-                        }
+                    .addOnFailureListener(e -> {
+                        Toast.makeText(AjoutTacheActivity.this, "Erreur lors de l'ajout de la tâche \n" + e, Toast.LENGTH_SHORT).show();
+                        Log.w("Erreur", "Erreur lors de l'ajout de la tâche", e);
                     });
-
         });
     }
 

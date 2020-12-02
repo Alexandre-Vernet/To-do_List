@@ -5,8 +5,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -42,15 +42,7 @@ public class MainActivity extends AppCompatActivity {
 
                         // Erreur dans la récupération des tâches
                     } else {
-                        AlertDialog alertDialog = new AlertDialog.Builder(getApplicationContext())
-                                .setIcon(android.R.drawable.stat_notify_error)
-                                .setTitle("Erreur")
-                                .setMessage("dans la récupération des tâches" + task.getException())
-                                .setPositiveButton("Oui", (dialogInterface, i) -> {
-                                })
-                                .show();
-                        alertDialog.setCanceledOnTouchOutside(false);
-
+                        Toast.makeText(this, "Erreur dans la récupération des tâches", Toast.LENGTH_SHORT).show();
                         Log.w("Erreur", "Erreur dans la récupération des tâches", task.getException());
                     }
                 });

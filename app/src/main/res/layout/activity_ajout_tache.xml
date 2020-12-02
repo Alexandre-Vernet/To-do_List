@@ -23,4 +23,11 @@
         android:padding="20dp"
         android:text="Valider"
         android:textSize="25sp" />
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="70dp"
+        android:visibility="invisible" />
 </LinearLayout>
