@@ -23,12 +23,14 @@ public class MainActivity extends AppCompatActivity {
         floatingActionButton = findViewById(R.id.floatingActionButton);
 
         // Afficher la liste des tâches
-        ArrayAdapter<String> tableau = new ArrayAdapter<>(listView.getContext(), R.layout.element, R.id.textViewTache);
-        for (int i = 0; i < 40; i++) {
-            tableau.add("coucou " + i);
-        }
-        listView.setAdapter(tableau);
+//        ArrayAdapter<String> tableau = new ArrayAdapter<>(listView.getContext(), R.layout.element, R.id.textViewTache);
+//        for (int i = 0; i < 40; i++) {
+//            tableau.add("coucou " + i);
+//        }
+//        listView.setAdapter(tableau);
 
+
+        // Ajouter une tâche
         floatingActionButton.setOnClickListener(v -> {
             startActivity(new Intent(getApplicationContext(), AjoutTacheActivity.class));
             finish();
