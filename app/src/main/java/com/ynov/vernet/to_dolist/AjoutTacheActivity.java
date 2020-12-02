@@ -1,5 +1,6 @@
 package com.ynov.vernet.to_dolist;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.EditText;
@@ -38,6 +39,8 @@ public class AjoutTacheActivity extends AppCompatActivity {
                     .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                         @Override
                         public void onSuccess(DocumentReference documentReference) {
+                            startActivity(new Intent(getApplicationContext(), MainActivity.class));
+                            finish();
                             Log.d("Ajout", "Tâche " + documentReference.getId() + " ajoutée");
                         }
                     })

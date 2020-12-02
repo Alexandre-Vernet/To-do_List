@@ -2,32 +2,58 @@ package com.ynov.vernet.to_dolist;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 public class MainActivity extends AppCompatActivity {
 
     ListView listView;
     FloatingActionButton floatingActionButton;
+    FirebaseFirestore db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        db = FirebaseFirestore.getInstance();
         listView = findViewById(R.id.listView);
         floatingActionButton = findViewById(R.id.floatingActionButton);
 
-        // Afficher la liste des tâches
-//        ArrayAdapter<String> tableau = new ArrayAdapter<>(listView.getContext(), R.layout.element, R.id.textViewTache);
-//        for (int i = 0; i < 40; i++) {
-//            tableau.add("coucou " + i);
-//        }
-//        listView.setAdapter(tableau);
+        db.collection("taches")
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        // Afficher les tâches
+                        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(listView.getContext(), R.layout.element, R.id.textViewTache);
+                        for (QueryDocumentSnapshot document : task.getResult())
+                            arrayAdapter.add(document.getData().toString());
+
+                        listView.setAdapter(arrayAdapter);
+
+
+                        // Erreur dans la récupération des tâches
+                    } else {
+                        AlertDialog alertDialog = new AlertDialog.Builder(getApplicationContext())
+                                .setIcon(android.R.drawable.stat_notify_error)
+                                .setTitle("Erreur")
+                                .setMessage("dans la récupération des tâches" + task.getException())
+                                .setPositiveButton("Oui", (dialogInterface, i) -> {
+                                })
+                                .show();
+                        alertDialog.setCanceledOnTouchOutside(false);
+
+                        Log.w("Erreur", "Erreur dans la récupération des tâches", task.getException());
+                    }
+                });
 
 
         // Ajouter une tâche
