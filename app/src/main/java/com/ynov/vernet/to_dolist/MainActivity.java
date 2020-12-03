@@ -22,6 +22,8 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
+import java.util.Objects;
+
 public class MainActivity extends AppCompatActivity {
 
     ProgressBar progressBar;
@@ -48,8 +50,8 @@ public class MainActivity extends AppCompatActivity {
 
                         // Afficher les tâches
                         ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(listView.getContext(), R.layout.element, R.id.textViewTache);
-                        for (QueryDocumentSnapshot document : task.getResult())
-                            arrayAdapter.add(document.getData().toString());
+                        for (QueryDocumentSnapshot document : Objects.requireNonNull(task.getResult()))
+                            arrayAdapter.add(document.get("tache").toString());
 
                         listView.setAdapter(arrayAdapter);
 
