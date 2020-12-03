@@ -35,6 +35,7 @@ public class AjoutTacheActivity extends AppCompatActivity {
         editTextTache.requestFocus();
         editTextTache.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
 
+
         findViewById(R.id.btnValider).setOnClickListener(v -> {
             if (!editTextTache.getText().toString().isEmpty()) {
 

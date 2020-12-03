@@ -51,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
                         // Afficher les tâches
                         ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(listView.getContext(), R.layout.element, R.id.textViewTache);
                         for (QueryDocumentSnapshot document : Objects.requireNonNull(task.getResult()))
-                            arrayAdapter.add(document.get("tache").toString());
+                            arrayAdapter.add(Objects.requireNonNull(document.get("tache")).toString());
 
                         listView.setAdapter(arrayAdapter);
 
