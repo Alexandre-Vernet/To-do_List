@@ -2,23 +2,20 @@ package com.ynov.vernet.to_dolist;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
@@ -27,9 +24,12 @@ import java.util.Objects;
 public class MainActivity extends AppCompatActivity {
 
     ProgressBar progressBar;
+    TextView textViewAucuneTacheEnCours;
     ListView listView;
     FloatingActionButton floatingActionButton;
     FirebaseFirestore db;
+
+    Runnable runnable;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,30 +38,47 @@ public class MainActivity extends AppCompatActivity {
 
         db = FirebaseFirestore.getInstance();
         progressBar = findViewById(R.id.progressBar);
+        textViewAucuneTacheEnCours = findViewById(R.id.textViewAucuneTacheEnCours);
         listView = findViewById(R.id.listView);
         floatingActionButton = findViewById(R.id.floatingActionButton);
 
-        db.collection("taches")
+
+        // Afficher les tâches en cours
+        Handler handler = new Handler();
+        runnable = () -> db.collection("taches")
                 .orderBy("tache", Query.Direction.DESCENDING)
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         progressBar.setVisibility(View.INVISIBLE);
 
-                        // Afficher les tâches
-                        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(listView.getContext(), R.layout.element, R.id.textViewTache);
-                        for (QueryDocumentSnapshot document : Objects.requireNonNull(task.getResult()))
-                            arrayAdapter.add(Objects.requireNonNull(document.get("tache")).toString());
+                        // Si aucune tâches n'est présente
+                        if (Objects.requireNonNull(task.getResult()).isEmpty())
+                            textViewAucuneTacheEnCours.setVisibility(View.VISIBLE);
 
-                        listView.setAdapter(arrayAdapter);
+                        else {
+                            textViewAucuneTacheEnCours.setVisibility(View.INVISIBLE);
+
+                            // Afficher les tâches dans la listView
+                            ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(listView.getContext(), R.layout.element, R.id.checkboxTache);
+                            for (QueryDocumentSnapshot document : Objects.requireNonNull(task.getResult())) {
+                                arrayAdapter.add(Objects.requireNonNull(document.get("tache")).toString());
+                            }
+
+                            listView.setAdapter(arrayAdapter);
+                        }
 
 
                         // Erreur dans la récupération des tâches
                     } else {
-                        Toast.makeText(this, "Erreur dans la récupération des tâches", Toast.LENGTH_SHORT).show();
-                        Log.w("Erreur", "Erreur dans la récupération des tâches", task.getException());
+                        Snackbar.make(findViewById(R.id.floatingActionButton), "Erreur dans la récupération des tâches \n" + task.getException(), Snackbar.LENGTH_LONG)
+                                .setAction("Rééssayer", v -> handler.postDelayed(runnable, 0))
+                                .show();
+                        Log.w("Erreur", "Erreur dans la récupération des tâches :", task.getException());
                     }
                 });
+        handler.postDelayed(runnable, 0);
+
 
         // Au clic d'un élément
         listView.setOnItemClickListener((parent, view, position, id) -> {

@@ -8,15 +8,8 @@
         android:id="@+id/checkboxTache"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
-        android:scaleX="1.2"
-        android:scaleY="1.2" />
-
-    <TextView
-        android:id="@+id/textViewTache"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Faire les courses"
-        android:textSize="20sp" />
+        android:layout_marginStart="10dp"
+        android:padding="15dp"
+        android:textSize="23sp" />
 
 </LinearLayout>
