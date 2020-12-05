@@ -1,10 +1,15 @@
 package com.ynov.vernet.to_dolist;
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Vibrator;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
@@ -33,6 +38,8 @@ public class MainActivity extends AppCompatActivity {
     Runnable runnable;
     private static final String TAG = "MainActivity";
 
+    Vibrator vibe;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,6 +50,7 @@ public class MainActivity extends AppCompatActivity {
         textViewAucuneTacheEnCours = findViewById(R.id.textViewAucuneTacheEnCours);
         listView = findViewById(R.id.listView);
         floatingActionButtonAjoutTache = findViewById(R.id.floatingActionButton);
+
 
 
         // Afficher les tâches en cours
@@ -106,6 +114,24 @@ public class MainActivity extends AppCompatActivity {
                                 .show();
                         Log.w(TAG, "Erreur lors de la suppression de la tâche : " + e);
                     });
+        });
+
+
+        // Appui long sur une tâche
+        listView.setOnItemLongClickListener((parent, view, position, id) -> {
+            // Copier la tache
+            ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+            ClipData clip = ClipData.newPlainText("tâche", listView.getItemAtPosition(position).toString());
+            assert clipboard != null;
+            clipboard.setPrimaryClip(clip);
+
+            Toast.makeText(MainActivity.this, "Texte copié !", Toast.LENGTH_SHORT).show();
+
+            // Vibrer
+            vibe = (Vibrator) MainActivity.this.getSystemService(Context.VIBRATOR_SERVICE);
+            vibe.vibrate(80);
+
+            return false;
         });
 
 
