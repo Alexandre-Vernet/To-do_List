@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">To-do List</string>
+    <string name="app_name" translatable="false">To-do List</string>
     <string name="ajouter_tache">Add a task</string>
     <string name="aucune_t_che_en_cours">No current task</string>
     <string name="erreur_recup_taches">Error retrieving tasks</string>
@@ -12,4 +12,6 @@
     <string name="erreur_ajout_tache">Error while adding task</string>
     <string name="zone_txt_ne_peut_pas_etre_vide">Textbox cannot be empty</string>
     <string name="annuler">Undo</string>
+    <string name="nb_taches_en_cours">%1$d current tasks</string>
+    <string name="nb_tache_en_cours">%1$d current task</string>
 </resources>

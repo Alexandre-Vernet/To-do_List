@@ -30,7 +30,7 @@ import java.util.Objects;
 public class MainActivity extends AppCompatActivity {
 
     ProgressBar progressBar;
-    TextView textViewAucuneTacheEnCours;
+    TextView textViewAucuneTacheEnCours, textViewNbTaches;
     ListView listView;
     FloatingActionButton floatingActionButtonAjoutTache;
     FirebaseFirestore db;
@@ -38,6 +38,7 @@ public class MainActivity extends AppCompatActivity {
     private Runnable runnable;
     private static final String TAG = "MainActivity";
     private Vibrator vibe;
+    private int nbTaches = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,49 +48,64 @@ public class MainActivity extends AppCompatActivity {
         db = FirebaseFirestore.getInstance();
         progressBar = findViewById(R.id.progressBar);
         textViewAucuneTacheEnCours = findViewById(R.id.textViewAucuneTacheEnCours);
+        textViewNbTaches = findViewById(R.id.textViewNbTaches);
         listView = findViewById(R.id.listView);
         floatingActionButtonAjoutTache = findViewById(R.id.floatingActionButton);
 
 
         // Afficher les tâches en cours
         Handler handler = new Handler();
-        runnable = () -> db.collection("taches")
-                .get()
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        progressBar.setVisibility(View.INVISIBLE);
+        runnable = () ->
+                db.collection("taches")
+                        .get()
+                        .addOnCompleteListener(task -> {
+                            nbTaches = 0;
+                            if (task.isSuccessful()) {
+                                progressBar.setVisibility(View.INVISIBLE);
 
-                        // Si aucune tâches n'est présente
-                        if (Objects.requireNonNull(task.getResult()).isEmpty()) {
-                            textViewAucuneTacheEnCours.setVisibility(View.VISIBLE);
-                            listView.setVisibility(View.INVISIBLE);
-                        } else {
-                            textViewAucuneTacheEnCours.setVisibility(View.INVISIBLE);
+                                // Si aucune tâches n'est présente
+                                if (Objects.requireNonNull(task.getResult()).isEmpty()) {
+                                    textViewAucuneTacheEnCours.setVisibility(View.VISIBLE);
+                                    listView.setVisibility(View.INVISIBLE);
+                                } else {
+                                    textViewAucuneTacheEnCours.setVisibility(View.INVISIBLE);
 
-                            // Récupérer les tâches
-                            ArrayList<String> tache = new ArrayList<>();
-                            for (QueryDocumentSnapshot document : Objects.requireNonNull(task.getResult()))
-                                tache.add(Objects.requireNonNull(document.get("Description")).toString());
+                                    // Récupérer les tâches
+                                    ArrayList<String> tache = new ArrayList<>();
+                                    for (QueryDocumentSnapshot document : Objects.requireNonNull(task.getResult())) {
+                                        tache.add(Objects.requireNonNull(document.get("Description")).toString());
+                                        nbTaches++;
+                                    }
 
-                            // Afficher les tâches dans la listView
-                            ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(listView.getContext(), android.R.layout.select_dialog_multichoice, tache);
-                            listView.setAdapter(arrayAdapter);
-                        }
+                                    // Afficher le nombre de tâches en cours
+                                    if (nbTaches <= 1)
+                                        textViewNbTaches.setText(getString(R.string.nb_tache_en_cours, nbTaches));
+                                    else
+                                        textViewNbTaches.setText(getString(R.string.nb_taches_en_cours, nbTaches));
 
 
-                        // Erreur dans la récupération des tâches
-                    } else {
-                        Snackbar.make(findViewById(R.id.floatingActionButton), (getString(R.string.erreur_recup_taches) + task.getException()), Snackbar.LENGTH_LONG)
-                                .setAction(R.string.reessayer, v -> handler.postDelayed(runnable, 0))
-                                .show();
-                        Log.w(TAG, getString(R.string.erreur_recup_taches) + task.getException());
-                    }
-                });
+                                    // Afficher les tâches dans la listView
+                                    ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(listView.getContext(), android.R.layout.select_dialog_multichoice, tache);
+                                    listView.setAdapter(arrayAdapter);
+                                }
+
+
+                                // Erreur dans la récupération des tâches
+                            } else {
+                                Snackbar.make(findViewById(R.id.floatingActionButton), (getString(R.string.erreur_recup_taches) + task.getException()), Snackbar.LENGTH_LONG)
+                                        .setAction(R.string.reessayer, v -> handler.postDelayed(runnable, 0))
+                                        .show();
+                                Log.w(TAG, getString(R.string.erreur_recup_taches) + task.getException());
+                            }
+                        });
         handler.postDelayed(runnable, 0);
 
 
         // Au clic d'une tâche
         listView.setOnItemClickListener((parent, view, position, id) -> {
+            nbTaches--;
+            textViewNbTaches.setText(getString(R.string.nb_taches_en_cours, nbTaches));
+
             // Récupérer son contenu
             String tache = (String) listView.getItemAtPosition(position);
 
@@ -99,7 +115,7 @@ public class MainActivity extends AppCompatActivity {
 
                     // Tâche supprimée
                     .addOnSuccessListener(aVoid -> {
-                        Snackbar.make(findViewById(R.id.floatingActionButton), (R.string.tache_supprimee), Snackbar.LENGTH_LONG)
+                        Snackbar.make(findViewById(R.id.test), (R.string.tache_supprimee), Snackbar.LENGTH_LONG)
                                 .setAction(R.string.annuler, v -> {
 
                                     // Restaurer son contenu
@@ -124,6 +140,7 @@ public class MainActivity extends AppCompatActivity {
                                             });
                                 })
                                 .show();
+
                         Log.d(TAG, getString(R.string.tache_supprimee));
 
                         // Mettre à jour l'affichage
