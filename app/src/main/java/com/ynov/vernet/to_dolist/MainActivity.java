@@ -1,6 +1,5 @@
 package com.ynov.vernet.to_dolist;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -15,10 +14,14 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
@@ -30,6 +33,7 @@ public class MainActivity extends AppCompatActivity {
     FirebaseFirestore db;
 
     Runnable runnable;
+    private static final String TAG = "MainActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,13 +78,13 @@ public class MainActivity extends AppCompatActivity {
                         Snackbar.make(findViewById(R.id.floatingActionButton), "Erreur dans la récupération des tâches \n" + task.getException(), Snackbar.LENGTH_LONG)
                                 .setAction("Rééssayer", v -> handler.postDelayed(runnable, 0))
                                 .show();
-                        Log.w("Erreur", "Erreur dans la récupération des tâches :", task.getException());
+                        Log.w(TAG, "Erreur dans la récupération des tâches :", task.getException());
                     }
                 });
         handler.postDelayed(runnable, 0);
 
 
-        // Au clic d'un élément
+        // Au clic d'une tâche
         listView.setOnItemClickListener((parent, view, position, id) -> {
             // Afficher un toast avec le nom du contact
             String tache = (String) listView.getItemAtPosition(position);
@@ -90,8 +94,20 @@ public class MainActivity extends AppCompatActivity {
 
         // Ajouter une tâche
         floatingActionButton.setOnClickListener(v -> {
-            startActivity(new Intent(getApplicationContext(), AjoutTacheActivity.class));
-            finish();
+//            startActivity(new Intent(getApplicationContext(), AjoutTacheActivity.class));
+//            finish();
+
+
+            // Supprimer une tâche
+
+            DocumentReference docRef = db.collection("taches").document("tache");
+
+            Map<String, Object> updates = new HashMap<>();
+            updates.put("Test1", FieldValue.delete());
+
+            docRef.update(updates).addOnCompleteListener(task -> {
+                handler.postDelayed(runnable, 0);
+            });
         });
     }
 }

@@ -24,6 +24,7 @@ public class AjoutTacheActivity extends AppCompatActivity {
     ProgressBar progressBar;
 
     Runnable runnable;
+    private static final String TAG = "AjoutTacheActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,7 +44,7 @@ public class AjoutTacheActivity extends AppCompatActivity {
         runnable = () -> findViewById(R.id.btnValider).setOnClickListener(v -> {
             if (!editTextTache.getText().toString().isEmpty()) {
 
-                progressBar.setVisibility(View.INVISIBLE);
+                progressBar.setVisibility(View.VISIBLE);
 
                 // Récupérer la tâche saisie
                 Map<String, Object> tache = new HashMap<>();
@@ -55,7 +56,7 @@ public class AjoutTacheActivity extends AppCompatActivity {
                         .addOnSuccessListener(documentReference -> {
                             startActivity(new Intent(getApplicationContext(), MainActivity.class));
                             finish();
-                            Log.d("Ajout", "Tâche " + documentReference.getId() + " ajoutée");
+                            Log.d(TAG, "Tâche " + documentReference.getId() + " ajoutée");
                         })
 
                         // Erreur dans l'ajout de la tâche à la BDD
@@ -63,7 +64,7 @@ public class AjoutTacheActivity extends AppCompatActivity {
                             Snackbar.make(findViewById(R.id.btnValider), "Erreur lors de l'ajout de la tâche \n" + e, Snackbar.LENGTH_LONG)
                                     .setAction("Rééessayer", erreur -> handler.postDelayed(runnable, 0))
                                     .show();
-                            Log.w("Erreur", "Erreur lors de l'ajout de la tâche : ", e);
+                            Log.w(TAG, "Erreur lors de l'ajout de la tâche : ", e);
                         });
 
                 // Zone de texte vide
@@ -73,7 +74,6 @@ public class AjoutTacheActivity extends AppCompatActivity {
             }
         });
         handler.postDelayed(runnable, 0);
-
     }
 
     @Override

@@ -1,0 +1,12 @@
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+  <shortcut
+      android:shortcutId="ajouterTache"
+      android:enabled="true"
+      android:icon="@drawable/icone"
+      android:shortcutShortLabel="@string/ajouterTache">
+      <intent
+          android:action="android.intent.action.VIEW"
+          android:targetPackage="com.ynov.vernet.morpion"
+          android:targetClass="com.ynov.vernet.morpion.UnJoueurActivity" />
+  </shortcut>
+</shortcuts>
