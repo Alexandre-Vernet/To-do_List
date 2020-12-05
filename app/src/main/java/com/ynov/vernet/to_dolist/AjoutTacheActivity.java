@@ -26,7 +26,6 @@ public class AjoutTacheActivity extends AppCompatActivity {
 
     Runnable runnable;
     private static final String TAG = "AjoutTacheActivity";
-    private int count = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,15 +62,15 @@ public class AjoutTacheActivity extends AppCompatActivity {
 
                         // Erreur dans l'ajout de la tâche à la BDD
                         .addOnFailureListener(e -> {
-                            Snackbar.make(findViewById(R.id.btnValider), "Erreur lors de l'ajout de la tâche \n" + e, Snackbar.LENGTH_LONG)
-                                    .setAction("Rééessayer", erreur -> handler.postDelayed(runnable, 0))
+                            Snackbar.make(findViewById(R.id.btnValider), (getString(R.string.erreur_ajout_tache)) + e, Snackbar.LENGTH_LONG)
+                                    .setAction(getString(R.string.reessayer), erreur -> handler.postDelayed(runnable, 0))
                                     .show();
-                            Log.w(TAG, "Erreur lors de l'ajout de la tâche : " + e);
+                            Log.w(TAG, (getString(R.string.erreur_ajout_tache)) + e);
                         });
 
                 // Zone de texte vide
             } else {
-                editTextTache.setError("La zone de texte ne peut pas être vide");
+                editTextTache.setError(getString(R.string.zone_txt_ne_peut_pas_etre_vide));
                 new Handler().postDelayed(() -> editTextTache.setError(null), 1000);
             }
         });

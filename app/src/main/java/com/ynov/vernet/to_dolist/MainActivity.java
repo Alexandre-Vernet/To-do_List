@@ -9,7 +9,6 @@ import android.os.Handler;
 import android.os.Vibrator;
 import android.util.Log;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
@@ -21,7 +20,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
@@ -35,10 +33,9 @@ public class MainActivity extends AppCompatActivity {
     FloatingActionButton floatingActionButtonAjoutTache;
     FirebaseFirestore db;
 
-    Runnable runnable;
+    private Runnable runnable;
     private static final String TAG = "MainActivity";
-
-    Vibrator vibe;
+    private Vibrator vibe;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,9 +61,7 @@ public class MainActivity extends AppCompatActivity {
                         if (Objects.requireNonNull(task.getResult()).isEmpty()) {
                             textViewAucuneTacheEnCours.setVisibility(View.VISIBLE);
                             listView.setVisibility(View.INVISIBLE);
-                        }
-
-                        else {
+                        } else {
                             textViewAucuneTacheEnCours.setVisibility(View.INVISIBLE);
 
                             // Récupérer les tâches
@@ -82,10 +77,10 @@ public class MainActivity extends AppCompatActivity {
 
                         // Erreur dans la récupération des tâches
                     } else {
-                        Snackbar.make(findViewById(R.id.floatingActionButton), "Erreur dans la récupération des tâches \n" + task.getException(), Snackbar.LENGTH_LONG)
-                                .setAction("Rééssayer", v -> handler.postDelayed(runnable, 0))
+                        Snackbar.make(findViewById(R.id.floatingActionButton), (getString(R.string.erreur_recup_taches) + task.getException()), Snackbar.LENGTH_LONG)
+                                .setAction(R.string.reessayer, v -> handler.postDelayed(runnable, 0))
                                 .show();
-                        Log.w(TAG, "Erreur dans la récupération des tâches : ", task.getException());
+                        Log.w(TAG, getString(R.string.erreur_recup_taches) + task.getException());
                     }
                 });
         handler.postDelayed(runnable, 0);
@@ -103,17 +98,17 @@ public class MainActivity extends AppCompatActivity {
 
                     // Tâche supprimée
                     .addOnSuccessListener(aVoid -> {
-                        Snackbar.make(findViewById(R.id.floatingActionButton), "Tâche supprimée", Snackbar.LENGTH_LONG)
+                        Snackbar.make(findViewById(R.id.floatingActionButton), (R.string.tache_supprimee), Snackbar.LENGTH_LONG)
                                 .show();
-                        Log.d(TAG, "Tâche supprimée");
+                        Log.d(TAG, getString(R.string.tache_supprimee));
                         handler.postDelayed(runnable, 0);
                     })
 
                     // Erreur dans la suppression de la tâche
                     .addOnFailureListener(e -> {
-                        Snackbar.make(findViewById(R.id.floatingActionButton), "Erreur lors de la suppression de la tâche " + e, Snackbar.LENGTH_LONG)
+                        Snackbar.make(findViewById(R.id.floatingActionButton), (getString(R.string.erreur_suppression_tache)) + e, Snackbar.LENGTH_LONG)
                                 .show();
-                        Log.w(TAG, "Erreur lors de la suppression de la tâche : " + e);
+                        Log.w(TAG, getString(R.string.erreur_suppression_tache) + e);
                     });
         });
 
@@ -126,7 +121,7 @@ public class MainActivity extends AppCompatActivity {
             assert clipboard != null;
             clipboard.setPrimaryClip(clip);
 
-            Toast.makeText(MainActivity.this, "Texte copié !", Toast.LENGTH_SHORT).show();
+            Toast.makeText(MainActivity.this, getString(R.string.texte_copie), Toast.LENGTH_SHORT).show();
 
             // Vibrer
             vibe = (Vibrator) MainActivity.this.getSystemService(Context.VIBRATOR_SERVICE);

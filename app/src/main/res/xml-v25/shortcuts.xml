@@ -3,7 +3,7 @@
         android:enabled="true"
         android:icon="@drawable/ajouter_tache"
         android:shortcutId="ajouterTache"
-        android:shortcutShortLabel="@string/ajouterTache">
+        android:shortcutShortLabel="@string/ajouter_tache">
         <intent
             android:action="android.intent.action.VIEW"
             android:targetClass="com.ynov.vernet.to_dolist.AjoutTacheActivity"

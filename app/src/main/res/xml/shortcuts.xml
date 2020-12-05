@@ -3,7 +3,7 @@
       android:shortcutId="ajouterTache"
       android:enabled="true"
       android:icon="@drawable/icone"
-      android:shortcutShortLabel="@string/ajouterTache">
+      android:shortcutShortLabel="@string/ajouter_tache">
       <intent
           android:action="android.intent.action.VIEW"
           android:targetPackage="com.ynov.vernet.morpion"

@@ -1,4 +1,14 @@
 <resources>
     <string name="app_name">To-do List</string>
-    <string name="ajouterTache">Ajouter une tâche</string>
+    <string name="ajouter_tache">Add a task</string>
+    <string name="aucune_t_che_en_cours">No current task</string>
+    <string name="erreur_recup_taches">Error retrieving tasks</string>
+    <string name="reessayer">Retry</string>
+    <string name="tache_supprimee">Task deleted</string>
+    <string name="erreur_suppression_tache">Error while deleting the task</string>
+    <string name="texte_copie">Copied text</string>
+    <string name="entrez_tache">Enter a task</string>
+    <string name="Ajouter">Add</string>
+    <string name="erreur_ajout_tache">Error while adding task</string>
+    <string name="zone_txt_ne_peut_pas_etre_vide">Textbox cannot be empty</string>
 </resources>

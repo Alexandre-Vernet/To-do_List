@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">To-do List</string>
+    <string name="ajouter_tache">Ajouter une tâche</string>
+    <string name="aucune_t_che_en_cours">Aucune tâche en cours</string>
+    <string name="erreur_recup_taches">Erreur lors de la récupération des tâches</string>
+    <string name="reessayer">Rééssayer</string>
+    <string name="tache_supprimee">Tâche supprimée</string>
+    <string name="erreur_suppression_tache">Erreur lors de la suppression de la tâche</string>
+    <string name="texte_copie">Texte copié !</string>
+    <string name="entrez_tache">Entrez une tâche</string>
+    <string name="Ajouter">Ajouter</string>
+    <string name="erreur_ajout_tache">Erreur lors de l\'ajout de la tâche</string>
+    <string name="zone_txt_ne_peut_pas_etre_vide">La zone de texte ne peut pas être vide</string>
+</resources>
