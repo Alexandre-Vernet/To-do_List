@@ -27,7 +27,7 @@ public class MainActivity extends AppCompatActivity {
     ProgressBar progressBar;
     TextView textViewAucuneTacheEnCours;
     ListView listView;
-    FloatingActionButton floatingActionButtonAjoutTache, floatingActionButtonSupprimerTache;
+    FloatingActionButton floatingActionButtonAjoutTache;
     FirebaseFirestore db;
 
     Runnable runnable;
@@ -43,7 +43,6 @@ public class MainActivity extends AppCompatActivity {
         textViewAucuneTacheEnCours = findViewById(R.id.textViewAucuneTacheEnCours);
         listView = findViewById(R.id.listView);
         floatingActionButtonAjoutTache = findViewById(R.id.floatingActionButton);
-        floatingActionButtonSupprimerTache = findViewById(R.id.floatingActionButtonSupprimerTache);
 
 
         // Afficher les tâches en cours
@@ -63,12 +62,8 @@ public class MainActivity extends AppCompatActivity {
 
                             // Récupérer les tâches
                             ArrayList<String> tache = new ArrayList<>();
-//                            for (QueryDocumentSnapshot document : Objects.requireNonNull(task.getResult()))
-//                                taches.add(Objects.requireNonNull(document.get("")).toString());
-
-                            for (QueryDocumentSnapshot document : task.getResult()) {
-                                tache.add(document.getId() + " => " + document.get("Description"));
-                            }
+                            for (QueryDocumentSnapshot document : Objects.requireNonNull(task.getResult()))
+                                tache.add(Objects.requireNonNull(document.get("Description")).toString());
 
                             // Afficher les tâches dans la listView
                             ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(listView.getContext(), android.R.layout.select_dialog_multichoice, tache);
@@ -109,7 +104,7 @@ public class MainActivity extends AppCompatActivity {
                     .addOnFailureListener(e -> {
                         Snackbar.make(findViewById(R.id.floatingActionButton), "Erreur lors de la suppression de la tâche " + e, Snackbar.LENGTH_LONG)
                                 .show();
-                        Log.w(TAG, "Erreur lors de la suppression de la tâche : ", e);
+                        Log.w(TAG, "Erreur lors de la suppression de la tâche : " + e);
                     });
         });
 
@@ -118,11 +113,6 @@ public class MainActivity extends AppCompatActivity {
         floatingActionButtonAjoutTache.setOnClickListener(v -> {
             startActivity(new Intent(getApplicationContext(), AjoutTacheActivity.class));
             finish();
-        });
-
-
-        // Supprimer une tâche manuellement
-        floatingActionButtonSupprimerTache.setOnClickListener(v -> {
         });
     }
 }

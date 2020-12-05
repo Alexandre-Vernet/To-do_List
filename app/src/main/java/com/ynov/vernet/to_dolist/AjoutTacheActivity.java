@@ -52,22 +52,9 @@ public class AjoutTacheActivity extends AppCompatActivity {
                 Map<String, Object> tache = new HashMap<>();
                 tache.put("Description", editTextTache.getText().toString());
 
-                // Définir son id
-                db.collection("taches")
-                        .get()
-                        .addOnCompleteListener(task -> {
-                            if (task.isSuccessful()) {
-                                for (DocumentSnapshot document : task.getResult()) {
-                                    count++;
-                                }
-                            } else {
-                                Log.d(TAG, "Error getting documents: ", task.getException());
-                            }
-                        });
-
                 // Ajouter la tâche saisie à la BDD
                 db.collection("taches")
-                        .document("Tache " + count)
+                        .document(editTextTache.getText().toString())
                         .set(tache)
                         .addOnSuccessListener(documentReference -> {
                             startActivity(new Intent(getApplicationContext(), MainActivity.class));
@@ -79,7 +66,7 @@ public class AjoutTacheActivity extends AppCompatActivity {
                             Snackbar.make(findViewById(R.id.btnValider), "Erreur lors de l'ajout de la tâche \n" + e, Snackbar.LENGTH_LONG)
                                     .setAction("Rééessayer", erreur -> handler.postDelayed(runnable, 0))
                                     .show();
-                            Log.w(TAG, "Erreur lors de l'ajout de la tâche : ", e);
+                            Log.w(TAG, "Erreur lors de l'ajout de la tâche : " + e);
                         });
 
                 // Zone de texte vide
