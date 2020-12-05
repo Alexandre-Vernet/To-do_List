@@ -12,6 +12,7 @@ import android.widget.ProgressBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.HashMap;
@@ -25,6 +26,7 @@ public class AjoutTacheActivity extends AppCompatActivity {
 
     Runnable runnable;
     private static final String TAG = "AjoutTacheActivity";
+    private int count = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,15 +50,28 @@ public class AjoutTacheActivity extends AppCompatActivity {
 
                 // Récupérer la tâche saisie
                 Map<String, Object> tache = new HashMap<>();
-                tache.put("tache", editTextTache.getText().toString());
+                tache.put("Description", editTextTache.getText().toString());
+
+                // Définir son id
+                db.collection("taches")
+                        .get()
+                        .addOnCompleteListener(task -> {
+                            if (task.isSuccessful()) {
+                                for (DocumentSnapshot document : task.getResult()) {
+                                    count++;
+                                }
+                            } else {
+                                Log.d(TAG, "Error getting documents: ", task.getException());
+                            }
+                        });
 
                 // Ajouter la tâche saisie à la BDD
                 db.collection("taches")
-                        .add(tache)
+                        .document("Tache " + count)
+                        .set(tache)
                         .addOnSuccessListener(documentReference -> {
                             startActivity(new Intent(getApplicationContext(), MainActivity.class));
                             finish();
-                            Log.d(TAG, "Tâche " + documentReference.getId() + " ajoutée");
                         })
 
                         // Erreur dans l'ajout de la tâche à la BDD

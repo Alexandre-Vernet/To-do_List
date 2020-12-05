@@ -19,6 +19,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
+import java.util.ArrayList;
 import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
@@ -48,7 +49,6 @@ public class MainActivity extends AppCompatActivity {
         // Afficher les tâches en cours
         Handler handler = new Handler();
         runnable = () -> db.collection("taches")
-                .orderBy("tache", Query.Direction.DESCENDING)
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
@@ -61,12 +61,17 @@ public class MainActivity extends AppCompatActivity {
                         else {
                             textViewAucuneTacheEnCours.setVisibility(View.INVISIBLE);
 
-                            // Afficher les tâches dans la listView
-                            ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(listView.getContext(), R.layout.element, R.id.checkboxTache);
-                            for (QueryDocumentSnapshot document : Objects.requireNonNull(task.getResult())) {
-                                arrayAdapter.add(Objects.requireNonNull(document.get("tache")).toString());
+                            // Récupérer les tâches
+                            ArrayList<String> tache = new ArrayList<>();
+//                            for (QueryDocumentSnapshot document : Objects.requireNonNull(task.getResult()))
+//                                taches.add(Objects.requireNonNull(document.get("")).toString());
+
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                tache.add(document.getId() + " => " + document.get("Description"));
                             }
 
+                            // Afficher les tâches dans la listView
+                            ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(listView.getContext(), android.R.layout.select_dialog_multichoice, tache);
                             listView.setAdapter(arrayAdapter);
                         }
 
@@ -76,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
                         Snackbar.make(findViewById(R.id.floatingActionButton), "Erreur dans la récupération des tâches \n" + task.getException(), Snackbar.LENGTH_LONG)
                                 .setAction("Rééssayer", v -> handler.postDelayed(runnable, 0))
                                 .show();
-                        Log.w(TAG, "Erreur dans la récupération des tâches :", task.getException());
+                        Log.w(TAG, "Erreur dans la récupération des tâches : ", task.getException());
                     }
                 });
         handler.postDelayed(runnable, 0);
@@ -84,9 +89,28 @@ public class MainActivity extends AppCompatActivity {
 
         // Au clic d'une tâche
         listView.setOnItemClickListener((parent, view, position, id) -> {
-            // Afficher un toast avec le nom du contact
+
+            // Récupérer son contenu
             String tache = (String) listView.getItemAtPosition(position);
-            Toast.makeText(MainActivity.this, tache, Toast.LENGTH_SHORT).show();
+
+            // La supprimer
+            db.collection("taches").document(tache)
+                    .delete()
+
+                    // Tâche supprimée
+                    .addOnSuccessListener(aVoid -> {
+                        Snackbar.make(findViewById(R.id.floatingActionButton), "Tâche supprimée", Snackbar.LENGTH_LONG)
+                                .show();
+                        Log.d(TAG, "Tâche supprimée");
+                        handler.postDelayed(runnable, 0);
+                    })
+
+                    // Erreur dans la suppression de la tâche
+                    .addOnFailureListener(e -> {
+                        Snackbar.make(findViewById(R.id.floatingActionButton), "Erreur lors de la suppression de la tâche " + e, Snackbar.LENGTH_LONG)
+                                .show();
+                        Log.w(TAG, "Erreur lors de la suppression de la tâche : ", e);
+                    });
         });
 
 
@@ -99,19 +123,6 @@ public class MainActivity extends AppCompatActivity {
 
         // Supprimer une tâche manuellement
         floatingActionButtonSupprimerTache.setOnClickListener(v -> {
-            db.collection("taches").document("pRcZ3jFJpW79swybthJ4")
-                    .delete()
-                    .addOnSuccessListener(aVoid -> {
-                        Snackbar.make(findViewById(R.id.floatingActionButton), "Tâche supprimée", Snackbar.LENGTH_LONG)
-                                .show();
-                        Log.d(TAG, "DocumentSnapshot successfully deleted!");
-                        handler.postDelayed(runnable, 0);
-                    })
-                    .addOnFailureListener(e -> {
-                        Snackbar.make(findViewById(R.id.floatingActionButton), "Erreur lors de la suppression de la tâche " + e, Snackbar.LENGTH_LONG)
-                                .show();
-                        Log.w(TAG, "Erreur lors de la suppression de la tâche ", e);
-                    });
         });
     }
 }
