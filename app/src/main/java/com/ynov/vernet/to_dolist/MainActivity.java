@@ -52,7 +52,6 @@ public class MainActivity extends AppCompatActivity {
         floatingActionButtonAjoutTache = findViewById(R.id.floatingActionButton);
 
 
-
         // Afficher les tâches en cours
         Handler handler = new Handler();
         runnable = () -> db.collection("taches")
@@ -62,8 +61,10 @@ public class MainActivity extends AppCompatActivity {
                         progressBar.setVisibility(View.INVISIBLE);
 
                         // Si aucune tâches n'est présente
-                        if (Objects.requireNonNull(task.getResult()).isEmpty())
+                        if (Objects.requireNonNull(task.getResult()).isEmpty()) {
                             textViewAucuneTacheEnCours.setVisibility(View.VISIBLE);
+                            listView.setVisibility(View.INVISIBLE);
+                        }
 
                         else {
                             textViewAucuneTacheEnCours.setVisibility(View.INVISIBLE);
@@ -131,7 +132,7 @@ public class MainActivity extends AppCompatActivity {
             vibe = (Vibrator) MainActivity.this.getSystemService(Context.VIBRATOR_SERVICE);
             vibe.vibrate(80);
 
-            return false;
+            return true;
         });
 
 
