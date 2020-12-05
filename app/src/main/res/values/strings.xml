@@ -11,4 +11,5 @@
     <string name="Ajouter">Add</string>
     <string name="erreur_ajout_tache">Error while adding task</string>
     <string name="zone_txt_ne_peut_pas_etre_vide">Textbox cannot be empty</string>
+    <string name="annuler">Undo</string>
 </resources>

@@ -23,6 +23,8 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
@@ -88,7 +90,6 @@ public class MainActivity extends AppCompatActivity {
 
         // Au clic d'une tâche
         listView.setOnItemClickListener((parent, view, position, id) -> {
-
             // Récupérer son contenu
             String tache = (String) listView.getItemAtPosition(position);
 
@@ -99,8 +100,33 @@ public class MainActivity extends AppCompatActivity {
                     // Tâche supprimée
                     .addOnSuccessListener(aVoid -> {
                         Snackbar.make(findViewById(R.id.floatingActionButton), (R.string.tache_supprimee), Snackbar.LENGTH_LONG)
+                                .setAction(R.string.annuler, v -> {
+
+                                    // Restaurer son contenu
+                                    Map<String, Object> taches = new HashMap<>();
+                                    taches.put("Description", tache);
+
+                                    // Ajouter la tâche saisie à la BDD
+                                    db.collection("taches")
+                                            .document(tache)
+                                            .set(taches)
+                                            .addOnSuccessListener(documentReference -> {
+                                                startActivity(new Intent(getApplicationContext(), MainActivity.class));
+                                                finish();
+                                            })
+
+                                            // Erreur dans l'ajout de la tâche à la BDD
+                                            .addOnFailureListener(e -> {
+                                                Snackbar.make(findViewById(R.id.btnValider), (getString(R.string.erreur_ajout_tache)) + e, Snackbar.LENGTH_LONG)
+                                                        .setAction(getString(R.string.reessayer), erreur -> handler.postDelayed(runnable, 0))
+                                                        .show();
+                                                Log.w(TAG, (getString(R.string.erreur_ajout_tache)) + e);
+                                            });
+                                })
                                 .show();
                         Log.d(TAG, getString(R.string.tache_supprimee));
+
+                        // Mettre à jour l'affichage
                         handler.postDelayed(runnable, 0);
                     })
 
@@ -125,6 +151,7 @@ public class MainActivity extends AppCompatActivity {
 
             // Vibrer
             vibe = (Vibrator) MainActivity.this.getSystemService(Context.VIBRATOR_SERVICE);
+            assert vibe != null;
             vibe.vibrate(80);
 
             return true;

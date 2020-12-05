@@ -12,4 +12,5 @@
     <string name="Ajouter">Ajouter</string>
     <string name="erreur_ajout_tache">Erreur lors de l\'ajout de la tâche</string>
     <string name="zone_txt_ne_peut_pas_etre_vide">La zone de texte ne peut pas être vide</string>
+    <string name="annuler">Annuler</string>
 </resources>
