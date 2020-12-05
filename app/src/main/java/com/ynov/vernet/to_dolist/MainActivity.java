@@ -1,5 +1,6 @@
 package com.ynov.vernet.to_dolist;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -14,14 +15,10 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
@@ -29,7 +26,7 @@ public class MainActivity extends AppCompatActivity {
     ProgressBar progressBar;
     TextView textViewAucuneTacheEnCours;
     ListView listView;
-    FloatingActionButton floatingActionButton;
+    FloatingActionButton floatingActionButtonAjoutTache, floatingActionButtonSupprimerTache;
     FirebaseFirestore db;
 
     Runnable runnable;
@@ -44,7 +41,8 @@ public class MainActivity extends AppCompatActivity {
         progressBar = findViewById(R.id.progressBar);
         textViewAucuneTacheEnCours = findViewById(R.id.textViewAucuneTacheEnCours);
         listView = findViewById(R.id.listView);
-        floatingActionButton = findViewById(R.id.floatingActionButton);
+        floatingActionButtonAjoutTache = findViewById(R.id.floatingActionButton);
+        floatingActionButtonSupprimerTache = findViewById(R.id.floatingActionButtonSupprimerTache);
 
 
         // Afficher les tâches en cours
@@ -93,21 +91,27 @@ public class MainActivity extends AppCompatActivity {
 
 
         // Ajouter une tâche
-        floatingActionButton.setOnClickListener(v -> {
-//            startActivity(new Intent(getApplicationContext(), AjoutTacheActivity.class));
-//            finish();
+        floatingActionButtonAjoutTache.setOnClickListener(v -> {
+            startActivity(new Intent(getApplicationContext(), AjoutTacheActivity.class));
+            finish();
+        });
 
 
-            // Supprimer une tâche
-
-            DocumentReference docRef = db.collection("taches").document("tache");
-
-            Map<String, Object> updates = new HashMap<>();
-            updates.put("Test1", FieldValue.delete());
-
-            docRef.update(updates).addOnCompleteListener(task -> {
-                handler.postDelayed(runnable, 0);
-            });
+        // Supprimer une tâche manuellement
+        floatingActionButtonSupprimerTache.setOnClickListener(v -> {
+            db.collection("taches").document("pRcZ3jFJpW79swybthJ4")
+                    .delete()
+                    .addOnSuccessListener(aVoid -> {
+                        Snackbar.make(findViewById(R.id.floatingActionButton), "Tâche supprimée", Snackbar.LENGTH_LONG)
+                                .show();
+                        Log.d(TAG, "DocumentSnapshot successfully deleted!");
+                        handler.postDelayed(runnable, 0);
+                    })
+                    .addOnFailureListener(e -> {
+                        Snackbar.make(findViewById(R.id.floatingActionButton), "Erreur lors de la suppression de la tâche " + e, Snackbar.LENGTH_LONG)
+                                .show();
+                        Log.w(TAG, "Erreur lors de la suppression de la tâche ", e);
+                    });
         });
     }
 }
