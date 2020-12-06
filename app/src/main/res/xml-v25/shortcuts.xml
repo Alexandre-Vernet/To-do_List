@@ -1,12 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
 <shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
     <shortcut
         android:enabled="true"
         android:icon="@drawable/ajouter_tache"
-        android:shortcutId="ajouterTache"
+        android:shortcutId="Ajouter une tâche"
         android:shortcutShortLabel="@string/ajouter_tache">
         <intent
             android:action="android.intent.action.VIEW"
             android:targetClass="com.ynov.vernet.to_dolist.AjoutTacheActivity"
             android:targetPackage="com.ynov.vernet.to_dolist" />
     </shortcut>
+
 </shortcuts>

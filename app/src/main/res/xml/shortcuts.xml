@@ -1,12 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
 <shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
-  <shortcut
-      android:shortcutId="ajouterTache"
-      android:enabled="true"
-      android:icon="@drawable/icone"
-      android:shortcutShortLabel="@string/ajouter_tache">
-      <intent
-          android:action="android.intent.action.VIEW"
-          android:targetPackage="com.ynov.vernet.morpion"
-          android:targetClass="com.ynov.vernet.morpion.UnJoueurActivity" />
-  </shortcut>
+    <shortcut
+        android:enabled="true"
+        android:icon="@drawable/ajouter_tache"
+        android:shortcutId="Ajouter une tâche"
+        android:shortcutShortLabel="@string/ajouter_tache">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetClass="com.ynov.vernet.to_dolist.AjoutTacheActivity"
+            android:targetPackage="com.ynov.vernet.to_dolist" />
+    </shortcut>
+
 </shortcuts>

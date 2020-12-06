@@ -5,18 +5,25 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ShortcutInfo;
+import android.content.pm.ShortcutManager;
+import android.graphics.drawable.Icon;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Vibrator;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -26,12 +33,14 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
 
+    Context context;
     ProgressBar progressBar;
     TextView textViewAucuneTacheEnCours, textViewNbTaches;
     ListView listView;
@@ -43,6 +52,7 @@ public class MainActivity extends AppCompatActivity {
     private Vibrator vibe;
     private int nbTaches = 0;
 
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,6 +64,15 @@ public class MainActivity extends AppCompatActivity {
         textViewNbTaches = findViewById(R.id.textViewNbTaches);
         listView = findViewById(R.id.listView);
         floatingActionButtonAjoutTache = findViewById(R.id.floatingActionButton);
+
+        // Vérifier la connexion Internet
+        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (Objects.requireNonNull(Objects.requireNonNull(connectivityManager).getNetworkInfo(ConnectivityManager.TYPE_MOBILE)).getState() == NetworkInfo.State.CONNECTED || Objects.requireNonNull(connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI)).getState() == NetworkInfo.State.CONNECTED) {
+            Log.d(TAG, "onCreate: Internet disponible");
+        } else {
+            Log.d(TAG, "onCreate: Internet indisponible");
+            floatingActionButtonAjoutTache.setVisibility(View.INVISIBLE);
+        }
 
 
         // Afficher les tâches en cours
