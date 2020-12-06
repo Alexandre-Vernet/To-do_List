@@ -1,5 +1,6 @@
 package com.ynov.vernet.to_dolist;
 
+import android.animation.ObjectAnimator;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
@@ -9,6 +10,7 @@ import android.os.Handler;
 import android.os.Vibrator;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
@@ -106,6 +108,18 @@ public class MainActivity extends AppCompatActivity {
 
         // Au clic d'une tâche
         listView.setOnItemClickListener((parent, view, position, id) -> {
+
+            // Adapter le floatingActionButton à la snackbar
+            ObjectAnimator animation = ObjectAnimator.ofFloat(floatingActionButtonAjoutTache, "translationY", -125f);
+            animation.setDuration(500);
+            animation.start();
+            new Handler().postDelayed(() -> {
+                ObjectAnimator animation1 = ObjectAnimator.ofFloat(floatingActionButtonAjoutTache, "translationY", 0f);
+                animation1.setDuration(500);
+                animation1.start();
+            }, 3500);
+
+
             nbTaches--;
             textViewNbTaches.setText(getString(R.string.nb_taches_en_cours, nbTaches));
 
