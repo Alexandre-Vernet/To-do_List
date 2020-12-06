@@ -54,7 +54,6 @@ public class AjoutTacheActivity extends AppCompatActivity {
                 // Ajouter la date et l'heure
                 Date date = Calendar.getInstance().getTime();
                 tache.put("date", date);
-//                Log.d(TAG, "onCreate: " + date);
 
                 // Ajouter la tâche saisie à la BDD
                 db.collection("taches")

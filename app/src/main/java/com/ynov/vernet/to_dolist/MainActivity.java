@@ -28,6 +28,8 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -152,6 +154,8 @@ public class MainActivity extends AppCompatActivity {
                                     // Restaurer son contenu
                                     Map<String, Object> taches = new HashMap<>();
                                     taches.put("Description", tache);
+                                    Date date = Calendar.getInstance().getTime();
+                                    taches.put("date", date);
 
                                     // Ajouter la tâche saisie à la BDD
                                     db.collection("taches")
