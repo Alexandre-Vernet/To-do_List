@@ -5,16 +5,12 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.ShortcutInfo;
-import android.content.pm.ShortcutManager;
-import android.graphics.drawable.Icon;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Vibrator;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -23,7 +19,6 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -33,14 +28,12 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
 
-    Context context;
     ProgressBar progressBar;
     TextView textViewAucuneTacheEnCours, textViewNbTaches;
     ListView listView;
@@ -52,7 +45,6 @@ public class MainActivity extends AppCompatActivity {
     private Vibrator vibe;
     private int nbTaches = 0;
 
-    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -71,6 +63,9 @@ public class MainActivity extends AppCompatActivity {
             Log.d(TAG, "onCreate: Internet disponible");
         } else {
             Log.d(TAG, "onCreate: Internet indisponible");
+            Snackbar.make(findViewById(R.id.test), "Connexion internet indisponible", Snackbar.LENGTH_LONG)
+                                .setAction("Activer", v -> startActivity(new Intent(Settings.ACTION_WIRELESS_SETTINGS)))
+                                .show();
             floatingActionButtonAjoutTache.setVisibility(View.INVISIBLE);
         }
 
