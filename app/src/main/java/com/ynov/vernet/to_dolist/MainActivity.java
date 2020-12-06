@@ -20,6 +20,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
@@ -57,6 +58,7 @@ public class MainActivity extends AppCompatActivity {
         Handler handler = new Handler();
         runnable = () ->
                 db.collection("taches")
+                        .orderBy("date", Query.Direction.DESCENDING)
                         .get()
                         .addOnCompleteListener(task -> {
                             nbTaches = 0;

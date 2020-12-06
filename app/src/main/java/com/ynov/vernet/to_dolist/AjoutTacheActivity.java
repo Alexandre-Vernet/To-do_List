@@ -12,9 +12,10 @@ import android.widget.ProgressBar;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.snackbar.Snackbar;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -49,6 +50,11 @@ public class AjoutTacheActivity extends AppCompatActivity {
                 // Récupérer la tâche saisie
                 Map<String, Object> tache = new HashMap<>();
                 tache.put("Description", editTextTache.getText().toString());
+
+                // Ajouter la date et l'heure
+                Date date = Calendar.getInstance().getTime();
+                tache.put("date", date);
+//                Log.d(TAG, "onCreate: " + date);
 
                 // Ajouter la tâche saisie à la BDD
                 db.collection("taches")
