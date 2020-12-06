@@ -65,6 +65,7 @@ public class MainActivity extends AppCompatActivity {
 
                                 // Si aucune tâches n'est présente
                                 if (Objects.requireNonNull(task.getResult()).isEmpty()) {
+                                    textViewNbTaches.setVisibility(View.INVISIBLE);
                                     textViewAucuneTacheEnCours.setVisibility(View.VISIBLE);
                                     listView.setVisibility(View.INVISIBLE);
                                 } else {

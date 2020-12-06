@@ -23,7 +23,6 @@ public class AjoutTacheActivity extends AppCompatActivity {
     FirebaseFirestore db;
     EditText editTextTache;
     ProgressBar progressBar;
-
     Runnable runnable;
     private static final String TAG = "AjoutTacheActivity";
 
