@@ -23,6 +23,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -66,8 +67,8 @@ public class MainActivity extends AppCompatActivity {
         } else {
             Log.d(TAG, "onCreate: Internet indisponible");
             Snackbar.make(findViewById(R.id.test), "Connexion internet indisponible", Snackbar.LENGTH_LONG)
-                                .setAction("Activer", v -> startActivity(new Intent(Settings.ACTION_WIRELESS_SETTINGS)))
-                                .show();
+                    .setAction("Activer", v -> startActivity(new Intent(Settings.ACTION_WIRELESS_SETTINGS)))
+                    .show();
             floatingActionButtonAjoutTache.setVisibility(View.INVISIBLE);
         }
 
@@ -120,6 +121,23 @@ public class MainActivity extends AppCompatActivity {
                             }
                         });
         handler.postDelayed(runnable, 0);
+
+
+        // Ecouter les tâches entrantes
+        db.collection("taches")
+                .addSnapshotListener((snapshots, e) -> {
+                    if (e != null) {
+                        Log.w(TAG, "onCreate: Erreur  dans l'écoute des tâches instantanée", e);
+                        return;
+                    }
+
+                    // Mettre à jour l'affichage
+                    for (DocumentChange dc : Objects.requireNonNull(snapshots).getDocumentChanges()) {
+                        if (dc.getType() == DocumentChange.Type.ADDED) {
+                            handler.postDelayed(runnable, 0);
+                        }
+                    }
+                });
 
 
         // Au clic d'une tâche
@@ -216,4 +234,5 @@ public class MainActivity extends AppCompatActivity {
             finish();
         });
     }
+
 }
