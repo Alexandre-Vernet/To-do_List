@@ -71,8 +71,8 @@ public class MainActivity extends AppCompatActivity {
             creerRaccourcis(true);
         } else {
             Log.d(TAG, "onCreate: Internet indisponible");
-            Snackbar.make(findViewById(R.id.test), "Connexion internet indisponible", Snackbar.LENGTH_LONG)
-                    .setAction("Activer", v -> startActivity(new Intent(Settings.ACTION_WIRELESS_SETTINGS)))
+            Snackbar.make(findViewById(R.id.test), R.string.internet_indisponible, Snackbar.LENGTH_LONG)
+                    .setAction(R.string.actier, v -> startActivity(new Intent(Settings.ACTION_WIRELESS_SETTINGS)))
                     .show();
             floatingActionButtonAjoutTache.setVisibility(View.INVISIBLE);
             creerRaccourcis(false);

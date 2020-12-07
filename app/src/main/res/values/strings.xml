@@ -14,4 +14,6 @@
     <string name="annuler">Undo</string>
     <string name="nb_taches_en_cours">%1$d current tasks</string>
     <string name="nb_tache_en_cours">%1$d current task</string>
+    <string name="internet_indisponible">No Internet connection</string>
+    <string name="actier">Activate</string>
 </resources>
