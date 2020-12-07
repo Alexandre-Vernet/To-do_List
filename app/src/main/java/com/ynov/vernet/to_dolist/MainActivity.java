@@ -23,7 +23,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
-import com.google.firebase.firestore.DocumentChange;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -90,7 +89,10 @@ public class MainActivity extends AppCompatActivity {
                                     textViewAucuneTacheEnCours.setVisibility(View.VISIBLE);
                                     listView.setVisibility(View.INVISIBLE);
                                 } else {
+                                    textViewNbTaches.setVisibility(View.VISIBLE);
                                     textViewAucuneTacheEnCours.setVisibility(View.INVISIBLE);
+                                    listView.setVisibility(View.VISIBLE);
+
 
                                     // Récupérer les tâches
                                     ArrayList<String> tache = new ArrayList<>();
@@ -124,20 +126,9 @@ public class MainActivity extends AppCompatActivity {
 
 
         // Ecouter les tâches entrantes
-        db.collection("taches")
-                .addSnapshotListener((snapshots, e) -> {
-                    if (e != null) {
-                        Log.w(TAG, "onCreate: Erreur  dans l'écoute des tâches instantanée", e);
-                        return;
-                    }
-
-                    // Mettre à jour l'affichage
-                    for (DocumentChange dc : Objects.requireNonNull(snapshots).getDocumentChanges()) {
-                        if (dc.getType() == DocumentChange.Type.ADDED) {
-                            handler.postDelayed(runnable, 0);
-                        }
-                    }
-                });
+        Query query = db.collection("taches");
+        query.addSnapshotListener(
+                (value, error) -> handler.postDelayed(runnable, 0));
 
 
         // Au clic d'une tâche
@@ -152,7 +143,6 @@ public class MainActivity extends AppCompatActivity {
                 animation1.setDuration(500);
                 animation1.start();
             }, 3500);
-
 
             nbTaches--;
             textViewNbTaches.setText(getString(R.string.nb_taches_en_cours, nbTaches));
