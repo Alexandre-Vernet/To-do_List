@@ -1,10 +1,14 @@
 package com.ynov.vernet.to_dolist;
 
 import android.animation.ObjectAnimator;
+import android.annotation.TargetApi;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ShortcutInfo;
+import android.content.pm.ShortcutManager;
+import android.graphics.drawable.Icon;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -29,6 +33,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -63,12 +68,14 @@ public class MainActivity extends AppCompatActivity {
         ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         if (Objects.requireNonNull(Objects.requireNonNull(connectivityManager).getNetworkInfo(ConnectivityManager.TYPE_MOBILE)).getState() == NetworkInfo.State.CONNECTED || Objects.requireNonNull(connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI)).getState() == NetworkInfo.State.CONNECTED) {
             Log.d(TAG, "onCreate: Internet disponible");
+            creerRaccourcis(true);
         } else {
             Log.d(TAG, "onCreate: Internet indisponible");
             Snackbar.make(findViewById(R.id.test), "Connexion internet indisponible", Snackbar.LENGTH_LONG)
                     .setAction("Activer", v -> startActivity(new Intent(Settings.ACTION_WIRELESS_SETTINGS)))
                     .show();
             floatingActionButtonAjoutTache.setVisibility(View.INVISIBLE);
+            creerRaccourcis(false);
         }
 
 
@@ -223,6 +230,33 @@ public class MainActivity extends AppCompatActivity {
             startActivity(new Intent(getApplicationContext(), AjoutTacheActivity.class));
             finish();
         });
+    }
+
+
+    @TargetApi(25)
+    private void creerRaccourcis(boolean actif) {
+        // Connexion Internet
+        if (actif) {
+            ShortcutManager sM = getSystemService(ShortcutManager.class);
+
+            Intent intent = new Intent(getApplicationContext(), AjoutTacheActivity.class);
+            intent.setAction(Intent.ACTION_VIEW);
+
+            ShortcutInfo shortcut1 = new ShortcutInfo.Builder(this, "ajoutTache")
+                    .setIntent(intent)
+                    .setShortLabel(getString(R.string.ajouter_tache))
+                    .setIcon(Icon.createWithResource(this, R.drawable.ajouter_tache))
+                    .build();
+            assert sM != null;
+            sM.setDynamicShortcuts(Collections.singletonList(shortcut1));
+
+            // Pas de connexion
+        } else {
+            ShortcutManager shortcutManager = getSystemService(ShortcutManager.class);
+            assert shortcutManager != null;
+            shortcutManager.disableShortcuts(Collections.singletonList("ajoutTache"));
+            shortcutManager.removeAllDynamicShortcuts();
+        }
     }
 
 }
