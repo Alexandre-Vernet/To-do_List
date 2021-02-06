@@ -15,5 +15,5 @@
     <string name="nb_taches_en_cours">%1$d  tâches en cours</string>
     <string name="nb_tache_en_cours">%1$d  tâche en cours</string>
     <string name="internet_indisponible">Pas de connexion internet</string>
-    <string name="actier">Activer</string>
+    <string name="activer">Activer</string>
 </resources>

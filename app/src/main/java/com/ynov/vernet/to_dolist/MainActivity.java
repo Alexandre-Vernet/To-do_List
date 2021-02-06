@@ -1,6 +1,5 @@
 package com.ynov.vernet.to_dolist;
 
-import android.animation.ObjectAnimator;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
@@ -71,7 +70,7 @@ public class MainActivity extends AppCompatActivity {
         } else {
             Log.d(TAG, "onCreate: Internet indisponible");
             Snackbar.make(findViewById(R.id.test), R.string.internet_indisponible, Snackbar.LENGTH_LONG)
-                    .setAction(R.string.actier, v -> startActivity(new Intent(Settings.ACTION_WIRELESS_SETTINGS)))
+                    .setAction(R.string.activer, v -> startActivity(new Intent(Settings.ACTION_WIRELESS_SETTINGS)))
                     .show();
             floatingActionButtonAjoutTache.setVisibility(View.INVISIBLE);
         }
@@ -121,7 +120,6 @@ public class MainActivity extends AppCompatActivity {
                                     textViewAucuneTacheEnCours.setVisibility(View.INVISIBLE);
                                     listView.setVisibility(View.VISIBLE);
 
-
                                     // Récupérer les tâches
                                     ArrayList<String> tache = new ArrayList<>();
                                     for (QueryDocumentSnapshot document : Objects.requireNonNull(task.getResult())) {
@@ -135,12 +133,10 @@ public class MainActivity extends AppCompatActivity {
                                     else
                                         textViewNbTaches.setText(getString(R.string.nb_taches_en_cours, nbTaches));
 
-
                                     // Afficher les tâches dans la listView
                                     ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(listView.getContext(), android.R.layout.select_dialog_multichoice, tache);
                                     listView.setAdapter(arrayAdapter);
                                 }
-
 
                                 // Erreur dans la récupération des tâches
                             } else {
@@ -154,23 +150,12 @@ public class MainActivity extends AppCompatActivity {
 
 
         // Ecouter les tâches entrantes
-        Query query = db.collection("taches");
+        Query query = db.collection(salon);
         query.addSnapshotListener(
                 (value, error) -> handler.postDelayed(runnable, 0));
 
-
         // Au clic d'une tâche
         listView.setOnItemClickListener((parent, view, position, id) -> {
-
-            // Adapter le floatingActionButton à la snackbar
-            ObjectAnimator animation = ObjectAnimator.ofFloat(floatingActionButtonAjoutTache, "translationY", -125f);
-            animation.setDuration(500);
-            animation.start();
-            new Handler().postDelayed(() -> {
-                ObjectAnimator animation1 = ObjectAnimator.ofFloat(floatingActionButtonAjoutTache, "translationY", 0f);
-                animation1.setDuration(500);
-                animation1.start();
-            }, 3500);
 
             nbTaches--;
             textViewNbTaches.setText(getString(R.string.nb_taches_en_cours, nbTaches));
@@ -194,7 +179,7 @@ public class MainActivity extends AppCompatActivity {
                                     taches.put("date", date);
 
                                     // Ajouter la tâche saisie à la BDD
-                                    db.collection("taches")
+                                    db.collection(salon)
                                             .document(tache)
                                             .set(taches)
                                             .addOnSuccessListener(documentReference -> {
