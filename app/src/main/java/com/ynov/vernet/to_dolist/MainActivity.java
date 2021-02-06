@@ -63,16 +63,16 @@ public class MainActivity extends AppCompatActivity {
         listView = findViewById(R.id.listView);
         floatingActionButtonAjoutTache = findViewById(R.id.floatingActionButton);
 
-        // Vérifier la connexion Internet
-        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        if (Objects.requireNonNull(Objects.requireNonNull(connectivityManager).getNetworkInfo(ConnectivityManager.TYPE_MOBILE)).getState() == NetworkInfo.State.CONNECTED || Objects.requireNonNull(connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI)).getState() == NetworkInfo.State.CONNECTED) {
-            Log.d(TAG, "onCreate: Internet disponible");
-        } else {
-            Log.d(TAG, "onCreate: Internet indisponible");
+
+        // Check Internet connexion
+        boolean internet = new Internet(this, this).internet();
+        if (!internet) {
+            floatingActionButtonAjoutTache.setVisibility(View.INVISIBLE);
+
+            // Display message
             Snackbar.make(findViewById(R.id.test), R.string.internet_indisponible, Snackbar.LENGTH_LONG)
                     .setAction(R.string.activer, v -> startActivity(new Intent(Settings.ACTION_WIRELESS_SETTINGS)))
                     .show();
-            floatingActionButtonAjoutTache.setVisibility(View.INVISIBLE);
         }
 
         // Vérifier si l'utilisateur possède déjà un salon
