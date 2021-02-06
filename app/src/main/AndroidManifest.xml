@@ -15,7 +15,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.TodoList">
         <activity
-            android:name=".AjoutTacheActivity"
+            android:name=".AddTaskActivity"
             android:windowSoftInputMode="adjustResize" />
         <activity android:name=".MainActivity">
             <intent-filter>

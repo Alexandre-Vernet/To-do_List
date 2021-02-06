@@ -5,8 +5,6 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Vibrator;
@@ -38,15 +36,15 @@ import java.util.Random;
 public class MainActivity extends AppCompatActivity {
 
     ProgressBar progressBar;
-    TextView textViewAucuneTacheEnCours, textViewNbTaches, textViewSalon;
+    TextView textViewCountTasks, textViewCountTaches, textViewRoom;
     ListView listView;
-    FloatingActionButton floatingActionButtonAjoutTache;
+    FloatingActionButton floatingActionButtonAddTask;
     FirebaseFirestore db;
 
     private Runnable runnable;
 
-    private int nbTaches = 0;
-    String salon;
+    private int countTask = 0;
+    String room;
 
     private static final String TAG = "MainActivity";
 
@@ -57,17 +55,17 @@ public class MainActivity extends AppCompatActivity {
 
         db = FirebaseFirestore.getInstance();
         progressBar = findViewById(R.id.progressBar);
-        textViewAucuneTacheEnCours = findViewById(R.id.textViewAucuneTacheEnCours);
-        textViewNbTaches = findViewById(R.id.textViewNbTaches);
-        textViewSalon = findViewById(R.id.textViewSalon);
+        textViewCountTasks = findViewById(R.id.textViewCountTasks);
+        textViewCountTaches = findViewById(R.id.textViewCountTaches);
+        textViewRoom = findViewById(R.id.textViewRoom);
         listView = findViewById(R.id.listView);
-        floatingActionButtonAjoutTache = findViewById(R.id.floatingActionButton);
+        floatingActionButtonAddTask = findViewById(R.id.floatingActionButtonAddTask);
 
 
         // Check Internet connexion
         boolean internet = new Internet(this, this).internet();
         if (!internet) {
-            floatingActionButtonAjoutTache.setVisibility(View.INVISIBLE);
+            floatingActionButtonAddTask.setVisibility(View.INVISIBLE);
 
             // Display message
             Snackbar.make(findViewById(R.id.test), R.string.internet_indisponible, Snackbar.LENGTH_LONG)
@@ -75,72 +73,72 @@ public class MainActivity extends AppCompatActivity {
                     .show();
         }
 
-        // Vérifier si l'utilisateur possède déjà un salon
+        // Check if user had room
         SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
-        salon = sharedPref.getString("salon", null);
+        room = sharedPref.getString("room", null);
 
-        // S'il n'a pas de salon
-        if (salon == null) {
-            // Générer un code de salon
+        // if no room
+        if (room == null) {
+            // Generate code room
             String characters = "1234567890AZERTYUIOPQSDFGHJKLMWXCVBN";
             final Random random = new Random();
             final StringBuilder sb = new StringBuilder(6);
             for (int i = 0; i < 6; ++i)
                 sb.append(characters.charAt(random.nextInt(characters.length())));
-            salon = sb.toString();
+            room = sb.toString();
 
-            // Sauver le code dans la mémoire
+            // Save it in memory
             SharedPreferences prefs = getPreferences(Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = prefs.edit();
-            editor.putString("salon", salon);
+            editor.putString("room", room);
             editor.apply();
         }
 
-        // Afficher le numéro de salon
-        textViewSalon.setText(salon);
+        // Display room code
+        textViewRoom.setText(room);
 
-        // Afficher les tâches en cours
+        // Display current task
         Handler handler = new Handler();
         runnable = () ->
-                db.collection(salon)
+                db.collection(room)
                         .orderBy("date", Query.Direction.DESCENDING)
                         .get()
                         .addOnCompleteListener(task -> {
-                            nbTaches = 0;
+                            countTask = 0;
                             if (task.isSuccessful()) {
                                 progressBar.setVisibility(View.INVISIBLE);
 
-                                // Si aucune tâches n'est présente
+                                // if no task
                                 if (Objects.requireNonNull(task.getResult()).isEmpty()) {
-                                    textViewNbTaches.setVisibility(View.INVISIBLE);
-                                    textViewAucuneTacheEnCours.setVisibility(View.VISIBLE);
+                                    textViewCountTaches.setVisibility(View.INVISIBLE);
+                                    textViewCountTasks.setVisibility(View.VISIBLE);
                                     listView.setVisibility(View.INVISIBLE);
                                 } else {
-                                    textViewNbTaches.setVisibility(View.VISIBLE);
-                                    textViewAucuneTacheEnCours.setVisibility(View.INVISIBLE);
+                                    textViewCountTaches.setVisibility(View.VISIBLE);
+                                    textViewCountTasks.setVisibility(View.INVISIBLE);
                                     listView.setVisibility(View.VISIBLE);
 
-                                    // Récupérer les tâches
+                                    // Get all tasks
                                     ArrayList<String> tache = new ArrayList<>();
                                     for (QueryDocumentSnapshot document : Objects.requireNonNull(task.getResult())) {
                                         tache.add(Objects.requireNonNull(document.get("Description")).toString());
-                                        nbTaches++;
+                                        countTask++;
                                     }
 
-                                    // Afficher le nombre de tâches en cours
-                                    if (nbTaches <= 1)
-                                        textViewNbTaches.setText(getString(R.string.nb_tache_en_cours, nbTaches));
+                                    // Display count of current tasks
+                                    if (countTask <= 1)
+                                        textViewCountTaches.setText(getString(R.string.nb_tache_en_cours, countTask));
                                     else
-                                        textViewNbTaches.setText(getString(R.string.nb_taches_en_cours, nbTaches));
+                                        textViewCountTaches.setText(getString(R.string.nb_taches_en_cours, countTask));
 
-                                    // Afficher les tâches dans la listView
+                                    // Display tasks in ListView
                                     ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(listView.getContext(), android.R.layout.select_dialog_multichoice, tache);
                                     listView.setAdapter(arrayAdapter);
                                 }
 
-                                // Erreur dans la récupération des tâches
+                                // Error while getting tasks
                             } else {
-                                Snackbar.make(findViewById(R.id.floatingActionButton), (getString(R.string.erreur_recup_taches) + task.getException()), Snackbar.LENGTH_LONG)
+                                Snackbar.make(findViewById(R.id.floatingActionButtonAddTask), (getString(R.string.erreur_recup_taches) + task.getException()), Snackbar.LENGTH_LONG)
                                         .setAction(R.string.reessayer, v -> handler.postDelayed(runnable, 0))
                                         .show();
                                 Log.w(TAG, getString(R.string.erreur_recup_taches) + task.getException());
@@ -149,37 +147,36 @@ public class MainActivity extends AppCompatActivity {
         handler.postDelayed(runnable, 0);
 
 
-        // Ecouter les tâches entrantes
-        Query query = db.collection(salon);
+        // Listen tasks
+        Query query = db.collection(room);
         query.addSnapshotListener(
                 (value, error) -> handler.postDelayed(runnable, 0));
 
-        // Au clic d'une tâche
+        // Click task
         listView.setOnItemClickListener((parent, view, position, id) -> {
 
-            nbTaches--;
-            textViewNbTaches.setText(getString(R.string.nb_taches_en_cours, nbTaches));
+            countTask--;
+            textViewCountTaches.setText(getString(R.string.nb_taches_en_cours, countTask));
 
-            // Récupérer son contenu
+            // Get content
             String tache = (String) listView.getItemAtPosition(position);
 
-            // La supprimer
+            // Delete it
             db.collection("taches").document(tache)
                     .delete()
 
-                    // Tâche supprimée
                     .addOnSuccessListener(aVoid -> {
                         Snackbar.make(findViewById(R.id.test), (R.string.tache_supprimee), Snackbar.LENGTH_LONG)
                                 .setAction(R.string.annuler, v -> {
 
-                                    // Restaurer son contenu
+                                    // Restore content
                                     Map<String, Object> taches = new HashMap<>();
                                     taches.put("Description", tache);
                                     Date date = Calendar.getInstance().getTime();
                                     taches.put("date", date);
 
-                                    // Ajouter la tâche saisie à la BDD
-                                    db.collection(salon)
+                                    // Add task to database
+                                    db.collection(room)
                                             .document(tache)
                                             .set(taches)
                                             .addOnSuccessListener(documentReference -> {
@@ -187,9 +184,9 @@ public class MainActivity extends AppCompatActivity {
                                                 finish();
                                             })
 
-                                            // Erreur dans l'ajout de la tâche à la BDD
+                                            // Error adding task
                                             .addOnFailureListener(e -> {
-                                                Snackbar.make(findViewById(R.id.btnValider), (getString(R.string.erreur_ajout_tache)) + e, Snackbar.LENGTH_LONG)
+                                                Snackbar.make(findViewById(R.id.floatingActionButtonAddTask), (getString(R.string.erreur_ajout_tache)) + e, Snackbar.LENGTH_LONG)
                                                         .setAction(getString(R.string.reessayer), erreur -> handler.postDelayed(runnable, 0))
                                                         .show();
                                                 Log.w(TAG, (getString(R.string.erreur_ajout_tache)) + e);
@@ -199,22 +196,22 @@ public class MainActivity extends AppCompatActivity {
 
                         Log.d(TAG, getString(R.string.tache_supprimee));
 
-                        // Mettre à jour l'affichage
+                        // Update view
                         handler.postDelayed(runnable, 0);
                     })
 
-                    // Erreur dans la suppression de la tâche
+                    // Error deleting task
                     .addOnFailureListener(e -> {
-                        Snackbar.make(findViewById(R.id.floatingActionButton), (getString(R.string.erreur_suppression_tache)) + e, Snackbar.LENGTH_LONG)
+                        Snackbar.make(findViewById(R.id.floatingActionButtonAddTask), (getString(R.string.erreur_suppression_tache)) + e, Snackbar.LENGTH_LONG)
                                 .show();
                         Log.w(TAG, getString(R.string.erreur_suppression_tache) + e);
                     });
         });
 
 
-        // Appui long sur une tâche
+        // Long press task
         listView.setOnItemLongClickListener((parent, view, position, id) -> {
-            // Copier la tache
+            // Copy
             ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
             ClipData clip = ClipData.newPlainText("tâche", listView.getItemAtPosition(position).toString());
             assert clipboard != null;
@@ -222,7 +219,7 @@ public class MainActivity extends AppCompatActivity {
 
             Toast.makeText(MainActivity.this, getString(R.string.texte_copie), Toast.LENGTH_SHORT).show();
 
-            // Vibrer
+            // Vibrate
             Vibrator vibe = (Vibrator) MainActivity.this.getSystemService(Context.VIBRATOR_SERVICE);
             assert vibe != null;
             vibe.vibrate(80);
@@ -231,10 +228,10 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
-        // Ajouter une tâche
-        floatingActionButtonAjoutTache.setOnClickListener(v -> {
-            Intent intent = new Intent(getApplicationContext(), AjoutTacheActivity.class);
-            intent.putExtra("salon", salon);
+        // Add a task
+        floatingActionButtonAddTask.setOnClickListener(v -> {
+            Intent intent = new Intent(getApplicationContext(), AddTaskActivity.class);
+            intent.putExtra("room", room);
             startActivity(intent);
             finish();
         });

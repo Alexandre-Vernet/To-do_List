@@ -19,46 +19,46 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-public class AjoutTacheActivity extends AppCompatActivity {
+public class AddTaskActivity extends AppCompatActivity {
 
     FirebaseFirestore db;
-    EditText editTextTache;
+    EditText editTextTask;
     ProgressBar progressBar;
     Runnable runnable;
-    private static final String TAG = "AjoutTacheActivity";
+    private static final String TAG = "AddTaskActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_ajout_tache);
+        setContentView(R.layout.activity_add_task);
 
         db = FirebaseFirestore.getInstance();
-        editTextTache = findViewById(R.id.editTextTache);
+        editTextTask = findViewById(R.id.editTextTask);
         progressBar = findViewById(R.id.progressBar);
 
-        // Ouvrir le clavier
-        editTextTache.requestFocus();
-        editTextTache.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
+        // Open keyboard
+        editTextTask.requestFocus();
+        editTextTask.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
 
-        // Récupérer le salon
-        String salon = getIntent().getStringExtra("salon");
+        // Get room
+        String salon = getIntent().getStringExtra("room");
 
-        // Ajouter une tâche
+        // Add a task
         Handler handler = new Handler();
-        runnable = () -> findViewById(R.id.btnValider).setOnClickListener(v -> {
-            if (!editTextTache.getText().toString().isEmpty()) {
+        runnable = () -> findViewById(R.id.btnValidate).setOnClickListener(v -> {
+            if (!editTextTask.getText().toString().isEmpty()) {
 
                 progressBar.setVisibility(View.VISIBLE);
 
-                // Récupérer la tâche saisie
+                // Get entered task
                 Map<String, Object> tache = new HashMap<>();
-                tache.put("Description", editTextTache.getText().toString());
+                tache.put("Description", editTextTask.getText().toString());
 
-                // Ajouter la date et l'heure
+                // Add date & hour
                 Date date = Calendar.getInstance().getTime();
                 tache.put("date", date);
 
-                // Ajouter la tâche saisie à la BDD
+                // Add to database
                 db.collection(salon)
                         .document("tache")
                         .set(tache)
@@ -67,18 +67,18 @@ public class AjoutTacheActivity extends AppCompatActivity {
                             finish();
                         })
 
-                        // Erreur dans l'ajout de la tâche à la BDD
+                        // Error adding database
                         .addOnFailureListener(e -> {
-                            Snackbar.make(findViewById(R.id.btnValider), (getString(R.string.erreur_ajout_tache)) + e, Snackbar.LENGTH_LONG)
+                            Snackbar.make(findViewById(R.id.btnValidate), (getString(R.string.erreur_ajout_tache)) + e, Snackbar.LENGTH_LONG)
                                     .setAction(getString(R.string.reessayer), erreur -> handler.postDelayed(runnable, 0))
                                     .show();
                             Log.w(TAG, (getString(R.string.erreur_ajout_tache)) + e);
                         });
 
-                // Zone de texte vide
+                // Empty text box
             } else {
-                editTextTache.setError(getString(R.string.zone_txt_ne_peut_pas_etre_vide));
-                new Handler().postDelayed(() -> editTextTache.setError(null), 1000);
+                editTextTask.setError(getString(R.string.zone_txt_ne_peut_pas_etre_vide));
+                new Handler().postDelayed(() -> editTextTask.setError(null), 1000);
             }
         });
         handler.postDelayed(runnable, 0);
