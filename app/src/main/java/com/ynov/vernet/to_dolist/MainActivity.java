@@ -1,14 +1,11 @@
 package com.ynov.vernet.to_dolist;
 
 import android.animation.ObjectAnimator;
-import android.annotation.TargetApi;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.ShortcutInfo;
-import android.content.pm.ShortcutManager;
-import android.graphics.drawable.Icon;
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -33,24 +30,26 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
 
     ProgressBar progressBar;
-    TextView textViewAucuneTacheEnCours, textViewNbTaches;
+    TextView textViewAucuneTacheEnCours, textViewNbTaches, textViewSalon;
     ListView listView;
     FloatingActionButton floatingActionButtonAjoutTache;
     FirebaseFirestore db;
 
     private Runnable runnable;
-    private static final String TAG = "MainActivity";
-    private Vibrator vibe;
+
     private int nbTaches = 0;
+    String salon;
+
+    private static final String TAG = "MainActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,6 +60,7 @@ public class MainActivity extends AppCompatActivity {
         progressBar = findViewById(R.id.progressBar);
         textViewAucuneTacheEnCours = findViewById(R.id.textViewAucuneTacheEnCours);
         textViewNbTaches = findViewById(R.id.textViewNbTaches);
+        textViewSalon = findViewById(R.id.textViewSalon);
         listView = findViewById(R.id.listView);
         floatingActionButtonAjoutTache = findViewById(R.id.floatingActionButton);
 
@@ -68,21 +68,42 @@ public class MainActivity extends AppCompatActivity {
         ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         if (Objects.requireNonNull(Objects.requireNonNull(connectivityManager).getNetworkInfo(ConnectivityManager.TYPE_MOBILE)).getState() == NetworkInfo.State.CONNECTED || Objects.requireNonNull(connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI)).getState() == NetworkInfo.State.CONNECTED) {
             Log.d(TAG, "onCreate: Internet disponible");
-            creerRaccourcis(true);
         } else {
             Log.d(TAG, "onCreate: Internet indisponible");
             Snackbar.make(findViewById(R.id.test), R.string.internet_indisponible, Snackbar.LENGTH_LONG)
                     .setAction(R.string.actier, v -> startActivity(new Intent(Settings.ACTION_WIRELESS_SETTINGS)))
                     .show();
             floatingActionButtonAjoutTache.setVisibility(View.INVISIBLE);
-            creerRaccourcis(false);
         }
 
+        // Vérifier si l'utilisateur possède déjà un salon
+        SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
+        salon = sharedPref.getString("salon", null);
+
+        // S'il n'a pas de salon
+        if (salon == null) {
+            // Générer un code de salon
+            String characters = "1234567890AZERTYUIOPQSDFGHJKLMWXCVBN";
+            final Random random = new Random();
+            final StringBuilder sb = new StringBuilder(6);
+            for (int i = 0; i < 6; ++i)
+                sb.append(characters.charAt(random.nextInt(characters.length())));
+            salon = sb.toString();
+
+            // Sauver le code dans la mémoire
+            SharedPreferences prefs = getPreferences(Context.MODE_PRIVATE);
+            SharedPreferences.Editor editor = prefs.edit();
+            editor.putString("salon", salon);
+            editor.apply();
+        }
+
+        // Afficher le numéro de salon
+        textViewSalon.setText(salon);
 
         // Afficher les tâches en cours
         Handler handler = new Handler();
         runnable = () ->
-                db.collection("taches")
+                db.collection(salon)
                         .orderBy("date", Query.Direction.DESCENDING)
                         .get()
                         .addOnCompleteListener(task -> {
@@ -217,7 +238,7 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(MainActivity.this, getString(R.string.texte_copie), Toast.LENGTH_SHORT).show();
 
             // Vibrer
-            vibe = (Vibrator) MainActivity.this.getSystemService(Context.VIBRATOR_SERVICE);
+            Vibrator vibe = (Vibrator) MainActivity.this.getSystemService(Context.VIBRATOR_SERVICE);
             assert vibe != null;
             vibe.vibrate(80);
 
@@ -227,36 +248,10 @@ public class MainActivity extends AppCompatActivity {
 
         // Ajouter une tâche
         floatingActionButtonAjoutTache.setOnClickListener(v -> {
-            startActivity(new Intent(getApplicationContext(), AjoutTacheActivity.class));
+            Intent intent = new Intent(getApplicationContext(), AjoutTacheActivity.class);
+            intent.putExtra("salon", salon);
+            startActivity(intent);
             finish();
         });
     }
-
-
-    @TargetApi(25)
-    private void creerRaccourcis(boolean actif) {
-        // Connexion Internet
-        if (actif) {
-            ShortcutManager sM = getSystemService(ShortcutManager.class);
-
-            Intent intent = new Intent(getApplicationContext(), AjoutTacheActivity.class);
-            intent.setAction(Intent.ACTION_VIEW);
-
-            ShortcutInfo shortcut1 = new ShortcutInfo.Builder(this, "ajoutTache")
-                    .setIntent(intent)
-                    .setShortLabel(getString(R.string.ajouter_tache))
-                    .setIcon(Icon.createWithResource(this, R.drawable.ajouter_tache))
-                    .build();
-            assert sM != null;
-            sM.setDynamicShortcuts(Collections.singletonList(shortcut1));
-
-            // Pas de connexion
-        } else {
-            ShortcutManager shortcutManager = getSystemService(ShortcutManager.class);
-            assert shortcutManager != null;
-            shortcutManager.disableShortcuts(Collections.singletonList("ajoutTache"));
-            shortcutManager.removeAllDynamicShortcuts();
-        }
-    }
-
 }

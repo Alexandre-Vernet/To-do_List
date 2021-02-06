@@ -36,9 +36,12 @@ public class AjoutTacheActivity extends AppCompatActivity {
         editTextTache = findViewById(R.id.editTextTache);
         progressBar = findViewById(R.id.progressBar);
 
+        // Ouvrir le clavier
         editTextTache.requestFocus();
         editTextTache.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
 
+        // Récupérer le salon
+        String salon = getIntent().getStringExtra("salon");
 
         // Ajouter une tâche
         Handler handler = new Handler();
@@ -56,8 +59,8 @@ public class AjoutTacheActivity extends AppCompatActivity {
                 tache.put("date", date);
 
                 // Ajouter la tâche saisie à la BDD
-                db.collection("taches")
-                        .document(editTextTache.getText().toString())
+                db.collection(salon)
+                        .document("tache")
                         .set(tache)
                         .addOnSuccessListener(documentReference -> {
                             startActivity(new Intent(getApplicationContext(), MainActivity.class));
@@ -84,7 +87,6 @@ public class AjoutTacheActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-
         startActivity(new Intent(getApplicationContext(), MainActivity.class));
         finish();
     }
