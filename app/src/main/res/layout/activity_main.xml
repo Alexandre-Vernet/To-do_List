@@ -22,7 +22,7 @@
 
         <!--Aucune tâche en cours-->
         <TextView
-            android:id="@+id/textViewCountTasks"
+            android:id="@+id/textViewNoCurrentTask"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/aucune_t_che_en_cours"

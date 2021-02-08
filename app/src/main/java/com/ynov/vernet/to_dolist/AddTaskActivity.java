@@ -13,6 +13,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.SetOptions;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -54,14 +55,16 @@ public class AddTaskActivity extends AppCompatActivity {
                 Map<String, Object> tache = new HashMap<>();
                 tache.put("Description", editTextTask.getText().toString());
 
-                // Add date & hour
+                // Add username
+                tache.put("utilisateur", "Alex");
+
+                // Add date
                 Date date = Calendar.getInstance().getTime();
                 tache.put("date", date);
 
                 // Add to database
                 db.collection(salon)
-                        .document("tache")
-                        .set(tache)
+                        .add(tache)
                         .addOnSuccessListener(documentReference -> {
                             startActivity(new Intent(getApplicationContext(), MainActivity.class));
                             finish();

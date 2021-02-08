@@ -36,7 +36,7 @@ import java.util.Random;
 public class MainActivity extends AppCompatActivity {
 
     ProgressBar progressBar;
-    TextView textViewCountTasks, textViewCountTaches, textViewRoom;
+    TextView textViewNoCurrentTask, textViewCountTaches, textViewRoom;
     ListView listView;
     FloatingActionButton floatingActionButtonAddTask;
     FirebaseFirestore db;
@@ -55,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
 
         db = FirebaseFirestore.getInstance();
         progressBar = findViewById(R.id.progressBar);
-        textViewCountTasks = findViewById(R.id.textViewCountTasks);
+        textViewNoCurrentTask = findViewById(R.id.textViewNoCurrentTask);
         textViewCountTaches = findViewById(R.id.textViewCountTaches);
         textViewRoom = findViewById(R.id.textViewRoom);
         listView = findViewById(R.id.listView);
@@ -111,11 +111,11 @@ public class MainActivity extends AppCompatActivity {
                                 // if no task
                                 if (Objects.requireNonNull(task.getResult()).isEmpty()) {
                                     textViewCountTaches.setVisibility(View.INVISIBLE);
-                                    textViewCountTasks.setVisibility(View.VISIBLE);
+                                    textViewNoCurrentTask.setVisibility(View.VISIBLE);
                                     listView.setVisibility(View.INVISIBLE);
                                 } else {
                                     textViewCountTaches.setVisibility(View.VISIBLE);
-                                    textViewCountTasks.setVisibility(View.INVISIBLE);
+                                    textViewNoCurrentTask.setVisibility(View.INVISIBLE);
                                     listView.setVisibility(View.VISIBLE);
 
                                     // Get all tasks
@@ -187,7 +187,7 @@ public class MainActivity extends AppCompatActivity {
                                             // Error adding task
                                             .addOnFailureListener(e -> {
                                                 Snackbar.make(findViewById(R.id.floatingActionButtonAddTask), (getString(R.string.erreur_ajout_tache)) + e, Snackbar.LENGTH_LONG)
-                                                        .setAction(getString(R.string.reessayer), erreur -> handler.postDelayed(runnable, 0))
+                                                        .setAction(getString(R.string.reessayer), error -> handler.postDelayed(runnable, 0))
                                                         .show();
                                                 Log.w(TAG, (getString(R.string.erreur_ajout_tache)) + e);
                                             });
