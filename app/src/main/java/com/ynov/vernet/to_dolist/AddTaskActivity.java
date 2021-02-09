@@ -19,6 +19,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class AddTaskActivity extends AppCompatActivity {
 
@@ -42,7 +43,7 @@ public class AddTaskActivity extends AppCompatActivity {
         editTextTask.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
 
         // Get room
-        String salon = getIntent().getStringExtra("room");
+        String room = getIntent().getStringExtra("room");
 
         // Add a task
         Handler handler = new Handler();
@@ -52,19 +53,22 @@ public class AddTaskActivity extends AppCompatActivity {
                 progressBar.setVisibility(View.VISIBLE);
 
                 // Get entered task
-                Map<String, Object> tache = new HashMap<>();
-                tache.put("Description", editTextTask.getText().toString());
+                Map<String, Object> map = new HashMap<>();
+                map.put("Description", editTextTask.getText().toString());
 
                 // Add username
-                tache.put("utilisateur", "Alex");
+                map.put("Utilisateur", "Alex");
 
                 // Add date
                 Date date = Calendar.getInstance().getTime();
-                tache.put("date", date);
+                map.put("date", date);
+
+                String id = "0001";
 
                 // Add to database
-                db.collection(salon)
-                        .add(tache)
+                db.collection(room)
+                        .document(editTextTask.getText().toString())
+                        .set(map)
                         .addOnSuccessListener(documentReference -> {
                             startActivity(new Intent(getApplicationContext(), MainActivity.class));
                             finish();
