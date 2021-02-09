@@ -9,24 +9,21 @@ import android.os.Vibrator;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -70,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
             floatingActionButtonAddTask.setVisibility(View.INVISIBLE);
 
             // Display message
-            Snackbar.make(findViewById(R.id.test), R.string.internet_indisponible, Snackbar.LENGTH_LONG)
+            Snackbar.make(findViewById(R.id.relativeLayout), R.string.internet_indisponible, Snackbar.LENGTH_LONG)
                     .setAction(R.string.activer, v -> startActivity(new Intent(Settings.ACTION_WIRELESS_SETTINGS)))
                     .show();
         }
@@ -141,14 +138,11 @@ public class MainActivity extends AppCompatActivity {
                                 // Error while getting tasks
                             } else {
                                 Snackbar.make(findViewById(R.id.floatingActionButtonAddTask), (getString(R.string.erreur_recup_taches) + task.getException()), Snackbar.LENGTH_LONG)
-                                        .setAction(R.string.reessayer, v -> handler.postDelayed(runnable, 0))
+                                        .setAction(R.string.reessayer, v -> {})
                                         .show();
                                 Log.w(TAG, getString(R.string.erreur_recup_taches) + task.getException());
                             }
                         });
-
-        // Update view
-        handler.postDelayed(runnable, 0);
 
         // Listen tasks
         Query query = db.collection(room);
@@ -172,7 +166,7 @@ public class MainActivity extends AppCompatActivity {
                     .delete()
                     .addOnSuccessListener(aVoid -> {
                         // Restore task with snackbar
-                        Snackbar.make(findViewById(R.id.test), (R.string.tache_supprimee), Snackbar.LENGTH_LONG)
+                        Snackbar.make(findViewById(R.id.relativeLayout), (R.string.tache_supprimee), Snackbar.LENGTH_LONG)
                                 .setAction(R.string.annuler, v -> {
 
                                     // Restore content
@@ -193,7 +187,7 @@ public class MainActivity extends AppCompatActivity {
                                             // Error adding task
                                             .addOnFailureListener(e -> {
                                                 Snackbar.make(findViewById(R.id.floatingActionButtonAddTask), (getString(R.string.erreur_ajout_tache)) + e, Snackbar.LENGTH_LONG)
-                                                        .setAction(getString(R.string.reessayer), error -> handler.postDelayed(runnable, 0))
+                                                        .setAction(getString(R.string.reessayer), error -> {})
                                                         .show();
                                                 Log.w(TAG, (getString(R.string.erreur_ajout_tache)) + e);
                                             });
@@ -201,9 +195,6 @@ public class MainActivity extends AppCompatActivity {
                                 .show();
 
                         Log.d(TAG, getString(R.string.tache_supprimee));
-
-                        // Update view
-                        handler.postDelayed(runnable, 0);
                     })
 
                     // Error deleting task
@@ -253,8 +244,8 @@ public class MainActivity extends AppCompatActivity {
 
                                 // Error updating database
                                 .addOnFailureListener(e -> {
-                                    Snackbar.make(findViewById(R.id.btnValidate), (getString(R.string.erreur_ajout_tache)) + e, Snackbar.LENGTH_LONG)
-                                            .setAction(getString(R.string.reessayer), error -> handler.postDelayed(runnable, 0))
+                                    Snackbar.make(findViewById(R.id.relativeLayout), (getString(R.string.erreur_ajout_tache)) + e, Snackbar.LENGTH_LONG)
+                                            .setAction(getString(R.string.reessayer), error -> {})
                                             .show();
                                     Log.w(TAG, (getString(R.string.erreur_ajout_tache)) + e);
                                 });
@@ -262,19 +253,55 @@ public class MainActivity extends AppCompatActivity {
                     .setNegativeButton("Cancel", null)
                     .show();
 
-            // Update view
-            handler.postDelayed(runnable, 0);
-
             return true;
         });
 
 
         // Add a task
         floatingActionButtonAddTask.setOnClickListener(v -> {
-            Intent intent = new Intent(getApplicationContext(), AddTaskActivity.class);
-            intent.putExtra("room", room);
-            startActivity(intent);
-            finish();
+            EditText editText = new EditText(this);
+            editText.setHint("Add some text here");
+
+            new AlertDialog.Builder(this)
+                    .setIcon(R.drawable.ajouter_tache)
+                    .setTitle("Add a task")
+                    .setView(editText)
+                    .setPositiveButton("Add", (dialogInterface, i) -> {
+
+                        // Get entered task
+                        String task = editText.getText().toString();
+
+                        // Add task
+                        Map<String, Object> map = new HashMap<>();
+                        map.put("Description", task);
+
+                        // Add username
+                        map.put("Utilisateur", "Alex");
+
+                        // Add date
+                        Date date = Calendar.getInstance().getTime();
+                        map.put("date", date);
+
+                        // Add all to database
+                        db.collection(room)
+                                .document(task)
+                                .set(map)
+                                .addOnSuccessListener(documentReference -> {
+                                    startActivity(new Intent(getApplicationContext(), MainActivity.class));
+                                    finish();
+                                })
+
+                                // Error adding database
+                                .addOnFailureListener(e -> {
+                                    Snackbar.make(findViewById(R.id.relativeLayout), (getString(R.string.erreur_ajout_tache)) + e, Snackbar.LENGTH_LONG)
+                                            .setAction(getString(R.string.reessayer), erreur -> {})
+                                            .show();
+                                    Log.w(TAG, (getString(R.string.erreur_ajout_tache)) + e);
+                                });
+
+                    })
+                    .setNegativeButton("Cancel", null)
+                    .show();
         });
     }
 }
