@@ -297,7 +297,7 @@ public class MainActivity extends AppCompatActivity {
             editText.setHint("Add some text here");
 
             new AlertDialog.Builder(this)
-                    .setIcon(R.drawable.ajouter_tache)
+                    .setIcon(R.drawable.add_task)
                     .setTitle("Add a task")
                     .setView(editText)
                     .setPositiveButton("Add", (dialogInterface, i) -> {
