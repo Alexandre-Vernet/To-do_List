@@ -44,7 +44,9 @@ public class MainActivity extends AppCompatActivity {
     private Runnable runnable;
 
     private int countTask = 0;
+
     String room;
+    String name;
 
     private static final String TAG = "MainActivity";
 
@@ -75,7 +77,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Check if user entered his name
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        String name = sharedPreferences.getString("name", null);
+        name = sharedPreferences.getString("name", null);
 
         // if user has no name
         if (name == null) {
@@ -90,9 +92,12 @@ public class MainActivity extends AppCompatActivity {
                     .setView(editText)
                     .setPositiveButton("OK", (dialogInterface, i) -> {
 
+                        // Get the name from EditText
+                        name = editText.getText().toString();
+
                         // Save user's name
                         SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(this).edit();
-                        editor.putString("name", editText.getText().toString());
+                        editor.putString("name", name);
                         editor.apply();
                     })
                     .show();
