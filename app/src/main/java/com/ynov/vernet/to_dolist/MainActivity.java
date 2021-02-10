@@ -9,7 +9,6 @@ import android.os.Vibrator;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -18,6 +17,7 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.preference.PreferenceManager;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
@@ -61,6 +61,7 @@ public class MainActivity extends AppCompatActivity {
         listView = findViewById(R.id.listView);
         floatingActionButtonAddTask = findViewById(R.id.floatingActionButtonAddTask);
 
+
         // Check Internet connexion
         boolean internet = new Internet(this, this).internet();
         if (!internet) {
@@ -70,6 +71,33 @@ public class MainActivity extends AppCompatActivity {
             Snackbar.make(findViewById(R.id.relativeLayout), R.string.internet_indisponible, Snackbar.LENGTH_LONG)
                     .setAction(R.string.activer, v -> startActivity(new Intent(Settings.ACTION_WIRELESS_SETTINGS)))
                     .show();
+        }
+
+        // Check if user entered his name
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        String name = sharedPreferences.getString("name", null);
+
+        // if user has no name
+        if (name == null) {
+            EditText editText = new EditText(this);
+            editText.setHint("Your name");
+
+            // Ask him
+            AlertDialog alertDialog = new AlertDialog.Builder(this)
+                    .setIcon(android.R.drawable.ic_dialog_info)
+                    .setTitle("Welcome")
+                    .setMessage("What's your name ?")
+                    .setView(editText)
+                    .setPositiveButton("OK", (dialogInterface, i) -> {
+
+                        // Save user's name
+                        SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(this).edit();
+                        editor.putString("name", editText.getText().toString());
+                        editor.apply();
+                    })
+                    .show();
+            alertDialog.setCanceledOnTouchOutside(false);
+            alertDialog.setCancelable(false);
         }
 
         // Check if user had room
@@ -138,17 +166,12 @@ public class MainActivity extends AppCompatActivity {
                                 // Error while getting tasks
                             } else {
                                 Snackbar.make(findViewById(R.id.floatingActionButtonAddTask), (getString(R.string.erreur_recup_taches) + task.getException()), Snackbar.LENGTH_LONG)
-                                        .setAction(R.string.reessayer, v -> {})
+                                        .setAction(R.string.reessayer, v -> {
+                                        })
                                         .show();
                                 Log.w(TAG, getString(R.string.erreur_recup_taches) + task.getException());
                             }
                         });
-
-        // Listen tasks
-        Query query = db.collection(room);
-        query.addSnapshotListener(
-                (value, error) -> handler.postDelayed(runnable, 0));
-
 
         // Click task
         listView.setOnItemClickListener((parent, view, position, id) -> {
@@ -165,15 +188,18 @@ public class MainActivity extends AppCompatActivity {
                     .document(task)
                     .delete()
                     .addOnSuccessListener(aVoid -> {
-                        // Restore task with snackbar
+                        // Restore task with Snackbar
                         Snackbar.make(findViewById(R.id.relativeLayout), (R.string.tache_supprimee), Snackbar.LENGTH_LONG)
                                 .setAction(R.string.annuler, v -> {
 
                                     // Restore content
                                     Map<String, Object> map = new HashMap<>();
                                     map.put("Description", task);
+
                                     Date date = Calendar.getInstance().getTime();
                                     map.put("date", date);
+
+                                    map.put("Utilisateur", name);
 
                                     // Add task to database
                                     db.collection(room)
@@ -187,7 +213,8 @@ public class MainActivity extends AppCompatActivity {
                                             // Error adding task
                                             .addOnFailureListener(e -> {
                                                 Snackbar.make(findViewById(R.id.floatingActionButtonAddTask), (getString(R.string.erreur_ajout_tache)) + e, Snackbar.LENGTH_LONG)
-                                                        .setAction(getString(R.string.reessayer), error -> {})
+                                                        .setAction(getString(R.string.reessayer), error -> {
+                                                        })
                                                         .show();
                                                 Log.w(TAG, (getString(R.string.erreur_ajout_tache)) + e);
                                             });
@@ -223,7 +250,7 @@ public class MainActivity extends AppCompatActivity {
             new AlertDialog.Builder(this)
                     .setIcon(android.R.drawable.ic_dialog_alert)
                     .setTitle("Edit task")
-                    .setMessage("Created by Alex")
+                    .setMessage("Created by " + name)
                     .setView(editText)
                     .setPositiveButton("Save", (dialogInterface, i) -> {
 
@@ -245,7 +272,8 @@ public class MainActivity extends AppCompatActivity {
                                 // Error updating database
                                 .addOnFailureListener(e -> {
                                     Snackbar.make(findViewById(R.id.relativeLayout), (getString(R.string.erreur_ajout_tache)) + e, Snackbar.LENGTH_LONG)
-                                            .setAction(getString(R.string.reessayer), error -> {})
+                                            .setAction(getString(R.string.reessayer), error -> {
+                                            })
                                             .show();
                                     Log.w(TAG, (getString(R.string.erreur_ajout_tache)) + e);
                                 });
@@ -276,7 +304,7 @@ public class MainActivity extends AppCompatActivity {
                         map.put("Description", task);
 
                         // Add username
-                        map.put("Utilisateur", "Alex");
+                        map.put("Utilisateur", name);
 
                         // Add date
                         Date date = Calendar.getInstance().getTime();
@@ -294,7 +322,8 @@ public class MainActivity extends AppCompatActivity {
                                 // Error adding database
                                 .addOnFailureListener(e -> {
                                     Snackbar.make(findViewById(R.id.relativeLayout), (getString(R.string.erreur_ajout_tache)) + e, Snackbar.LENGTH_LONG)
-                                            .setAction(getString(R.string.reessayer), erreur -> {})
+                                            .setAction(getString(R.string.reessayer), erreur -> {
+                                            })
                                             .show();
                                     Log.w(TAG, (getString(R.string.erreur_ajout_tache)) + e);
                                 });
@@ -303,5 +332,12 @@ public class MainActivity extends AppCompatActivity {
                     .setNegativeButton("Cancel", null)
                     .show();
         });
+
+
+        // Listen tasks
+        Query query = db.collection(room);
+        query.addSnapshotListener(
+                (value, error) -> handler.postDelayed(runnable, 0));
+
     }
 }
