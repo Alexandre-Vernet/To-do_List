@@ -38,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
     ProgressBar progressBar;
     TextView textViewNoCurrentTask, textViewCountTaches, textViewRoom;
     ListView listView;
-    FloatingActionButton floatingActionButtonAddTask;
+    FloatingActionButton floatingActionButtonAddTask, floatingActionButtonEditRoom;
     FirebaseFirestore db;
 
     private Runnable runnable;
@@ -62,6 +62,7 @@ public class MainActivity extends AppCompatActivity {
         textViewRoom = findViewById(R.id.textViewRoom);
         listView = findViewById(R.id.listView);
         floatingActionButtonAddTask = findViewById(R.id.floatingActionButtonAddTask);
+        floatingActionButtonEditRoom = findViewById(R.id.floatingActionButtonEditRoom);
 
 
         // Check Internet connexion
@@ -336,6 +337,12 @@ public class MainActivity extends AppCompatActivity {
                     })
                     .setNegativeButton("Cancel", null)
                     .show();
+        });
+
+
+        // Edit room
+        floatingActionButtonEditRoom.setOnClickListener(v -> {
+
         });
 
 
