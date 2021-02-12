@@ -19,7 +19,6 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.preference.PreferenceManager;
 
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
@@ -38,7 +37,6 @@ public class MainActivity extends AppCompatActivity {
     ProgressBar progressBar;
     TextView textViewNoCurrentTask, textViewCountTaches, textViewRoom;
     ListView listView;
-    FloatingActionButton floatingActionButtonAddTask, floatingActionButtonEditRoom;
     FirebaseFirestore db;
 
     private Runnable runnable;
@@ -61,15 +59,13 @@ public class MainActivity extends AppCompatActivity {
         textViewCountTaches = findViewById(R.id.textViewCountTaches);
         textViewRoom = findViewById(R.id.textViewRoom);
         listView = findViewById(R.id.listView);
-        floatingActionButtonAddTask = findViewById(R.id.floatingActionButtonAddTask);
-        floatingActionButtonEditRoom = findViewById(R.id.floatingActionButtonEditRoom);
 
+        // Menu
+        new Menu(this, this);
 
         // Check Internet connexion
         boolean internet = new Internet(this, this).internet();
         if (!internet) {
-            floatingActionButtonAddTask.setVisibility(View.INVISIBLE);
-
             // Display message
             Snackbar.make(findViewById(R.id.relativeLayout), R.string.internet_indisponible, Snackbar.LENGTH_LONG)
                     .setAction(R.string.activer, v -> startActivity(new Intent(Settings.ACTION_WIRELESS_SETTINGS)))
@@ -171,7 +167,7 @@ public class MainActivity extends AppCompatActivity {
 
                                 // Error while getting tasks
                             } else {
-                                Snackbar.make(findViewById(R.id.floatingActionButtonAddTask), (getString(R.string.erreur_recup_taches) + task.getException()), Snackbar.LENGTH_LONG)
+                                Snackbar.make(findViewById(R.id.relativeLayout), (getString(R.string.erreur_recup_taches) + task.getException()), Snackbar.LENGTH_LONG)
                                         .setAction(R.string.reessayer, v -> {
                                         })
                                         .show();
@@ -218,7 +214,7 @@ public class MainActivity extends AppCompatActivity {
 
                                             // Error adding task
                                             .addOnFailureListener(e -> {
-                                                Snackbar.make(findViewById(R.id.floatingActionButtonAddTask), (getString(R.string.erreur_ajout_tache)) + e, Snackbar.LENGTH_LONG)
+                                                Snackbar.make(findViewById(R.id.relativeLayout), (getString(R.string.erreur_ajout_tache)) + e, Snackbar.LENGTH_LONG)
                                                         .setAction(getString(R.string.reessayer), error -> {
                                                         })
                                                         .show();
@@ -232,7 +228,7 @@ public class MainActivity extends AppCompatActivity {
 
                     // Error deleting task
                     .addOnFailureListener(e -> {
-                        Snackbar.make(findViewById(R.id.floatingActionButtonAddTask), (getString(R.string.erreur_suppression_tache)) + e, Snackbar.LENGTH_LONG)
+                        Snackbar.make(findViewById(R.id.relativeLayout), (getString(R.string.erreur_suppression_tache)) + e, Snackbar.LENGTH_LONG)
                                 .show();
                         Log.w(TAG, getString(R.string.erreur_suppression_tache) + e);
                     });
@@ -288,65 +284,6 @@ public class MainActivity extends AppCompatActivity {
                     .show();
 
             return true;
-        });
-
-
-        // Add a task
-        floatingActionButtonAddTask.setOnClickListener(v -> {
-            EditText editText = new EditText(this);
-            editText.setHint("Add some text here");
-
-            new AlertDialog.Builder(this)
-                    .setIcon(R.drawable.add_task)
-                    .setTitle("Add a task")
-                    .setView(editText)
-                    .setPositiveButton("Add", (dialogInterface, i) -> {
-
-                        // Get entered task
-                        String task = editText.getText().toString();
-
-                        // Edit text can't be empty
-                        if (task.isEmpty())
-                            return;
-
-                        // Add task
-                        Map<String, Object> map = new HashMap<>();
-                        map.put("Description", task);
-
-                        // Add username
-                        map.put("Utilisateur", name);
-
-                        // Add date
-                        Date date = Calendar.getInstance().getTime();
-                        map.put("date", date);
-
-                        // Add all to database
-                        db.collection(room)
-                                .document(task)
-                                .set(map)
-                                .addOnSuccessListener(documentReference -> {
-                                    startActivity(new Intent(getApplicationContext(), MainActivity.class));
-                                    finish();
-                                })
-
-                                // Error adding database
-                                .addOnFailureListener(e -> {
-                                    Snackbar.make(findViewById(R.id.relativeLayout), (getString(R.string.erreur_ajout_tache)) + e, Snackbar.LENGTH_LONG)
-                                            .setAction(getString(R.string.reessayer), erreur -> {
-                                            })
-                                            .show();
-                                    Log.w(TAG, (getString(R.string.erreur_ajout_tache)) + e);
-                                });
-
-                    })
-                    .setNegativeButton("Cancel", null)
-                    .show();
-        });
-
-
-        // Edit room
-        floatingActionButtonEditRoom.setOnClickListener(v -> {
-
         });
 
 

@@ -66,33 +66,65 @@
     </LinearLayout>
 
 
+
+    <!--Floating Action Button-->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <!--Add a task-->
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/floatingActionButtonAddTask"
+        <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+            android:id="@+id/fab"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="end"
             android:layout_marginEnd="16dp"
-            android:layout_marginBottom="40dp"
-            android:contentDescription="@string/ajouter_tache"
-            android:src="@drawable/add"
+            android:layout_marginBottom="16dp"
+            android:text=""
+            app:icon="@drawable/add"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 
-        <!--Edit room-->
+
+        <!--Add a task-->
         <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/floatingActionButtonEditRoom"
+            android:id="@+id/addTaskFab"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="40dp"
-            android:layout_marginStart="16dp"
-            android:contentDescription="Join / Create a room"
-            android:src="@drawable/edit_room"
+            android:layout_marginEnd="10dp"
+            android:layout_marginBottom="140dp"
+            android:contentDescription="Add a task"
+            app:fabSize="normal"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:srcCompat="@drawable/add_task" />
+
+
+        <!--Join / Edit room-->
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/editRoomFab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="60dp"
+            android:layout_marginBottom="90dp"
+            android:contentDescription="Join / Edit room"
+            app:fabSize="normal"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:srcCompat="@drawable/edit_room" />
+
+
+        <!--Settings-->
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/settingsFab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="100dp"
+            android:layout_marginBottom="25dp"
+            android:contentDescription="Settings"
+            app:fabSize="normal"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:srcCompat="@drawable/settings" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </RelativeLayout>
