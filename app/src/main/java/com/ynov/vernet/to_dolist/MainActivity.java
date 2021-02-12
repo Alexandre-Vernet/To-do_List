@@ -305,6 +305,10 @@ public class MainActivity extends AppCompatActivity {
                         // Get entered task
                         String task = editText.getText().toString();
 
+                        // Edit text can't be empty
+                        if (task.isEmpty())
+                            return;
+
                         // Add task
                         Map<String, Object> map = new HashMap<>();
                         map.put("Description", task);
