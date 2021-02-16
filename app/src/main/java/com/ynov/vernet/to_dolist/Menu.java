@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.util.Log;
 import android.view.View;
 import android.view.animation.OvershootInterpolator;
 import android.widget.EditText;
@@ -34,8 +35,7 @@ public class Menu extends Activity {
 
     FirebaseFirestore db;
 
-    String room;
-    String name;
+    private static final String TAG = "Menu";
 
     public Menu(Activity activity, Context context) {
 
@@ -52,12 +52,14 @@ public class Menu extends Activity {
 
 
         // Get room code
-        SharedPreferences sharedPref = this.activity.getPreferences(Context.MODE_PRIVATE);
-        room = sharedPref.getString("room", null);
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        String room = prefs.getString("room", null);
 
         // Get name
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
-        name = sharedPreferences.getString("name", null);
+        String name = sharedPreferences.getString("name", null);
+
+        Log.d(TAG, "Menu: " + room + name);
 
         // Hide widget
         editRoomFab.setVisibility(View.GONE);
@@ -115,10 +117,10 @@ public class Menu extends Activity {
 
                         // Add task
                         Map<String, Object> map = new HashMap<>();
-                        map.put("Description", task);
+                        map.put("description", task);
 
                         // Add username
-                        map.put("Utilisateur", name);
+                        map.put("user", name);
 
                         // Add date
                         Date date = Calendar.getInstance().getTime();
@@ -126,22 +128,18 @@ public class Menu extends Activity {
 
                         // Add all to database
                         db.collection(room)
-                                .document(task)
-                                .set(map)
+                                .add(map)
 
                                 // Error adding database
-                                .addOnFailureListener(e -> {
-                                    Snackbar.make(findViewById(R.id.relativeLayout), (getString(R.string.erreur_ajout_tache)) + e, Snackbar.LENGTH_LONG)
-                                            .setAction(getString(R.string.reessayer), error -> {
-                                            })
-                                            .show();
-                                });
-
+                                .addOnFailureListener(e -> Snackbar.make(findViewById(R.id.relativeLayout), (getString(R.string.erreur_ajout_tache)) + e, Snackbar.LENGTH_LONG)
+                                        .setAction(getString(R.string.reessayer), error -> {
+                                        })
+                                        .show());
                     })
                     .setNegativeButton("Cancel", null)
                     .show();
 
-            // Disable menu
+            // Hide menu
             ViewCompat.animate(fab)
                     .rotation(0.0F)
                     .withLayer()

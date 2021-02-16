@@ -34,6 +34,7 @@ import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
 
+    Context context;
     ProgressBar progressBar;
     TextView textViewNoCurrentTask, textViewCountTaches, textViewRoom;
     ListView listView;
@@ -46,6 +47,8 @@ public class MainActivity extends AppCompatActivity {
     String room;
     String name;
 
+    ArrayList<String> arrayListId;
+
     private static final String TAG = "MainActivity";
 
     @Override
@@ -53,15 +56,14 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        db = FirebaseFirestore.getInstance();
+        context = getApplicationContext();
         progressBar = findViewById(R.id.progressBar);
         textViewNoCurrentTask = findViewById(R.id.textViewNoCurrentTask);
         textViewCountTaches = findViewById(R.id.textViewCountTaches);
         textViewRoom = findViewById(R.id.textViewRoom);
         listView = findViewById(R.id.listView);
 
-        // Menu
-        new Menu(this, this);
+        db = FirebaseFirestore.getInstance();
 
         // Check Internet connexion
         boolean internet = new Internet(this, this).internet();
@@ -103,8 +105,8 @@ public class MainActivity extends AppCompatActivity {
         }
 
         // Check if user had room
-        SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
-        room = sharedPref.getString("room", null);
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        room = prefs.getString("room", null);
 
         // if no room
         if (room == null) {
@@ -117,11 +119,13 @@ public class MainActivity extends AppCompatActivity {
             room = sb.toString();
 
             // Save it in memory
-            SharedPreferences prefs = getPreferences(Context.MODE_PRIVATE);
-            SharedPreferences.Editor editor = prefs.edit();
+            SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(context).edit();
             editor.putString("room", room);
             editor.apply();
         }
+
+        // Menu
+        new Menu(this, this);
 
         // Display room code
         textViewRoom.setText(room);
@@ -147,12 +151,17 @@ public class MainActivity extends AppCompatActivity {
                                     textViewNoCurrentTask.setVisibility(View.INVISIBLE);
                                     listView.setVisibility(View.VISIBLE);
 
-                                    // Get all tasks
-                                    ArrayList<String> arrayList = new ArrayList<>();
-                                    for (QueryDocumentSnapshot document : Objects.requireNonNull(task.getResult())) {
-                                        arrayList.add(Objects.requireNonNull(document.get("Description")).toString());
+                                    // Get all tasks in ArrayList
+                                    arrayListId = new ArrayList<>();
+                                    ArrayList<String> arrayListTask = new ArrayList<>();
+
+
+                                    for (QueryDocumentSnapshot document : task.getResult()) {
+                                        arrayListId.add(document.getId());
+                                        arrayListTask.add(document.get("description").toString());
                                         countTask++;
                                     }
+
 
                                     // Display count of current tasks
                                     if (countTask <= 1)
@@ -161,7 +170,7 @@ public class MainActivity extends AppCompatActivity {
                                         textViewCountTaches.setText(getString(R.string.nb_taches_en_cours, countTask));
 
                                     // Display tasks in ListView
-                                    ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(listView.getContext(), android.R.layout.select_dialog_multichoice, arrayList);
+                                    ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(listView.getContext(), android.R.layout.select_dialog_multichoice, arrayListTask);
                                     listView.setAdapter(arrayAdapter);
                                 }
 
@@ -175,19 +184,22 @@ public class MainActivity extends AppCompatActivity {
                             }
                         });
 
+
         // Click task
         listView.setOnItemClickListener((parent, view, position, id) -> {
 
-            // Remove 1 task in count
-            countTask--;
-            textViewCountTaches.setText(getString(R.string.nb_taches_en_cours, countTask));
+            // Refresh view
+            handler.postDelayed(runnable, 0);
+
+            // Get taskId
+            String taskId = arrayListId.get(position);
 
             // Get content of the task
             String task = (String) listView.getItemAtPosition(position);
 
             // Delete the task in database
             db.collection(room)
-                    .document(task)
+                    .document(taskId)
                     .delete()
                     .addOnSuccessListener(aVoid -> {
                         // Restore task with Snackbar
@@ -196,17 +208,16 @@ public class MainActivity extends AppCompatActivity {
 
                                     // Restore content
                                     Map<String, Object> map = new HashMap<>();
-                                    map.put("Description", task);
+                                    map.put("description", task);
 
                                     Date date = Calendar.getInstance().getTime();
                                     map.put("date", date);
 
-                                    map.put("Utilisateur", name);
+                                    map.put("user", name);
 
                                     // Add task to database
                                     db.collection(room)
-                                            .document(task)
-                                            .set(map)
+                                            .add(map)
                                             .addOnSuccessListener(documentReference -> {
                                                 startActivity(new Intent(getApplicationContext(), MainActivity.class));
                                                 finish();
@@ -234,6 +245,7 @@ public class MainActivity extends AppCompatActivity {
                     });
         });
 
+
         // Long press task
         listView.setOnItemLongClickListener((parent, view, position, id) -> {
 
@@ -242,29 +254,32 @@ public class MainActivity extends AppCompatActivity {
             assert vibe != null;
             vibe.vibrate(80);
 
+            // Get taskId
+            String taskId = arrayListId.get(position);
+
             // Get task
             String task = (String) listView.getItemAtPosition(position);
 
-            // Keybord
+            // Keyboard
             EditText editText = new EditText(this);
             editText.setText(task);
 
             new AlertDialog.Builder(this)
                     .setIcon(android.R.drawable.ic_dialog_alert)
                     .setTitle("Edit task")
-                    .setMessage("Created by " + name)
+                    .setMessage("Created by " + "test")
                     .setView(editText)
                     .setPositiveButton("Save", (dialogInterface, i) -> {
 
                         // Get edited task
-                        String edittedTask = editText.getText().toString();
+                        String editedTask = editText.getText().toString();
 
                         Map<String, Object> map = new HashMap<>();
-                        map.put("Description", edittedTask);
+                        map.put("description", editedTask);
 
                         // Update database
                         db.collection(room)
-                                .document(task)
+                                .document(taskId)
                                 .update(map)
                                 .addOnSuccessListener(documentReference -> {
                                     startActivity(new Intent(getApplicationContext(), MainActivity.class));
@@ -291,6 +306,5 @@ public class MainActivity extends AppCompatActivity {
         Query query = db.collection(room);
         query.addSnapshotListener(
                 (value, error) -> handler.postDelayed(runnable, 0));
-
     }
 }
