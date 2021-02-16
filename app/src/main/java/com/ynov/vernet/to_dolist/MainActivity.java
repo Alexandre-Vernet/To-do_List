@@ -48,6 +48,8 @@ public class MainActivity extends AppCompatActivity {
     String name;
 
     ArrayList<String> arrayListId;
+    ArrayList<String> arrayListTask;
+    ArrayList<String> arrayListName;
 
     private static final String TAG = "MainActivity";
 
@@ -151,14 +153,16 @@ public class MainActivity extends AppCompatActivity {
                                     textViewNoCurrentTask.setVisibility(View.INVISIBLE);
                                     listView.setVisibility(View.VISIBLE);
 
-                                    // Get all tasks in ArrayList
+                                    // Get all data in ArrayList
                                     arrayListId = new ArrayList<>();
-                                    ArrayList<String> arrayListTask = new ArrayList<>();
+                                    arrayListTask = new ArrayList<>();
+                                    arrayListName = new ArrayList<>();
 
 
                                     for (QueryDocumentSnapshot document : task.getResult()) {
                                         arrayListId.add(document.getId());
                                         arrayListTask.add(document.get("description").toString());
+                                        arrayListName.add(document.get("user").toString());
                                         countTask++;
                                     }
 
@@ -258,16 +262,19 @@ public class MainActivity extends AppCompatActivity {
             String taskId = arrayListId.get(position);
 
             // Get task
-            String task = (String) listView.getItemAtPosition(position);
+            String taskDescription = (String) listView.getItemAtPosition(position);
+
+            // Get the name of the creator
+            String taskWrittenBy = arrayListName.get(position);
 
             // Keyboard
             EditText editText = new EditText(this);
-            editText.setText(task);
+            editText.setText(taskDescription);
 
             new AlertDialog.Builder(this)
-                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .setIcon(R.drawable.edit_room)
                     .setTitle("Edit task")
-                    .setMessage("Created by " + "test")
+                    .setMessage("Created by " + taskWrittenBy)
                     .setView(editText)
                     .setPositiveButton("Save", (dialogInterface, i) -> {
 
