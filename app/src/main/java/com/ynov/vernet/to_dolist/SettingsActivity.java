@@ -41,8 +41,8 @@ public class SettingsActivity extends AppCompatActivity {
 
             // Ask him
             AlertDialog alertDialog = new AlertDialog.Builder(context)
-                    .setIcon(android.R.drawable.ic_dialog_info)
-                    .setTitle("Welcome")
+                    .setIcon(R.drawable.person)
+                    .setTitle("Welcome !")
                     .setMessage("What's your name ?")
                     .setView(editText)
                     .setPositiveButton("OK", (dialogInterface, i) -> {
@@ -121,7 +121,7 @@ public class SettingsActivity extends AppCompatActivity {
                 // Get room
                 SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
                 String room = prefs.getString("room", null);
-                
+
                 // Copy room code
                 ClipboardManager clipboard = (ClipboardManager) getContext().getSystemService(Context.CLIPBOARD_SERVICE);
                 ClipData clip = ClipData.newPlainText("room", room);
