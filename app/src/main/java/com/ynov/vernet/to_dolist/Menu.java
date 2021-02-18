@@ -30,7 +30,7 @@ public class Menu extends Activity {
     Context context;
 
     ExtendedFloatingActionButton fab;
-    FloatingActionButton editRoomFab, addTaskFab, settingsFab;
+    FloatingActionButton addTaskFab, searchFab, settingsFab;
     Boolean isAllFabsVisible;
 
     FirebaseFirestore db;
@@ -46,8 +46,8 @@ public class Menu extends Activity {
         db = FirebaseFirestore.getInstance();
 
         fab = this.activity.findViewById(R.id.fab);
-        editRoomFab = this.activity.findViewById(R.id.editRoomFab);
         addTaskFab = this.activity.findViewById(R.id.addTaskFab);
+        searchFab = this.activity.findViewById(R.id.searchFab);
         settingsFab = this.activity.findViewById(R.id.settingsFab);
 
 
@@ -62,7 +62,7 @@ public class Menu extends Activity {
         Log.d(TAG, "Menu: " + room + name);
 
         // Hide widget
-        editRoomFab.setVisibility(View.GONE);
+        searchFab.setVisibility(View.GONE);
         addTaskFab.setVisibility(View.GONE);
         settingsFab.setVisibility(View.GONE);
         isAllFabsVisible = false;
@@ -76,7 +76,7 @@ public class Menu extends Activity {
                         .setDuration(300L)
                         .setInterpolator(new OvershootInterpolator(10.0F))
                         .start();
-                editRoomFab.show();
+                searchFab.show();
                 addTaskFab.show();
                 settingsFab.show();
                 fab.extend();
@@ -88,7 +88,7 @@ public class Menu extends Activity {
                         .setDuration(300L)
                         .setInterpolator(new OvershootInterpolator(10.0F))
                         .start();
-                editRoomFab.hide();
+                searchFab.hide();
                 addTaskFab.hide();
                 settingsFab.hide();
                 fab.shrink();
@@ -103,7 +103,7 @@ public class Menu extends Activity {
             editText.setHint("Add some text here");
 
             new AlertDialog.Builder(context)
-                    .setIcon(R.drawable.add_task)
+                    .setIcon(R.drawable.add)
                     .setTitle("Add a task")
                     .setView(editText)
                     .setPositiveButton("Add", (dialogInterface, i) -> {
@@ -146,15 +146,15 @@ public class Menu extends Activity {
                     .setDuration(300L)
                     .setInterpolator(new OvershootInterpolator(10.0F))
                     .start();
-            editRoomFab.hide();
+            searchFab.hide();
             addTaskFab.hide();
             settingsFab.hide();
             isAllFabsVisible = false;
         });
 
 
-        // Join / Edit room
-        editRoomFab.setOnClickListener(v -> {
+        // Look for a task
+        searchFab.setOnClickListener(v -> {
 
         });
 

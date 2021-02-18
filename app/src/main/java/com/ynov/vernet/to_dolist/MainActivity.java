@@ -19,7 +19,6 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.preference.Preference;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -238,7 +237,7 @@ public class MainActivity extends AppCompatActivity {
             editText.setText(taskDescription);
 
             new AlertDialog.Builder(this)
-                    .setIcon(R.drawable.edit_room)
+                    .setIcon(R.drawable.edit_task)
                     .setTitle("Edit task")
                     .setMessage("Created by " + taskWrittenBy + "\nThe " + taskDate + " at " + taskHour)
                     .setView(editText)
