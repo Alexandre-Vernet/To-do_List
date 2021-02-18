@@ -1,5 +1,7 @@
 package com.ynov.vernet.to_dolist;
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -13,6 +15,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -237,6 +240,19 @@ public class MainActivity extends AppCompatActivity {
                     .setTitle("Edit task")
                     .setMessage("Created by " + taskWrittenBy + "\nThe " + taskDate + " at " + taskHour)
                     .setView(editText)
+                    .setNeutralButton("Copy", (dialog, which) -> {
+                        // Copy task
+                        ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+                        ClipData clip = ClipData.newPlainText("task", taskDescription);
+                        clipboard.setPrimaryClip(clip);
+
+                        // Vibrate
+                        long[] pattern = {0, 100};
+                        vibe.vibrate(pattern, -1);
+
+                        // Display Toast
+                        Toast.makeText(context, "Task copied !", Toast.LENGTH_SHORT).show();
+                    })
                     .setPositiveButton("Save", (dialogInterface, i) -> {
 
                         // Get edited task
