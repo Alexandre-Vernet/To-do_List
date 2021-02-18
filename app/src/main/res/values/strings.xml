@@ -1,35 +1,6 @@
 <resources>
     <string name="app_name" translatable="false">To-do List</string>
-    <string name="ajouter_tache">Add a task</string>
-    <string name="aucune_t_che_en_cours">No current task</string>
-    <string name="erreur_recup_taches">Error retrieving tasks</string>
-    <string name="reessayer">Retry</string>
-    <string name="tache_supprimee">Task deleted</string>
-    <string name="erreur_suppression_tache">Error while deleting the task</string>
-    <string name="texte_copie">Copied text</string>
-    <string name="entrez_tache">Enter a task</string>
-    <string name="Ajouter">Add</string>
-    <string name="erreur_ajout_tache">Error while adding task</string>
-    <string name="zone_txt_ne_peut_pas_etre_vide">Textbox cannot be empty</string>
-    <string name="annuler">Undo</string>
-    <string name="nb_taches_en_cours">%1$d current tasks</string>
-    <string name="nb_tache_en_cours">%1$d current task</string>
-    <string name="internet_indisponible">No Internet connection</string>
-    <string name="activer">Activate</string>
+    <string name="current_tasks">%1$d current tasks</string>
+    <string name="current_task">%1$d current task</string>
     <string name="title_activity_settings">SettingsActivity</string>
-
-    <!-- Preference Titles -->
-    <string name="messages_header">Messages</string>
-    <string name="sync_header">Sync</string>
-
-    <!-- Messages Preferences -->
-    <string name="signature_title">Your signature</string>
-    <string name="reply_title">Default reply action</string>
-
-    <!-- Sync Preferences -->
-    <string name="sync_title">Sync email periodically</string>
-    <string name="attachment_title">Download incoming attachments</string>
-    <string name="attachment_summary_on">Automatically download attachments for incoming emails
-    </string>
-    <string name="attachment_summary_off">Only download attachments when manually requested</string>
 </resources>

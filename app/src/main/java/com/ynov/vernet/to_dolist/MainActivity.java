@@ -39,14 +39,14 @@ public class MainActivity extends AppCompatActivity {
 
     Context context;
     ProgressBar progressBar;
-    TextView textViewNoCurrentTask, textViewCountTaches, textViewRoom;
+    TextView textViewNoCurrentTask, textViewCountTask, textViewRoom;
     SearchView searchView;
     ListView listView;
     FirebaseFirestore db;
 
     private Runnable runnable;
 
-    private int countTask = 0;
+    private int countTask;
 
     ArrayList<String> arrayListId;
     ArrayList<String> arrayListTask;
@@ -64,7 +64,7 @@ public class MainActivity extends AppCompatActivity {
         context = getApplicationContext();
         progressBar = findViewById(R.id.progressBar);
         textViewNoCurrentTask = findViewById(R.id.textViewNoCurrentTask);
-        textViewCountTaches = findViewById(R.id.textViewCountTaches);
+        textViewCountTask = findViewById(R.id.textViewCountTask);
         textViewRoom = findViewById(R.id.textViewRoom);
         searchView = findViewById(R.id.searchView);
         listView = findViewById(R.id.listView);
@@ -76,8 +76,8 @@ public class MainActivity extends AppCompatActivity {
         boolean internet = new Internet(this, this).internet();
         if (!internet) {
             // Display message
-            Snackbar.make(findViewById(R.id.relativeLayout), R.string.internet_indisponible, Snackbar.LENGTH_LONG)
-                    .setAction(R.string.activer, v -> startActivity(new Intent(Settings.ACTION_WIRELESS_SETTINGS)))
+            Snackbar.make(findViewById(R.id.relativeLayout), "No internet connection", Snackbar.LENGTH_LONG)
+                    .setAction("Activate", v -> startActivity(new Intent(Settings.ACTION_WIRELESS_SETTINGS)))
                     .show();
         }
 
@@ -104,11 +104,11 @@ public class MainActivity extends AppCompatActivity {
 
                                 // if no task
                                 if (Objects.requireNonNull(task.getResult()).isEmpty()) {
-                                    textViewCountTaches.setVisibility(View.INVISIBLE);
+                                    textViewCountTask.setVisibility(View.INVISIBLE);
                                     textViewNoCurrentTask.setVisibility(View.VISIBLE);
                                     listView.setVisibility(View.INVISIBLE);
                                 } else {
-                                    textViewCountTaches.setVisibility(View.VISIBLE);
+                                    textViewCountTask.setVisibility(View.VISIBLE);
                                     textViewNoCurrentTask.setVisibility(View.INVISIBLE);
                                     listView.setVisibility(View.VISIBLE);
 
@@ -118,7 +118,7 @@ public class MainActivity extends AppCompatActivity {
                                     arrayListName = new ArrayList<>();
                                     arrayListDate = new ArrayList<>();
 
-
+                                    // Save data from database
                                     for (QueryDocumentSnapshot document : task.getResult()) {
                                         arrayListId.add(document.getId());
                                         arrayListTask.add(document.get("description").toString());
@@ -127,12 +127,11 @@ public class MainActivity extends AppCompatActivity {
                                         countTask++;
                                     }
 
-
                                     // Display count of current tasks
                                     if (countTask <= 1)
-                                        textViewCountTaches.setText(getString(R.string.nb_tache_en_cours, countTask));
+                                        textViewCountTask.setText(getString(R.string.current_task, countTask));
                                     else
-                                        textViewCountTaches.setText(getString(R.string.nb_taches_en_cours, countTask));
+                                        textViewCountTask.setText(getString(R.string.current_tasks, countTask));
 
                                     // Display tasks in ListView
                                     arrayAdapter = new ArrayAdapter<>(listView.getContext(), android.R.layout.select_dialog_multichoice, arrayListTask);
@@ -141,11 +140,8 @@ public class MainActivity extends AppCompatActivity {
 
                                 // Error while getting tasks
                             } else {
-                                Snackbar.make(findViewById(R.id.relativeLayout), (getString(R.string.erreur_recup_taches) + task.getException()), Snackbar.LENGTH_LONG)
-                                        .setAction(R.string.reessayer, v -> {
-                                        })
+                                Snackbar.make(findViewById(R.id.relativeLayout), ("Error while getting tasks " + task.getException()), Snackbar.LENGTH_LONG)
                                         .show();
-                                Log.w(TAG, getString(R.string.erreur_recup_taches) + task.getException());
                             }
                         });
 
@@ -189,8 +185,8 @@ public class MainActivity extends AppCompatActivity {
                     .delete()
                     .addOnSuccessListener(aVoid -> {
                         // Restore task with Snackbar
-                        Snackbar.make(findViewById(R.id.relativeLayout), (R.string.tache_supprimee), Snackbar.LENGTH_LONG)
-                                .setAction(R.string.annuler, v -> {
+                        Snackbar.make(findViewById(R.id.relativeLayout), "Deleted task", Snackbar.LENGTH_LONG)
+                                .setAction("Undo", v -> {
 
                                     // Restore content
                                     Map<String, Object> map = new HashMap<>();
@@ -211,23 +207,17 @@ public class MainActivity extends AppCompatActivity {
 
                                             // Error adding task
                                             .addOnFailureListener(e -> {
-                                                Snackbar.make(findViewById(R.id.relativeLayout), (getString(R.string.erreur_ajout_tache)) + e, Snackbar.LENGTH_LONG)
-                                                        .setAction(getString(R.string.reessayer), error -> {
-                                                        })
+                                                Snackbar.make(findViewById(R.id.relativeLayout), "Error while adding task " + e, Snackbar.LENGTH_LONG)
                                                         .show();
-                                                Log.w(TAG, (getString(R.string.erreur_ajout_tache)) + e);
                                             });
                                 })
                                 .show();
-
-                        Log.d(TAG, getString(R.string.tache_supprimee));
                     })
 
                     // Error deleting task
                     .addOnFailureListener(e -> {
-                        Snackbar.make(findViewById(R.id.relativeLayout), (getString(R.string.erreur_suppression_tache)) + e, Snackbar.LENGTH_LONG)
+                        Snackbar.make(findViewById(R.id.relativeLayout), "Error while deleting task" + e, Snackbar.LENGTH_LONG)
                                 .show();
-                        Log.w(TAG, getString(R.string.erreur_suppression_tache) + e);
                     });
         });
 
@@ -295,11 +285,10 @@ public class MainActivity extends AppCompatActivity {
 
                                 // Error updating database
                                 .addOnFailureListener(e -> {
-                                    Snackbar.make(findViewById(R.id.relativeLayout), (getString(R.string.erreur_ajout_tache)) + e, Snackbar.LENGTH_LONG)
-                                            .setAction(getString(R.string.reessayer), error -> {
+                                    Snackbar.make(findViewById(R.id.relativeLayout), "Error while adding task" + e, Snackbar.LENGTH_LONG)
+                                            .setAction("Retry", error -> {
                                             })
                                             .show();
-                                    Log.w(TAG, (getString(R.string.erreur_ajout_tache)) + e);
                                 });
                     })
                     .setNegativeButton("Cancel", null)

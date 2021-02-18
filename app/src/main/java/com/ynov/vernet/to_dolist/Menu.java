@@ -127,8 +127,8 @@ public class Menu extends Activity {
                                 .add(map)
 
                                 // Error adding database
-                                .addOnFailureListener(e -> Snackbar.make(findViewById(R.id.relativeLayout), (getString(R.string.erreur_ajout_tache)) + e, Snackbar.LENGTH_LONG)
-                                        .setAction(getString(R.string.reessayer), error -> {
+                                .addOnFailureListener(e -> Snackbar.make(findViewById(R.id.relativeLayout), "Error while adding data" + e, Snackbar.LENGTH_LONG)
+                                        .setAction("Retry", error -> {
                                         })
                                         .show());
                     })
