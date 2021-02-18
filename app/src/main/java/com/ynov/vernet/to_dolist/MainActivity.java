@@ -2,7 +2,6 @@ package com.ynov.vernet.to_dolist;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Vibrator;
@@ -17,13 +16,13 @@ import android.widget.TextView;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.preference.PreferenceManager;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -46,6 +45,7 @@ public class MainActivity extends AppCompatActivity {
     ArrayList<String> arrayListId;
     ArrayList<String> arrayListTask;
     ArrayList<String> arrayListName;
+    ArrayList<Date> arrayListDate;
 
     private static final String TAG = "MainActivity";
 
@@ -72,7 +72,7 @@ public class MainActivity extends AppCompatActivity {
                     .show();
         }
 
-       // Get name
+        // Get name
         String name = new SettingsActivity().getName(this, this);
         Log.d(TAG, "onCreate: " + name);
 
@@ -110,12 +110,14 @@ public class MainActivity extends AppCompatActivity {
                                     arrayListId = new ArrayList<>();
                                     arrayListTask = new ArrayList<>();
                                     arrayListName = new ArrayList<>();
+                                    arrayListDate = new ArrayList<>();
 
 
                                     for (QueryDocumentSnapshot document : task.getResult()) {
                                         arrayListId.add(document.getId());
                                         arrayListTask.add(document.get("description").toString());
                                         arrayListName.add(document.get("user").toString());
+                                        arrayListDate.add(document.getTimestamp("date").toDate());
                                         countTask++;
                                     }
 
@@ -214,11 +216,17 @@ public class MainActivity extends AppCompatActivity {
             // Get taskId
             String taskId = arrayListId.get(position);
 
-            // Get task description
-            String taskDescription = (String) listView.getItemAtPosition(position);
-
             // Get the name of the creator
             String taskWrittenBy = arrayListName.get(position);
+
+
+            // Get date of creation
+            Date taskCreatedAt = arrayListDate.get(position);
+            String taskDate = new SimpleDateFormat("d/MM/Y").format(taskCreatedAt);
+            String taskHour = new SimpleDateFormat("HH:mm").format(taskCreatedAt);
+
+            // Get task description
+            String taskDescription = (String) listView.getItemAtPosition(position);
 
             // Keyboard
             EditText editText = new EditText(this);
@@ -227,7 +235,7 @@ public class MainActivity extends AppCompatActivity {
             new AlertDialog.Builder(this)
                     .setIcon(R.drawable.edit_room)
                     .setTitle("Edit task")
-                    .setMessage("Created by " + taskWrittenBy)
+                    .setMessage("Created by " + taskWrittenBy + "\nThe " + taskDate + " at " + taskHour)
                     .setView(editText)
                     .setPositiveButton("Save", (dialogInterface, i) -> {
 
