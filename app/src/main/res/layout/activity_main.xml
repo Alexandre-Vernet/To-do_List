@@ -95,8 +95,8 @@
             android:id="@+id/addTaskFab"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="10dp"
-            android:layout_marginBottom="140dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="160dp"
             android:contentDescription="Add a task"
             app:fabSize="normal"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -104,27 +104,13 @@
             app:srcCompat="@drawable/add" />
 
 
-        <!--Look for a task-->
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/searchFab"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="60dp"
-            android:layout_marginBottom="90dp"
-            android:contentDescription="Look for a task"
-            app:fabSize="normal"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:srcCompat="@drawable/search" />
-
-
         <!--Settings-->
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/settingsFab"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="100dp"
-            android:layout_marginBottom="25dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="90dp"
             android:contentDescription="Settings"
             app:fabSize="normal"
             app:layout_constraintBottom_toBottomOf="parent"

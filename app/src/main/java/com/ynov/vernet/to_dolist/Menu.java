@@ -30,7 +30,7 @@ public class Menu extends Activity {
     Context context;
 
     ExtendedFloatingActionButton fab;
-    FloatingActionButton addTaskFab, searchFab, settingsFab;
+    FloatingActionButton addTaskFab, settingsFab;
     Boolean isAllFabsVisible;
 
     FirebaseFirestore db;
@@ -47,7 +47,6 @@ public class Menu extends Activity {
 
         fab = this.activity.findViewById(R.id.fab);
         addTaskFab = this.activity.findViewById(R.id.addTaskFab);
-        searchFab = this.activity.findViewById(R.id.searchFab);
         settingsFab = this.activity.findViewById(R.id.settingsFab);
 
 
@@ -62,7 +61,6 @@ public class Menu extends Activity {
         Log.d(TAG, "Menu: " + room + name);
 
         // Hide widget
-        searchFab.setVisibility(View.GONE);
         addTaskFab.setVisibility(View.GONE);
         settingsFab.setVisibility(View.GONE);
         isAllFabsVisible = false;
@@ -76,7 +74,6 @@ public class Menu extends Activity {
                         .setDuration(300L)
                         .setInterpolator(new OvershootInterpolator(10.0F))
                         .start();
-                searchFab.show();
                 addTaskFab.show();
                 settingsFab.show();
                 fab.extend();
@@ -88,7 +85,6 @@ public class Menu extends Activity {
                         .setDuration(300L)
                         .setInterpolator(new OvershootInterpolator(10.0F))
                         .start();
-                searchFab.hide();
                 addTaskFab.hide();
                 settingsFab.hide();
                 fab.shrink();
@@ -146,18 +142,10 @@ public class Menu extends Activity {
                     .setDuration(300L)
                     .setInterpolator(new OvershootInterpolator(10.0F))
                     .start();
-            searchFab.hide();
             addTaskFab.hide();
             settingsFab.hide();
             isAllFabsVisible = false;
         });
-
-
-        // Look for a task
-        searchFab.setOnClickListener(v -> {
-
-        });
-
 
         // Settings
         settingsFab.setOnClickListener(v -> {
