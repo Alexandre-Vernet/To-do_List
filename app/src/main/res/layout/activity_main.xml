@@ -20,12 +20,12 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <!--Aucune tâche en cours-->
+        <!--No current task-->
         <TextView
             android:id="@+id/textViewNoCurrentTask"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="No current task"
+            android:text="@string/no_current_task"
             android:textSize="25sp"
             android:visibility="invisible"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -40,7 +40,7 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <!--Nombre de tâches-->
+        <!--Task count-->
         <TextView
             android:id="@+id/textViewCountTask"
             android:layout_width="match_parent"
@@ -49,7 +49,7 @@
             android:textAlignment="center"
             android:textSize="20sp" />
 
-        <!--Salon actuel-->
+        <!--Room-->
         <TextView
             android:id="@+id/textViewRoom"
             android:layout_width="match_parent"
@@ -65,7 +65,7 @@
             android:layout_height="wrap_content" />
 
 
-        <!--Afficher les tâches-->
+        <!--Display task-->
         <ListView
             android:id="@+id/listView"
             android:layout_width="match_parent"
@@ -97,7 +97,7 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="16dp"
             android:layout_marginBottom="160dp"
-            android:contentDescription="Add a task"
+            android:contentDescription="@string/add_a_task"
             app:fabSize="normal"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -111,7 +111,7 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="16dp"
             android:layout_marginBottom="90dp"
-            android:contentDescription="Settings"
+            android:contentDescription="@string/settings"
             app:fabSize="normal"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

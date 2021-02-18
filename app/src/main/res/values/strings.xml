@@ -3,4 +3,20 @@
     <string name="current_tasks">%1$d current tasks</string>
     <string name="current_task">%1$d current task</string>
     <string name="title_activity_settings">SettingsActivity</string>
+    <string name="no_current_task">No current task</string>
+    <string name="add_a_task">Add a task</string>
+    <string name="settings">Settings</string>
+    <string name="no_internet_connection">No internet connection</string>
+    <string name="activate">Activate</string>
+    <string name="error_while_getting_tasks">Error while getting tasks</string>
+    <string name="undo">Undo</string>
+    <string name="deleted_task">Deleted task</string>
+    <string name="error_while_adding_task">Error while adding task</string>
+    <string name="error_while_deleting_task">Error while deleting task</string>
+    <string name="edit_task">Edit task</string>
+    <string name="created_by">Created by</string>
+    <string name="copy">Copy</string>
+    <string name="task_copied">Task copied !</string>
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
 </resources>

@@ -76,8 +76,8 @@ public class MainActivity extends AppCompatActivity {
         boolean internet = new Internet(this, this).internet();
         if (!internet) {
             // Display message
-            Snackbar.make(findViewById(R.id.relativeLayout), "No internet connection", Snackbar.LENGTH_LONG)
-                    .setAction("Activate", v -> startActivity(new Intent(Settings.ACTION_WIRELESS_SETTINGS)))
+            Snackbar.make(findViewById(R.id.relativeLayout), getString(R.string.no_internet_connection), Snackbar.LENGTH_LONG)
+                    .setAction(R.string.activate, v -> startActivity(new Intent(Settings.ACTION_WIRELESS_SETTINGS)))
                     .show();
         }
 
@@ -140,8 +140,9 @@ public class MainActivity extends AppCompatActivity {
 
                                 // Error while getting tasks
                             } else {
-                                Snackbar.make(findViewById(R.id.relativeLayout), ("Error while getting tasks " + task.getException()), Snackbar.LENGTH_LONG)
+                                Snackbar.make(findViewById(R.id.relativeLayout), getString(R.string.error_while_getting_tasks), Snackbar.LENGTH_LONG)
                                         .show();
+                                Log.w(TAG, "onCreate: ", task.getException());
                             }
                         });
 
@@ -185,8 +186,8 @@ public class MainActivity extends AppCompatActivity {
                     .delete()
                     .addOnSuccessListener(aVoid -> {
                         // Restore task with Snackbar
-                        Snackbar.make(findViewById(R.id.relativeLayout), "Deleted task", Snackbar.LENGTH_LONG)
-                                .setAction("Undo", v -> {
+                        Snackbar.make(findViewById(R.id.relativeLayout), getString(R.string.deleted_task), Snackbar.LENGTH_LONG)
+                                .setAction(R.string.undo, v -> {
 
                                     // Restore content
                                     Map<String, Object> map = new HashMap<>();
@@ -207,8 +208,9 @@ public class MainActivity extends AppCompatActivity {
 
                                             // Error adding task
                                             .addOnFailureListener(e -> {
-                                                Snackbar.make(findViewById(R.id.relativeLayout), "Error while adding task " + e, Snackbar.LENGTH_LONG)
+                                                Snackbar.make(findViewById(R.id.relativeLayout), getString(R.string.error_while_adding_task), Snackbar.LENGTH_LONG)
                                                         .show();
+                                                Log.w(TAG, "onCreate: ", e);
                                             });
                                 })
                                 .show();
@@ -216,8 +218,9 @@ public class MainActivity extends AppCompatActivity {
 
                     // Error deleting task
                     .addOnFailureListener(e -> {
-                        Snackbar.make(findViewById(R.id.relativeLayout), "Error while deleting task" + e, Snackbar.LENGTH_LONG)
+                        Snackbar.make(findViewById(R.id.relativeLayout), getString(R.string.error_while_deleting_task), Snackbar.LENGTH_LONG)
                                 .show();
+                        Log.w(TAG, "onCreate: ", e);
                     });
         });
 
@@ -227,7 +230,6 @@ public class MainActivity extends AppCompatActivity {
 
             // Vibrate
             Vibrator vibe = (Vibrator) MainActivity.this.getSystemService(Context.VIBRATOR_SERVICE);
-            assert vibe != null;
             vibe.vibrate(80);
 
             // Get taskId
@@ -250,10 +252,10 @@ public class MainActivity extends AppCompatActivity {
 
             new AlertDialog.Builder(this)
                     .setIcon(R.drawable.edit_task)
-                    .setTitle("Edit task")
-                    .setMessage("Created by " + taskWrittenBy + "\nThe " + taskDate + " at " + taskHour)
+                    .setTitle(R.string.edit_task)
+                    .setMessage(getString(R.string.created_by) + taskWrittenBy + "\nThe " + taskDate + " at " + taskHour)
                     .setView(editText)
-                    .setNeutralButton("Copy", (dialog, which) -> {
+                    .setNeutralButton(R.string.copy, (dialog, which) -> {
                         // Copy task
                         ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
                         ClipData clip = ClipData.newPlainText("task", taskDescription);
@@ -264,9 +266,9 @@ public class MainActivity extends AppCompatActivity {
                         vibe.vibrate(pattern, -1);
 
                         // Display Toast
-                        Toast.makeText(context, "Task copied !", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context, getString(R.string.task_copied), Toast.LENGTH_SHORT).show();
                     })
-                    .setPositiveButton("Save", (dialogInterface, i) -> {
+                    .setPositiveButton(R.string.save, (dialogInterface, i) -> {
 
                         // Get edited task
                         String editedTask = editText.getText().toString();
@@ -285,13 +287,12 @@ public class MainActivity extends AppCompatActivity {
 
                                 // Error updating database
                                 .addOnFailureListener(e -> {
-                                    Snackbar.make(findViewById(R.id.relativeLayout), "Error while adding task" + e, Snackbar.LENGTH_LONG)
-                                            .setAction("Retry", error -> {
-                                            })
+                                    Snackbar.make(findViewById(R.id.relativeLayout), getString(R.string.error_while_adding_task), Snackbar.LENGTH_LONG)
                                             .show();
+                                    Log.w(TAG, "onCreate: ", e);
                                 });
                     })
-                    .setNegativeButton("Cancel", null)
+                    .setNegativeButton(R.string.cancel, null)
                     .show();
 
             return true;
