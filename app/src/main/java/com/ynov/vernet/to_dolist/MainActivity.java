@@ -43,8 +43,6 @@ public class MainActivity extends AppCompatActivity {
 
     private int countTask = 0;
 
-    String name;
-
     ArrayList<String> arrayListId;
     ArrayList<String> arrayListTask;
     ArrayList<String> arrayListName;
@@ -74,38 +72,12 @@ public class MainActivity extends AppCompatActivity {
                     .show();
         }
 
-        // Check if user entered his name
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-        name = sharedPreferences.getString("name", null);
-
-        // if user has no name
-        if (name == null) {
-            EditText editText = new EditText(this);
-            editText.setHint("Your name");
-
-            // Ask him
-            AlertDialog alertDialog = new AlertDialog.Builder(this)
-                    .setIcon(android.R.drawable.ic_dialog_info)
-                    .setTitle("Welcome")
-                    .setMessage("What's your name ?")
-                    .setView(editText)
-                    .setPositiveButton("OK", (dialogInterface, i) -> {
-
-                        // Get the name from EditText
-                        name = editText.getText().toString();
-
-                        // Save user's name
-                        SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(this).edit();
-                        editor.putString("name", name);
-                        editor.apply();
-                    })
-                    .show();
-            alertDialog.setCanceledOnTouchOutside(false);
-            alertDialog.setCancelable(false);
-        }
+       // Get name
+        String name = new SettingsActivity().getName(this, this);
+        Log.d(TAG, "onCreate: " + name);
 
         // Get room
-        String room = new Room(this, this).getRoom();
+        String room = new SettingsActivity().getRoom(this, this);
 
         // Menu
         new Menu(this, this);
@@ -242,7 +214,7 @@ public class MainActivity extends AppCompatActivity {
             // Get taskId
             String taskId = arrayListId.get(position);
 
-            // Get task
+            // Get task description
             String taskDescription = (String) listView.getItemAtPosition(position);
 
             // Get the name of the creator
