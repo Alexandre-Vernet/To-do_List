@@ -30,7 +30,7 @@ public class Menu extends Activity {
     Context context;
 
     ExtendedFloatingActionButton fab;
-    FloatingActionButton addTaskFab, settingsFab;
+    FloatingActionButton addTaskFab, shareFab, settingsFab;
     Boolean isAllFabsVisible;
 
     FirebaseFirestore db;
@@ -47,8 +47,8 @@ public class Menu extends Activity {
 
         fab = this.activity.findViewById(R.id.fab);
         addTaskFab = this.activity.findViewById(R.id.addTaskFab);
+        shareFab = this.activity.findViewById(R.id.shareFab);
         settingsFab = this.activity.findViewById(R.id.settingsFab);
-
 
         // Get room code
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
@@ -58,11 +58,10 @@ public class Menu extends Activity {
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
         String name = sharedPreferences.getString("name", null);
 
-        Log.d(TAG, "Menu: " + room + name);
-
         // Hide widget
         addTaskFab.setVisibility(View.GONE);
         settingsFab.setVisibility(View.GONE);
+        shareFab.setVisibility(View.GONE);
         isAllFabsVisible = false;
 
         // Toggle menu
@@ -76,6 +75,7 @@ public class Menu extends Activity {
                         .start();
                 addTaskFab.show();
                 settingsFab.show();
+                shareFab.show();
                 fab.extend();
                 isAllFabsVisible = true;
             } else {
@@ -87,10 +87,13 @@ public class Menu extends Activity {
                         .start();
                 addTaskFab.hide();
                 settingsFab.hide();
+                shareFab.hide();
                 fab.shrink();
                 isAllFabsVisible = false;
             }
         });
+
+
 
         // Add a task
         addTaskFab.setOnClickListener(v -> {
@@ -135,22 +138,38 @@ public class Menu extends Activity {
                     .setNegativeButton("Cancel", null)
                     .show();
 
-            // Hide menu
-            ViewCompat.animate(fab)
-                    .rotation(0.0F)
-                    .withLayer()
-                    .setDuration(300L)
-                    .setInterpolator(new OvershootInterpolator(10.0F))
-                    .start();
-            addTaskFab.hide();
-            settingsFab.hide();
-            isAllFabsVisible = false;
+            hideMenu();
         });
+
+
+        // Share room
+        shareFab.setOnClickListener(v -> {
+            Intent intent = new Intent(Intent.ACTION_SEND);
+            intent.setType("text/plain");
+            intent.putExtra(Intent.EXTRA_TEXT, room);
+            this.activity.startActivity(Intent.createChooser(intent, "Share via"));
+
+            hideMenu();
+        });
+
 
         // Settings
         settingsFab.setOnClickListener(v -> {
             this.activity.startActivity(new Intent(context, SettingsActivity.class));
             this.activity.finish();
         });
+    }
+
+    public void hideMenu() {
+        ViewCompat.animate(fab)
+                .rotation(0.0F)
+                .withLayer()
+                .setDuration(300L)
+                .setInterpolator(new OvershootInterpolator(10.0F))
+                .start();
+        addTaskFab.hide();
+        settingsFab.hide();
+        shareFab.hide();
+        isAllFabsVisible = false;
     }
 }

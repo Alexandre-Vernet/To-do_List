@@ -150,19 +150,17 @@ public class MainActivity extends AppCompatActivity {
         // Display room code
         textViewRoom.setText(room);
 
-        // Search ba
+        // Search bar
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
                 arrayAdapter.getFilter().filter(query);
-
                 return false;
             }
 
             @Override
             public boolean onQueryTextChange(String newText) {
                 arrayAdapter.getFilter().filter(newText);
-
                 return false;
             }
         });
@@ -253,7 +251,7 @@ public class MainActivity extends AppCompatActivity {
             new AlertDialog.Builder(this)
                     .setIcon(R.drawable.edit_task)
                     .setTitle(R.string.edit_task)
-                    .setMessage(getString(R.string.created_by) + taskWrittenBy + "\nThe " + taskDate + " at " + taskHour)
+                    .setMessage(getString(R.string.created_by) + " " + taskWrittenBy + "\nThe " + taskDate + " at " + taskHour)
                     .setView(editText)
                     .setNeutralButton(R.string.copy, (dialog, which) -> {
                         // Copy task
