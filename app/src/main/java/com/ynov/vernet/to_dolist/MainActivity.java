@@ -14,6 +14,7 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -30,6 +31,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
@@ -38,6 +40,7 @@ public class MainActivity extends AppCompatActivity {
     Context context;
     ProgressBar progressBar;
     TextView textViewNoCurrentTask, textViewCountTaches, textViewRoom;
+    SearchView searchView;
     ListView listView;
     FirebaseFirestore db;
 
@@ -49,6 +52,7 @@ public class MainActivity extends AppCompatActivity {
     ArrayList<String> arrayListTask;
     ArrayList<String> arrayListName;
     ArrayList<Date> arrayListDate;
+    ArrayAdapter<String> arrayAdapter;
 
     private static final String TAG = "MainActivity";
 
@@ -62,6 +66,7 @@ public class MainActivity extends AppCompatActivity {
         textViewNoCurrentTask = findViewById(R.id.textViewNoCurrentTask);
         textViewCountTaches = findViewById(R.id.textViewCountTaches);
         textViewRoom = findViewById(R.id.textViewRoom);
+        searchView = findViewById(R.id.searchView);
         listView = findViewById(R.id.listView);
 
         db = FirebaseFirestore.getInstance();
@@ -85,9 +90,6 @@ public class MainActivity extends AppCompatActivity {
 
         // Menu
         new Menu(this, this);
-
-        // Display room code
-        textViewRoom.setText(room);
 
         // Display current task
         Handler handler = new Handler();
@@ -133,7 +135,7 @@ public class MainActivity extends AppCompatActivity {
                                         textViewCountTaches.setText(getString(R.string.nb_taches_en_cours, countTask));
 
                                     // Display tasks in ListView
-                                    ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(listView.getContext(), android.R.layout.select_dialog_multichoice, arrayListTask);
+                                    arrayAdapter = new ArrayAdapter<>(listView.getContext(), android.R.layout.select_dialog_multichoice, arrayListTask);
                                     listView.setAdapter(arrayAdapter);
                                 }
 
@@ -146,6 +148,27 @@ public class MainActivity extends AppCompatActivity {
                                 Log.w(TAG, getString(R.string.erreur_recup_taches) + task.getException());
                             }
                         });
+
+
+        // Display room code
+        textViewRoom.setText(room);
+
+        // Search ba
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                arrayAdapter.getFilter().filter(query);
+
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                arrayAdapter.getFilter().filter(newText);
+
+                return false;
+            }
+        });
 
 
         // Click task
@@ -223,11 +246,10 @@ public class MainActivity extends AppCompatActivity {
             // Get the name of the creator
             String taskWrittenBy = arrayListName.get(position);
 
-
             // Get date of creation
             Date taskCreatedAt = arrayListDate.get(position);
-            String taskDate = new SimpleDateFormat("d/MM/Y").format(taskCreatedAt);
-            String taskHour = new SimpleDateFormat("HH:mm").format(taskCreatedAt);
+            String taskDate = new SimpleDateFormat("d/MM/y", Locale.getDefault()).format(taskCreatedAt);
+            String taskHour = new SimpleDateFormat("HH:mm", Locale.getDefault()).format(taskCreatedAt);
 
             // Get task description
             String taskDescription = (String) listView.getItemAtPosition(position);
