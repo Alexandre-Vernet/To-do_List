@@ -8,14 +8,14 @@
 
     <application
         android:allowBackup="true"
-        android:icon="@drawable/icone"
+        android:icon="@drawable/icon"
         android:label="@string/app_name"
-        android:roundIcon="@drawable/icone"
+        android:roundIcon="@drawable/icon"
         android:supportsRtl="true"
         android:theme="@style/Theme.TodoList">
         <activity
             android:name=".SettingsActivity"
-            android:label="@string/title_activity_settings"></activity>
+            android:label="@string/title_activity_settings" />
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

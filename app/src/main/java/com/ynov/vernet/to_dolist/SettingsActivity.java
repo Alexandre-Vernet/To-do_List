@@ -1,16 +1,20 @@
 package com.ynov.vernet.to_dolist;
 
 import android.app.Activity;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Vibrator;
 import android.util.Log;
 import android.widget.EditText;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceManager;
 
@@ -91,6 +95,8 @@ public class SettingsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.settings_activity);
+
+
         if (savedInstanceState == null) {
             getSupportFragmentManager()
                     .beginTransaction()
@@ -101,12 +107,33 @@ public class SettingsActivity extends AppCompatActivity {
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
+
     }
 
     public static class SettingsFragment extends PreferenceFragmentCompat {
         @Override
         public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
             setPreferencesFromResource(R.xml.root_preferences, rootKey);
+
+            Preference myPref = findPreference("room");
+            myPref.setOnPreferenceClickListener(preference -> {
+
+                // Get room
+                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
+                String room = prefs.getString("room", null);
+                
+                // Copy room code
+                ClipboardManager clipboard = (ClipboardManager) getContext().getSystemService(Context.CLIPBOARD_SERVICE);
+                ClipData clip = ClipData.newPlainText("room", room);
+                clipboard.setPrimaryClip(clip);
+
+                // Vibrate
+                Vibrator vibe = (Vibrator) getContext().getSystemService(Context.VIBRATOR_SERVICE);
+                long[] pattern = {0, 100};
+                vibe.vibrate(pattern, -1);
+
+                return true;
+            });
         }
     }
 

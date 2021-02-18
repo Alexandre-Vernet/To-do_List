@@ -19,6 +19,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.preference.Preference;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -65,6 +66,7 @@ public class MainActivity extends AppCompatActivity {
         listView = findViewById(R.id.listView);
 
         db = FirebaseFirestore.getInstance();
+
 
         // Check Internet connexion
         boolean internet = new Internet(this, this).internet();
