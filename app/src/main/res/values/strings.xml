@@ -26,4 +26,9 @@
     <string name="welcome">Welcome !</string>
     <string name="what_s_your_name">What\'s your name ?</string>
     <string name="ok">OK</string>
+    <string name="general">General</string>
+    <string name="notification">Notification</string>
+    <string name="about">About</string>
+    <string name="version">Version</string>
+    <string name="developer">Developer</string>
 </resources>

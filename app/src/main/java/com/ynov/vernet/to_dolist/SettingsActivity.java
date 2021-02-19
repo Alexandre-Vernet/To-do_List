@@ -6,6 +6,7 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Vibrator;
 import android.util.Log;
@@ -115,8 +116,9 @@ public class SettingsActivity extends AppCompatActivity {
         public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
             setPreferencesFromResource(R.xml.root_preferences, rootKey);
 
-            Preference myPref = findPreference("room");
-            myPref.setOnPreferenceClickListener(preference -> {
+            // Copy room
+            Preference preferenceRoom = findPreference("room");
+            preferenceRoom.setOnPreferenceClickListener(preference -> {
 
                 // Get room
                 SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
@@ -132,6 +134,16 @@ public class SettingsActivity extends AppCompatActivity {
                 long[] pattern = {0, 100};
                 vibe.vibrate(pattern, -1);
 
+                return true;
+            });
+
+            // Redirect to Instagram
+            Preference preferenceDeveloper = findPreference("developer");
+            preferenceDeveloper.setOnPreferenceClickListener(preference -> {
+
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.setData(Uri.parse("https://www.instagram.com/alexandre_vernet/?hl=fr"));
+                startActivity(intent);
                 return true;
             });
         }
