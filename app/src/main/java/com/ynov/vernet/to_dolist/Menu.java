@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.text.InputType;
+import android.util.Log;
 import android.view.View;
 import android.view.animation.OvershootInterpolator;
 import android.widget.EditText;
@@ -33,6 +34,8 @@ public class Menu extends Activity {
     Boolean isAllFabsVisible;
 
     FirebaseFirestore db;
+
+    private static final String TAG = "Menu";
 
     public Menu(Activity activity, Context context) {
 
