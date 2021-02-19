@@ -46,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
 
     private Runnable runnable;
 
-    private int countTask;
+    private int countTask = 0;
 
     ArrayList<String> arrayListId;
     ArrayList<String> arrayListTask;
@@ -83,7 +83,6 @@ public class MainActivity extends AppCompatActivity {
 
         // Get name
         String name = new SettingsActivity().getName(this, this);
-        Log.d(TAG, "onCreate: " + name);
 
         // Get room
         String room = new SettingsActivity().getRoom(this, this);
@@ -98,7 +97,6 @@ public class MainActivity extends AppCompatActivity {
                         .orderBy("date", Query.Direction.DESCENDING)
                         .get()
                         .addOnCompleteListener(task -> {
-                            countTask = 0;
                             if (task.isSuccessful()) {
                                 progressBar.setVisibility(View.INVISIBLE);
 
@@ -299,7 +297,6 @@ public class MainActivity extends AppCompatActivity {
 
         // Listen tasks
         Query query = db.collection(room);
-        query.addSnapshotListener(
-                (value, error) -> handler.postDelayed(runnable, 0));
+        query.addSnapshotListener((value, error) -> handler.postDelayed(runnable, 0));
     }
 }
