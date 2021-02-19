@@ -6,6 +6,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Handler;
 import android.text.InputType;
 import android.util.Log;
 import android.view.View;
@@ -133,14 +134,7 @@ public class Menu extends Activity {
                         // Add all to database
                         db.collection(room)
                                 .add(map)
-
-                                // Error adding database
-                                .addOnFailureListener(e -> {
-                                    Snackbar.make(findViewById(R.id.relativeLayout), getString(R.string.error_while_adding_task), Snackbar.LENGTH_LONG)
-                                            .show();
-                                    Log.w(TAG, "Menu: ", e);
-                                });
-
+                                .addOnFailureListener(e -> error(e, getString(R.string.error_while_adding_task)));
 
                         // Send notification to other user's in same room
                         AlarmManager manager = (AlarmManager) this.activity.getSystemService(Context.ALARM_SERVICE);
@@ -184,5 +178,19 @@ public class Menu extends Activity {
         settingsFab.hide();
         shareFab.hide();
         isAllFabsVisible = false;
+    }
+
+    public void error(Throwable error, String msg) {
+
+        // Hide fab
+        findViewById(R.id.fab).setVisibility(View.INVISIBLE);
+
+        // Display error
+        Snackbar.make(findViewById(R.id.relativeLayout), msg, Snackbar.LENGTH_LONG)
+                .show();
+        Log.w(TAG, "onCreate: ", error);
+
+        // Display fab
+        new Handler().postDelayed(() -> findViewById(R.id.fab).setVisibility(View.VISIBLE), 2800);
     }
 }

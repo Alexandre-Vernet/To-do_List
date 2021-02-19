@@ -139,9 +139,7 @@ public class MainActivity extends AppCompatActivity {
 
                                 // Error while getting tasks
                             } else {
-                                Snackbar.make(findViewById(R.id.relativeLayout), getString(R.string.error_while_getting_tasks), Snackbar.LENGTH_LONG)
-                                        .show();
-                                Log.w(TAG, "onCreate: ", task.getException());
+                                error(task.getException(), getString(R.string.error_while_deleting_task));
                             }
                         });
 
@@ -204,21 +202,13 @@ public class MainActivity extends AppCompatActivity {
                                             })
 
                                             // Error adding task
-                                            .addOnFailureListener(e -> {
-                                                Snackbar.make(findViewById(R.id.relativeLayout), getString(R.string.error_while_adding_task), Snackbar.LENGTH_LONG)
-                                                        .show();
-                                                Log.w(TAG, "onCreate: ", e);
-                                            });
+                                            .addOnFailureListener(e -> error(e, getString(R.string.error_while_adding_task)));
                                 })
                                 .show();
                     })
 
                     // Error deleting task
-                    .addOnFailureListener(e -> {
-                        Snackbar.make(findViewById(R.id.relativeLayout), getString(R.string.error_while_deleting_task), Snackbar.LENGTH_LONG)
-                                .show();
-                        Log.w(TAG, "onCreate: ", e);
-                    });
+                    .addOnFailureListener(e -> error(e, getString(R.string.error_while_deleting_task)));
         });
 
 
@@ -283,11 +273,7 @@ public class MainActivity extends AppCompatActivity {
                                 })
 
                                 // Error updating database
-                                .addOnFailureListener(e -> {
-                                    Snackbar.make(findViewById(R.id.relativeLayout), getString(R.string.error_while_adding_task), Snackbar.LENGTH_LONG)
-                                            .show();
-                                    Log.w(TAG, "onCreate: ", e);
-                                });
+                                .addOnFailureListener(e -> error(e, getString(R.string.error_while_adding_task)));
                     })
                     .setNegativeButton(R.string.cancel, null)
                     .show();
@@ -299,5 +285,19 @@ public class MainActivity extends AppCompatActivity {
         // Listen tasks
         Query query = db.collection(room);
         query.addSnapshotListener((value, error) -> handler.postDelayed(runnable, 0));
+    }
+
+    public void error(Throwable error, String msg) {
+
+        // Hide fab
+        findViewById(R.id.fab).setVisibility(View.INVISIBLE);
+
+        // Display error
+        Snackbar.make(findViewById(R.id.relativeLayout), msg, Snackbar.LENGTH_LONG)
+                .show();
+        Log.w(TAG, "onCreate: ", error);
+
+        // Display fab
+        new Handler().postDelayed(() -> findViewById(R.id.fab).setVisibility(View.VISIBLE), 2800);
     }
 }
