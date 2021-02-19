@@ -250,6 +250,7 @@ public class MainActivity extends AppCompatActivity {
             new AlertDialog.Builder(this)
                     .setIcon(R.drawable.edit_task)
                     .setTitle(R.string.edit_task)
+
                     .setMessage(getString(R.string.created_by) + " " + taskWrittenBy + "\nThe " + taskDate + " at " + taskHour)
                     .setView(editText)
                     .setNeutralButton(R.string.copy, (dialog, which) -> {
