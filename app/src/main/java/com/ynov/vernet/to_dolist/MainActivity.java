@@ -47,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
 
     private Runnable runnable;
 
-    private int countTask;
+    private int countTask = 0;
 
     ArrayList<String> arrayListId;
     ArrayList<String> arrayListTask;
@@ -72,19 +72,18 @@ public class MainActivity extends AppCompatActivity {
 
         db = FirebaseFirestore.getInstance();
 
+
         // Check Internet connexion
         boolean internet = new Internet(this, this).internet();
         if (!internet) {
             // Display message
-            Snackbar.make(findViewById(R.id.relativeLayout), getString(R.string.no_internet_connection),
-                    Snackbar.LENGTH_LONG)
+            Snackbar.make(findViewById(R.id.relativeLayout), getString(R.string.no_internet_connection), Snackbar.LENGTH_LONG)
                     .setAction(R.string.activate, v -> startActivity(new Intent(Settings.ACTION_WIRELESS_SETTINGS)))
                     .show();
         }
 
         // Get name
         String name = new SettingsActivity().getName(this, this);
-        Log.d(TAG, "onCreate: " + name);
 
         // Get room
         String room = new SettingsActivity().getRoom(this, this);
@@ -94,56 +93,58 @@ public class MainActivity extends AppCompatActivity {
 
         // Display current task
         Handler handler = new Handler();
-        runnable = () -> db.collection(room).orderBy("date", Query.Direction.DESCENDING).get()
-                .addOnCompleteListener(task -> {
-                    countTask = 0;
-                    if (task.isSuccessful()) {
-                        progressBar.setVisibility(View.INVISIBLE);
+        runnable = () ->
+                db.collection(room)
+                        .orderBy("date", Query.Direction.DESCENDING)
+                        .get()
+                        .addOnCompleteListener(task -> {
+                            if (task.isSuccessful()) {
+                                progressBar.setVisibility(View.INVISIBLE);
 
-                        // if no task
-                        if (Objects.requireNonNull(task.getResult()).isEmpty()) {
-                            textViewCountTask.setVisibility(View.INVISIBLE);
-                            textViewNoCurrentTask.setVisibility(View.VISIBLE);
-                            listView.setVisibility(View.INVISIBLE);
-                        } else {
-                            textViewCountTask.setVisibility(View.VISIBLE);
-                            textViewNoCurrentTask.setVisibility(View.INVISIBLE);
-                            listView.setVisibility(View.VISIBLE);
+                                // if no task
+                                if (Objects.requireNonNull(task.getResult()).isEmpty()) {
+                                    textViewCountTask.setVisibility(View.INVISIBLE);
+                                    textViewNoCurrentTask.setVisibility(View.VISIBLE);
+                                    listView.setVisibility(View.INVISIBLE);
+                                } else {
+                                    textViewCountTask.setVisibility(View.VISIBLE);
+                                    textViewNoCurrentTask.setVisibility(View.INVISIBLE);
+                                    listView.setVisibility(View.VISIBLE);
 
-                            // Get all data in ArrayList
-                            arrayListId = new ArrayList<>();
-                            arrayListTask = new ArrayList<>();
-                            arrayListName = new ArrayList<>();
-                            arrayListDate = new ArrayList<>();
+                                    // Get all data in ArrayList
+                                    arrayListId = new ArrayList<>();
+                                    arrayListTask = new ArrayList<>();
+                                    arrayListName = new ArrayList<>();
+                                    arrayListDate = new ArrayList<>();
 
-                            // Save data from database
-                            for (QueryDocumentSnapshot document : task.getResult()) {
-                                arrayListId.add(document.getId());
-                                arrayListTask.add(document.get("description").toString());
-                                arrayListName.add(document.get("user").toString());
-                                arrayListDate.add(document.getTimestamp("date").toDate());
-                                countTask++;
+                                    // Save data from database
+                                    for (QueryDocumentSnapshot document : task.getResult()) {
+                                        arrayListId.add(document.getId());
+                                        arrayListTask.add(document.get("description").toString());
+                                        arrayListName.add(document.get("user").toString());
+                                        arrayListDate.add(document.getTimestamp("date").toDate());
+                                        countTask++;
+                                    }
+
+                                    // Display count of current tasks
+                                    if (countTask <= 1)
+                                        textViewCountTask.setText(getString(R.string.current_task, countTask));
+                                    else
+                                        textViewCountTask.setText(getString(R.string.current_tasks, countTask));
+
+                                    // Display tasks in ListView
+                                    arrayAdapter = new ArrayAdapter<>(listView.getContext(), android.R.layout.select_dialog_multichoice, arrayListTask);
+                                    listView.setAdapter(arrayAdapter);
+                                }
+
+                                // Error while getting tasks
+                            } else {
+                                Snackbar.make(findViewById(R.id.relativeLayout), getString(R.string.error_while_getting_tasks), Snackbar.LENGTH_LONG)
+                                        .show();
+                                Log.w(TAG, "onCreate: ", task.getException());
                             }
+                        });
 
-                            // Display count of current tasks
-                            if (countTask <= 1)
-                                textViewCountTask.setText(getString(R.string.current_task, countTask));
-                            else
-                                textViewCountTask.setText(getString(R.string.current_tasks, countTask));
-
-                            // Display tasks in ListView
-                            arrayAdapter = new ArrayAdapter<>(listView.getContext(),
-                                    android.R.layout.select_dialog_multichoice, arrayListTask);
-                            listView.setAdapter(arrayAdapter);
-                        }
-
-                        // Error while getting tasks
-                    } else {
-                        Snackbar.make(findViewById(R.id.relativeLayout), getString(R.string.error_while_getting_tasks),
-                                Snackbar.LENGTH_LONG).show();
-                        Log.w(TAG, "onCreate: ", task.getException());
-                    }
-                });
 
         // Display room code
         textViewRoom.setText(room);
@@ -163,6 +164,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+
         // Click task
         listView.setOnItemClickListener((parent, view, position, id) -> {
 
@@ -176,43 +178,49 @@ public class MainActivity extends AppCompatActivity {
             String task = (String) listView.getItemAtPosition(position);
 
             // Delete the task in database
-            db.collection(room).document(taskId).delete().addOnSuccessListener(aVoid -> {
-                // Restore task with Snackbar
-                Snackbar.make(findViewById(R.id.relativeLayout), getString(R.string.deleted_task), Snackbar.LENGTH_LONG)
-                        .setAction(R.string.undo, v -> {
+            db.collection(room)
+                    .document(taskId)
+                    .delete()
+                    .addOnSuccessListener(aVoid -> {
+                        // Restore task with Snackbar
+                        Snackbar.make(findViewById(R.id.relativeLayout), getString(R.string.deleted_task), Snackbar.LENGTH_LONG)
+                                .setAction(R.string.undo, v -> {
 
-                            // Restore content
-                            Map<String, Object> map = new HashMap<>();
-                            map.put("description", task);
+                                    // Restore content
+                                    Map<String, Object> map = new HashMap<>();
+                                    map.put("description", task);
 
-                            Date date = Calendar.getInstance().getTime();
-                            map.put("date", date);
+                                    Date date = Calendar.getInstance().getTime();
+                                    map.put("date", date);
 
-                            map.put("user", name);
+                                    map.put("user", name);
 
-                            // Add task to database
-                            db.collection(room).add(map).addOnSuccessListener(documentReference -> {
-                                startActivity(new Intent(getApplicationContext(), MainActivity.class));
-                                finish();
-                            })
+                                    // Add task to database
+                                    db.collection(room)
+                                            .add(map)
+                                            .addOnSuccessListener(documentReference -> {
+                                                startActivity(new Intent(getApplicationContext(), MainActivity.class));
+                                                finish();
+                                            })
 
-                                    // Error adding task
-                                    .addOnFailureListener(e -> {
-                                        Snackbar.make(findViewById(R.id.relativeLayout),
-                                                getString(R.string.error_while_adding_task), Snackbar.LENGTH_LONG)
-                                                .show();
-                                        Log.w(TAG, "onCreate: ", e);
-                                    });
-                        }).show();
-            })
+                                            // Error adding task
+                                            .addOnFailureListener(e -> {
+                                                Snackbar.make(findViewById(R.id.relativeLayout), getString(R.string.error_while_adding_task), Snackbar.LENGTH_LONG)
+                                                        .show();
+                                                Log.w(TAG, "onCreate: ", e);
+                                            });
+                                })
+                                .show();
+                    })
 
                     // Error deleting task
                     .addOnFailureListener(e -> {
-                        Snackbar.make(findViewById(R.id.relativeLayout), getString(R.string.error_while_deleting_task),
-                                Snackbar.LENGTH_LONG).show();
+                        Snackbar.make(findViewById(R.id.relativeLayout), getString(R.string.error_while_deleting_task), Snackbar.LENGTH_LONG)
+                                .show();
                         Log.w(TAG, "onCreate: ", e);
                     });
         });
+
 
         // Long press task
         listView.setOnItemLongClickListener((parent, view, position, id) -> {
@@ -239,21 +247,25 @@ public class MainActivity extends AppCompatActivity {
             EditText editText = new EditText(this);
             editText.setText(taskDescription);
 
-            new AlertDialog.Builder(this).setIcon(R.drawable.edit_task).setTitle(R.string.edit_task).setMessage(
-                    getString(R.string.created_by) + " " + taskWrittenBy + "\nThe " + taskDate + " at " + taskHour)
-                    .setView(editText).setNeutralButton(R.string.copy, (dialog, which) -> {
+            new AlertDialog.Builder(this)
+                    .setIcon(R.drawable.edit_task)
+                    .setTitle(R.string.edit_task)
+                    .setMessage(getString(R.string.created_by) + " " + taskWrittenBy + "\nThe " + taskDate + " at " + taskHour)
+                    .setView(editText)
+                    .setNeutralButton(R.string.copy, (dialog, which) -> {
                         // Copy task
                         ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
                         ClipData clip = ClipData.newPlainText("task", taskDescription);
                         clipboard.setPrimaryClip(clip);
 
                         // Vibrate
-                        long[] pattern = { 0, 100 };
+                        long[] pattern = {0, 100};
                         vibe.vibrate(pattern, -1);
 
                         // Display Toast
                         Toast.makeText(context, getString(R.string.task_copied), Toast.LENGTH_SHORT).show();
-                    }).setPositiveButton(R.string.save, (dialogInterface, i) -> {
+                    })
+                    .setPositiveButton(R.string.save, (dialogInterface, i) -> {
 
                         // Get edited task
                         String editedTask = editText.getText().toString();
@@ -262,21 +274,27 @@ public class MainActivity extends AppCompatActivity {
                         map.put("description", editedTask);
 
                         // Update database
-                        db.collection(room).document(taskId).update(map).addOnSuccessListener(documentReference -> {
-                            startActivity(new Intent(getApplicationContext(), MainActivity.class));
-                            finish();
-                        })
+                        db.collection(room)
+                                .document(taskId)
+                                .update(map)
+                                .addOnSuccessListener(documentReference -> {
+                                    startActivity(new Intent(getApplicationContext(), MainActivity.class));
+                                    finish();
+                                })
 
                                 // Error updating database
                                 .addOnFailureListener(e -> {
-                                    Snackbar.make(findViewById(R.id.relativeLayout),
-                                            getString(R.string.error_while_adding_task), Snackbar.LENGTH_LONG).show();
+                                    Snackbar.make(findViewById(R.id.relativeLayout), getString(R.string.error_while_adding_task), Snackbar.LENGTH_LONG)
+                                            .show();
                                     Log.w(TAG, "onCreate: ", e);
                                 });
-                    }).setNegativeButton(R.string.cancel, null).show();
+                    })
+                    .setNegativeButton(R.string.cancel, null)
+                    .show();
 
             return true;
         });
+
 
         // Listen tasks
         Query query = db.collection(room);
