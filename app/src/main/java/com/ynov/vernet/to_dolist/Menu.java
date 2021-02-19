@@ -1,11 +1,10 @@
 package com.ynov.vernet.to_dolist;
 
-
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.util.Log;
+import android.text.InputType;
 import android.view.View;
 import android.view.animation.OvershootInterpolator;
 import android.widget.EditText;
@@ -34,8 +33,6 @@ public class Menu extends Activity {
     Boolean isAllFabsVisible;
 
     FirebaseFirestore db;
-
-    private static final String TAG = "Menu";
 
     public Menu(Activity activity, Context context) {
 
@@ -94,12 +91,15 @@ public class Menu extends Activity {
         });
 
 
-
         // Add a task
         addTaskFab.setOnClickListener(v -> {
 
+            // Open edit text
             EditText editText = new EditText(context);
             editText.setHint("Add some text here");
+
+            // First letter in uppercase
+            editText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
 
             new AlertDialog.Builder(context)
                     .setIcon(R.drawable.add)
