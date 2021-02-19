@@ -44,10 +44,9 @@ public class MainActivity extends AppCompatActivity {
     ListView listView;
     FirebaseFirestore db;
 
-
     private Runnable runnable;
 
-    private int countTask = 0;
+    private int countTask;
 
     ArrayList<String> arrayListId;
     ArrayList<String> arrayListTask;
@@ -100,6 +99,7 @@ public class MainActivity extends AppCompatActivity {
                         .addOnCompleteListener(task -> {
                             if (task.isSuccessful()) {
                                 progressBar.setVisibility(View.INVISIBLE);
+                                countTask = 0;
 
                                 // if no task
                                 if (Objects.requireNonNull(task.getResult()).isEmpty()) {

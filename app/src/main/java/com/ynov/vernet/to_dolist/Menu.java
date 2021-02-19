@@ -1,6 +1,8 @@
 package com.ynov.vernet.to_dolist;
 
 import android.app.Activity;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -138,6 +140,13 @@ public class Menu extends Activity {
                                             .show();
                                     Log.w(TAG, "Menu: ", e);
                                 });
+
+
+                        // Send notification to other user's in same room
+                        AlarmManager manager = (AlarmManager) this.activity.getSystemService(Context.ALARM_SERVICE);
+                        Intent alarmIntent = new Intent(context, Notification.class);
+                        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, alarmIntent, 0);
+                        manager.setInexactRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), 0, pendingIntent);
                     })
                     .setNegativeButton(R.string.cancel, null)
                     .show();
