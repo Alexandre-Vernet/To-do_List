@@ -96,7 +96,7 @@ public class Menu extends Activity {
 
             // Open edit text
             EditText editText = new EditText(context);
-            editText.setHint("Add some text here");
+            editText.setHint(R.string.add_some_text_here);
 
             // First letter in uppercase
             editText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
@@ -105,7 +105,7 @@ public class Menu extends Activity {
                     .setIcon(R.drawable.add)
                     .setTitle("Add a task")
                     .setView(editText)
-                    .setPositiveButton("Add", (dialogInterface, i) -> {
+                    .setPositiveButton(R.string.add, (dialogInterface, i) -> {
 
                         // Get entered task
                         String task = editText.getText().toString();
@@ -130,12 +130,13 @@ public class Menu extends Activity {
                                 .add(map)
 
                                 // Error adding database
-                                .addOnFailureListener(e -> Snackbar.make(findViewById(R.id.relativeLayout), "Error while adding data" + e, Snackbar.LENGTH_LONG)
-                                        .setAction("Retry", error -> {
-                                        })
-                                        .show());
+                                .addOnFailureListener(e -> {
+                                    Snackbar.make(findViewById(R.id.relativeLayout), getString(R.string.error_while_adding_task), Snackbar.LENGTH_LONG)
+                                            .show();
+                                    Log.w(TAG, "Menu: ", e);
+                                });
                     })
-                    .setNegativeButton("Cancel", null)
+                    .setNegativeButton(R.string.cancel, null)
                     .show();
 
             hideMenu();
@@ -147,7 +148,7 @@ public class Menu extends Activity {
             Intent intent = new Intent(Intent.ACTION_SEND);
             intent.setType("text/plain");
             intent.putExtra(Intent.EXTRA_TEXT, room);
-            this.activity.startActivity(Intent.createChooser(intent, "Share via"));
+            this.activity.startActivity(Intent.createChooser(intent, getString(R.string.share_with)));
 
             hideMenu();
         });
