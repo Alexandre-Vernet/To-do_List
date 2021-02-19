@@ -12,9 +12,9 @@
         android:roundIcon="@drawable/icon"
         android:supportsRtl="true"
         android:theme="@style/Theme.TodoList">
-        <activity
-            android:name=".SettingsActivity"
-            android:label="@string/title_activity_settings" />
+
+        <activity android:name=".SettingsActivity" />
+
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

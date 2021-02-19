@@ -37,15 +37,15 @@ public class SettingsActivity extends AppCompatActivity {
         // if user has no name
         if (name == null) {
             EditText editText = new EditText(context);
-            editText.setHint("Your name");
+            editText.setHint(R.string.your_name);
 
             // Ask him
             AlertDialog alertDialog = new AlertDialog.Builder(context)
                     .setIcon(R.drawable.person)
-                    .setTitle("Welcome !")
-                    .setMessage("What's your name ?")
+                    .setTitle(R.string.welcome)
+                    .setMessage(R.string.what_s_your_name)
                     .setView(editText)
-                    .setPositiveButton("OK", (dialogInterface, i) -> {
+                    .setPositiveButton(R.string.ok, (dialogInterface, i) -> {
 
                         // Get the name from EditText
                         String editName = editText.getText().toString();

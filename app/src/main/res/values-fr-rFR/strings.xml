@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="current_tasks">%1$d tâches en cours</string>
+    <string name="current_task">%1$d tâche en cours</string>
+    <string name="no_current_task">Aucune tâche en cours</string>
+    <string name="add_a_task">Ajouter une tâche</string>
+    <string name="settings">Paramètres</string>
+    <string name="no_internet_connection">Pas de connexion internet</string>
+    <string name="activate">Activer</string>
+    <string name="error_while_getting_tasks">Erreur lors de la récupération des tâches</string>
+    <string name="undo">Annuler</string>
+    <string name="deleted_task">Tâche supprimée</string>
+    <string name="error_while_adding_task">Erreur lors de l\'ajout de la tâche</string>
+    <string name="error_while_deleting_task">Erreur lors de la suppression de la tâche</string>
+    <string name="edit_task">Editer la tâche</string>
+    <string name="created_by">Créé par</string>
+    <string name="copy">Copier</string>
+    <string name="task_copied">Tâche copié !</string>
+    <string name="save">Sauvegarder</string>
+    <string name="cancel">Annuler</string>
+    <string name="share_room_code">Partager le code du salon</string>
+    <string name="add_some_text_here">Ecrivez quelque chose ici</string>
+    <string name="add">Ajouter</string>
+    <string name="share_with">Partager avec</string>
+    <string name="your_name">Votre nom</string>
+    <string name="welcome">Bienvenue !</string>
+    <string name="what_s_your_name">Quel est votre nom ?</string>
+    <string name="ok">OK</string>
+</resources>
