@@ -154,7 +154,7 @@ public class Menu extends Activity {
             Intent intent = new Intent(Intent.ACTION_SEND);
             intent.setType("text/plain");
             intent.putExtra(Intent.EXTRA_TEXT, room);
-            this.activity.startActivity(Intent.createChooser(intent, getString(R.string.share_with)));
+            this.activity.startActivity(Intent.createChooser(intent, "Share with"));
 
             hideMenu();
         });
