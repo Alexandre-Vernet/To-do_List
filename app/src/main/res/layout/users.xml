@@ -11,7 +11,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="15dp"
         android:layout_marginBottom="15dp"
-        android:text="coucou"
+        android:text="User 1"
         android:textColor="@color/black"
         android:textSize="23sp"
         app:layout_constraintBottom_toBottomOf="parent"

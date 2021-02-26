@@ -37,11 +37,10 @@ import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
 
-    Context context;
     ProgressBar progressBar;
     TextView textViewNoCurrentTask, textViewCountTask, textViewRoom;
     SearchView searchView;
-    ListView listView;
+    ListView listViewTasks;
     FirebaseFirestore db;
 
     private Runnable runnable;
@@ -49,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
     private int countTask;
 
     ArrayList<String> arrayListId;
-    ArrayList<String> arrayListTask;
+    ArrayList<String> arrayListDescription;
     ArrayList<String> arrayListName;
     ArrayList<Date> arrayListDate;
     ArrayAdapter<String> arrayAdapter;
@@ -61,13 +60,12 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        context = getApplicationContext();
         progressBar = findViewById(R.id.progressBar);
         textViewNoCurrentTask = findViewById(R.id.textViewNoCurrentTask);
         textViewCountTask = findViewById(R.id.textViewCountTask);
         textViewRoom = findViewById(R.id.textViewRoom);
         searchView = findViewById(R.id.searchView);
-        listView = findViewById(R.id.listView);
+        listViewTasks = findViewById(R.id.listViewTasks);
 
         db = FirebaseFirestore.getInstance();
 
@@ -109,22 +107,22 @@ public class MainActivity extends AppCompatActivity {
                                 if (Objects.requireNonNull(task.getResult()).isEmpty()) {
                                     textViewCountTask.setVisibility(View.INVISIBLE);
                                     textViewNoCurrentTask.setVisibility(View.VISIBLE);
-                                    listView.setVisibility(View.INVISIBLE);
+                                    listViewTasks.setVisibility(View.INVISIBLE);
                                 } else {
                                     textViewCountTask.setVisibility(View.VISIBLE);
                                     textViewNoCurrentTask.setVisibility(View.INVISIBLE);
-                                    listView.setVisibility(View.VISIBLE);
+                                    listViewTasks.setVisibility(View.VISIBLE);
 
                                     // Get all data in ArrayList
                                     arrayListId = new ArrayList<>();
-                                    arrayListTask = new ArrayList<>();
+                                    arrayListDescription = new ArrayList<>();
                                     arrayListName = new ArrayList<>();
                                     arrayListDate = new ArrayList<>();
 
                                     // Save data from database
                                     for (QueryDocumentSnapshot document : task.getResult()) {
                                         arrayListId.add(document.getId());
-                                        arrayListTask.add(document.get("description").toString());
+                                        arrayListDescription.add(document.get("description").toString());
                                         arrayListName.add(document.get("user").toString());
                                         arrayListDate.add(document.getTimestamp("date").toDate());
                                         countTask++;
@@ -137,8 +135,8 @@ public class MainActivity extends AppCompatActivity {
                                         textViewCountTask.setText(getString(R.string.current_tasks, countTask));
 
                                     // Display tasks in ListView
-                                    arrayAdapter = new ArrayAdapter<>(listView.getContext(), android.R.layout.select_dialog_multichoice, arrayListTask);
-                                    listView.setAdapter(arrayAdapter);
+                                    arrayAdapter = new ArrayAdapter<>(this, R.layout.tasks, R.id.textViewTask, arrayListDescription);
+                                    listViewTasks.setAdapter(arrayAdapter);
                                 }
 
                                 // Error while getting tasks
@@ -168,7 +166,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         // Click task
-        listView.setOnItemClickListener((parent, view, position, id) -> {
+        listViewTasks.setOnItemClickListener((parent, view, position, id) -> {
 
             // Refresh view
             handler.postDelayed(runnable, 0);
@@ -177,7 +175,7 @@ public class MainActivity extends AppCompatActivity {
             String taskId = arrayListId.get(position);
 
             // Get content of the task
-            String task = (String) listView.getItemAtPosition(position);
+            String task = (String) listViewTasks.getItemAtPosition(position);
 
             // Delete the task in database
             db.collection(room)
@@ -200,10 +198,7 @@ public class MainActivity extends AppCompatActivity {
                                     // Add task to database
                                     db.collection(room)
                                             .add(map)
-                                            .addOnSuccessListener(documentReference -> {
-                                                startActivity(new Intent(getApplicationContext(), MainActivity.class));
-                                                finish();
-                                            })
+                                            .addOnSuccessListener(documentReference -> handler.postDelayed(runnable, 0))
 
                                             // Error adding task
                                             .addOnFailureListener(e -> error(e, getString(R.string.error_while_adding_task)));
@@ -217,7 +212,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         // Long press task
-        listView.setOnItemLongClickListener((parent, view, position, id) -> {
+        listViewTasks.setOnItemLongClickListener((parent, view, position, id) -> {
 
             // Vibrate
             Vibrator vibe = (Vibrator) MainActivity.this.getSystemService(Context.VIBRATOR_SERVICE);
@@ -235,7 +230,7 @@ public class MainActivity extends AppCompatActivity {
             String taskHour = new SimpleDateFormat("HH:mm", Locale.getDefault()).format(taskCreatedAt);
 
             // Get task description
-            String taskDescription = (String) listView.getItemAtPosition(position);
+            String taskDescription = (String) listViewTasks.getItemAtPosition(position);
 
             // Keyboard
             EditText editText = new EditText(this);
@@ -257,7 +252,7 @@ public class MainActivity extends AppCompatActivity {
                         vibe.vibrate(pattern, -1);
 
                         // Display Toast
-                        Toast.makeText(context, getString(R.string.task_copied), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, getString(R.string.task_copied), Toast.LENGTH_SHORT).show();
                     })
                     .setPositiveButton(R.string.save, (dialogInterface, i) -> {
 
@@ -271,10 +266,7 @@ public class MainActivity extends AppCompatActivity {
                         db.collection(room)
                                 .document(taskId)
                                 .update(map)
-                                .addOnSuccessListener(documentReference -> {
-                                    startActivity(new Intent(getApplicationContext(), MainActivity.class));
-                                    finish();
-                                })
+                                .addOnSuccessListener(documentReference -> handler.postDelayed(runnable, 0))
 
                                 // Error updating database
                                 .addOnFailureListener(e -> error(e, getString(R.string.error_while_adding_task)));

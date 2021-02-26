@@ -17,7 +17,7 @@ import java.util.ArrayList;
 public class UsersActivity extends AppCompatActivity {
 
     FirebaseFirestore db;
-    ListView listView;
+    ListView listViewUsers;
     ArrayList<String> arrayListUsers;
     ArrayList<Integer> arrayListUserCountTask;
     int userCountTask = 0;
@@ -29,7 +29,7 @@ public class UsersActivity extends AppCompatActivity {
 
         db = FirebaseFirestore.getInstance();
 
-        listView = findViewById(R.id.listView);
+        listViewUsers = findViewById(R.id.listViewUsers);
 
         // Get current room
         String room = new SettingsActivity().getRoom(this, this);
@@ -53,7 +53,7 @@ public class UsersActivity extends AppCompatActivity {
                             ArrayAdapter<Integer> arrayAdapterUserCountTask;
                             arrayAdapterUsers = new ArrayAdapter<>(this, R.layout.users, R.id.textViewCountUser, arrayListUsers);
                             arrayAdapterUserCountTask = new ArrayAdapter<>(this, R.layout.users, R.id.textViewCountUser, arrayListUserCountTask);
-                            listView.setAdapter(arrayAdapterUsers);
+                            listViewUsers.setAdapter(arrayAdapterUsers);
                         });
 
         handler.postDelayed(runnable, 0);

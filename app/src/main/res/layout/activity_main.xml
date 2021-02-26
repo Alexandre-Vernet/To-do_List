@@ -67,7 +67,7 @@
 
         <!--Display task-->
         <ListView
-            android:id="@+id/listView"
+            android:id="@+id/listViewTasks"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
     </LinearLayout>
@@ -129,6 +129,5 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:srcCompat="@drawable/settings" />
-
     </androidx.constraintlayout.widget.ConstraintLayout>
 </RelativeLayout>
