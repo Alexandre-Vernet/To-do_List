@@ -71,6 +71,9 @@ public class MainActivity extends AppCompatActivity {
 
         db = FirebaseFirestore.getInstance();
 
+//        startActivity(new Intent(getApplicationContext(), UsersActivity.class));
+//        finish();
+
 
         // Check Internet connexion
         boolean internet = new Internet(this, this).internet();
