@@ -30,4 +30,6 @@
     <string name="about">About</string>
     <string name="version">Version</string>
     <string name="developer">Developer</string>
+    <string name="name">Name</string>
+    <string name="room">Room</string>
 </resources>

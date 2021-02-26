@@ -33,10 +33,15 @@ public class SettingsActivity extends AppCompatActivity {
 
         // Check if user entered his name
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
-        String name = sharedPreferences.getString("name", null);
+        String name = sharedPreferences.getString("name", "New user");
+
+        // Save user's name
+        SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(context).edit();
+        editor.putString("name", name);
+        editor.apply();
 
         // if user has no name
-        if (name == null) {
+        if (name.equals("null")) {
             EditText editText = new EditText(context);
             editText.setHint(R.string.your_name);
 
@@ -51,8 +56,7 @@ public class SettingsActivity extends AppCompatActivity {
                         // Get the name from EditText
                         String editName = editText.getText().toString();
 
-                        // Save user's name
-                        SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(context).edit();
+                        // Update user's name
                         editor.putString("name", editName);
                         editor.apply();
                     })

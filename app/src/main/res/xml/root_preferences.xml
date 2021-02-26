@@ -4,12 +4,12 @@
     <PreferenceCategory app:title="@string/general">
         <EditTextPreference
             app:key="name"
-            app:title="Your name"
+            app:title="@string/name"
             app:useSimpleSummaryProvider="true" />
 
         <EditTextPreference
             app:key="room"
-            app:title="Your room"
+            app:title="@string/room"
             app:useSimpleSummaryProvider="true" />
     </PreferenceCategory>
 

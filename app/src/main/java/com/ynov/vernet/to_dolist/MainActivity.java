@@ -83,6 +83,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Get name
         String name = new SettingsActivity().getName(this, this);
+        Log.d(TAG, "onCreate: " + name);
 
         // Get room
         String room = new SettingsActivity().getRoom(this, this);
