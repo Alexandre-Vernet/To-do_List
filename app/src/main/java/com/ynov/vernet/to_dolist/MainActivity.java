@@ -10,7 +10,6 @@ import android.os.Vibrator;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.ProgressBar;
@@ -40,18 +39,13 @@ public class MainActivity extends AppCompatActivity {
     ProgressBar progressBar;
     TextView textViewNoCurrentTask, textViewCountTask, textViewRoom;
     SearchView searchView;
-    ListView listViewTasks;
+    ListView listView;
     FirebaseFirestore db;
-
-    private Runnable runnable;
 
     private int countTask;
 
-    ArrayList<String> arrayListId;
-    ArrayList<String> arrayListDescription;
-    ArrayList<String> arrayListName;
-    ArrayList<Date> arrayListDate;
-    ArrayAdapter<String> arrayAdapter;
+    ArrayList<Task> arrayList;
+    TaskListAdapter adapter;
 
     private static final String TAG = "MainActivity";
 
@@ -65,9 +59,10 @@ public class MainActivity extends AppCompatActivity {
         textViewCountTask = findViewById(R.id.textViewCountTask);
         textViewRoom = findViewById(R.id.textViewRoom);
         searchView = findViewById(R.id.searchView);
-        listViewTasks = findViewById(R.id.listViewTasks);
+        listView = findViewById(R.id.listView);
 
         db = FirebaseFirestore.getInstance();
+
 
 //        startActivity(new Intent(getApplicationContext(), UsersActivity.class));
 //        finish();
@@ -82,69 +77,14 @@ public class MainActivity extends AppCompatActivity {
                     .show();
         }
 
-        // Get name
-        String name = new SettingsActivity().getName(this, this);
-        Log.d(TAG, "onCreate: " + name);
-
         // Get room
-        String room = new SettingsActivity().getRoom(this, this);
+        String room = getRoom();
 
         // Menu
         new Menu(this, this);
 
         // Display current task
-        Handler handler = new Handler();
-        runnable = () ->
-                db.collection(room)
-                        .orderBy("date", Query.Direction.DESCENDING)
-                        .get()
-                        .addOnCompleteListener(task -> {
-                            if (task.isSuccessful()) {
-                                progressBar.setVisibility(View.INVISIBLE);
-                                countTask = 0;
-
-                                // if no task
-                                if (Objects.requireNonNull(task.getResult()).isEmpty()) {
-                                    textViewCountTask.setVisibility(View.INVISIBLE);
-                                    textViewNoCurrentTask.setVisibility(View.VISIBLE);
-                                    listViewTasks.setVisibility(View.INVISIBLE);
-                                } else {
-                                    textViewCountTask.setVisibility(View.VISIBLE);
-                                    textViewNoCurrentTask.setVisibility(View.INVISIBLE);
-                                    listViewTasks.setVisibility(View.VISIBLE);
-
-                                    // Get all data in ArrayList
-                                    arrayListId = new ArrayList<>();
-                                    arrayListDescription = new ArrayList<>();
-                                    arrayListName = new ArrayList<>();
-                                    arrayListDate = new ArrayList<>();
-
-                                    // Save data from database
-                                    for (QueryDocumentSnapshot document : task.getResult()) {
-                                        arrayListId.add(document.getId());
-                                        arrayListDescription.add(document.get("description").toString());
-                                        arrayListName.add(document.get("user").toString());
-                                        arrayListDate.add(document.getTimestamp("date").toDate());
-                                        countTask++;
-                                    }
-
-                                    // Display count of current tasks
-                                    if (countTask <= 1)
-                                        textViewCountTask.setText(getString(R.string.current_task, countTask));
-                                    else
-                                        textViewCountTask.setText(getString(R.string.current_tasks, countTask));
-
-                                    // Display tasks in ListView
-                                    arrayAdapter = new ArrayAdapter<>(this, R.layout.tasks, R.id.textViewTask, arrayListDescription);
-                                    listViewTasks.setAdapter(arrayAdapter);
-                                }
-
-                                // Error while getting tasks
-                            } else {
-                                error(task.getException(), getString(R.string.error_while_deleting_task));
-                            }
-                        });
-
+        this.refreshListTasks();
 
         // Display room code
         textViewRoom.setText(room);
@@ -153,54 +93,47 @@ public class MainActivity extends AppCompatActivity {
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                if (arrayAdapter != null)
-                    arrayAdapter.getFilter().filter(query);
+                adapter.getFilter().filter(query);
                 return false;
             }
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                if (arrayAdapter != null)
-                    arrayAdapter.getFilter().filter(newText);
+                adapter.getFilter().filter(newText);
                 return false;
             }
         });
 
 
         // Click task
-        listViewTasks.setOnItemClickListener((parent, view, position, id) -> {
+        listView.setOnItemClickListener((parent, view, position, id) -> {
 
-            // Refresh view
-            handler.postDelayed(runnable, 0);
-
-            // Get taskId
-            String taskId = arrayListId.get(position);
-
-            // Get content of the task
-            String task = (String) listViewTasks.getItemAtPosition(position);
+            // Get data
+            Task task = arrayList.get(position);
+            String taskId = task.getId();
 
             // Delete the task in database
             db.collection(room)
                     .document(taskId)
                     .delete()
                     .addOnSuccessListener(aVoid -> {
-                        // Restore task with Snackbar
+                        // Restore task with snackbar
                         Snackbar.make(findViewById(R.id.relativeLayout), getString(R.string.deleted_task), Snackbar.LENGTH_LONG)
                                 .setAction(R.string.undo, v -> {
 
                                     // Restore content
                                     Map<String, Object> map = new HashMap<>();
-                                    map.put("description", task);
+                                    map.put("description", task.getDescription());
 
-                                    Date date = Calendar.getInstance().getTime();
-                                    map.put("date", date);
+                                    Calendar.getInstance().getTime();
+                                    map.put("date", task.getDate());
 
-                                    map.put("user", name);
+                                    map.put("user", task.getName());
 
                                     // Add task to database
                                     db.collection(room)
                                             .add(map)
-                                            .addOnSuccessListener(documentReference -> handler.postDelayed(runnable, 0))
+                                            .addOnSuccessListener(documentReference -> refreshListTasks())
 
                                             // Error adding task
                                             .addOnFailureListener(e -> error(e, getString(R.string.error_while_adding_task)));
@@ -214,25 +147,23 @@ public class MainActivity extends AppCompatActivity {
 
 
         // Long press task
-        listViewTasks.setOnItemLongClickListener((parent, view, position, id) -> {
+        listView.setOnItemLongClickListener((parent, view, position, id) -> {
 
             // Vibrate
             Vibrator vibe = (Vibrator) MainActivity.this.getSystemService(Context.VIBRATOR_SERVICE);
             vibe.vibrate(80);
 
-            // Get taskId
-            String taskId = arrayListId.get(position);
-
-            // Get the name of the creator
-            String taskWrittenBy = arrayListName.get(position);
+            // Get data
+            Task task = arrayList.get(position);
+            String taskId = task.getId();
+            String taskDescription = task.getDescription();
+            String taskName = task.getName();
+            Log.d(TAG, "onCreate: " + taskName);
+            Date taskDate = task.getDate();
 
             // Get date of creation
-            Date taskCreatedAt = arrayListDate.get(position);
-            String taskDate = new SimpleDateFormat("d/MM/y", Locale.getDefault()).format(taskCreatedAt);
-            String taskHour = new SimpleDateFormat("HH:mm", Locale.getDefault()).format(taskCreatedAt);
-
-            // Get task description
-            String taskDescription = (String) listViewTasks.getItemAtPosition(position);
+            String taskDateDay = new SimpleDateFormat("d/MM/y", Locale.getDefault()).format(taskDate);
+            String taskDateHour = new SimpleDateFormat("HH:mm", Locale.getDefault()).format(taskDate);
 
             // Keyboard
             EditText editText = new EditText(this);
@@ -241,7 +172,7 @@ public class MainActivity extends AppCompatActivity {
             new AlertDialog.Builder(this)
                     .setIcon(R.drawable.edit_task)
                     .setTitle(R.string.edit_task)
-                    .setMessage(getString(R.string.created_by) + " " + taskWrittenBy + "\nThe " + taskDate + " at " + taskHour)
+                    .setMessage(getString(R.string.created_by, taskName, taskDateDay, taskDateHour))
                     .setView(editText)
                     .setNeutralButton(R.string.copy, (dialog, which) -> {
                         // Copy task
@@ -268,7 +199,7 @@ public class MainActivity extends AppCompatActivity {
                         db.collection(room)
                                 .document(taskId)
                                 .update(map)
-                                .addOnSuccessListener(documentReference -> handler.postDelayed(runnable, 0))
+                                .addOnSuccessListener(documentReference -> refreshListTasks())
 
                                 // Error updating database
                                 .addOnFailureListener(e -> error(e, getString(R.string.error_while_adding_task)));
@@ -282,7 +213,70 @@ public class MainActivity extends AppCompatActivity {
 
         // Listen tasks
         Query query = db.collection(room);
-        query.addSnapshotListener((value, error) -> handler.postDelayed(runnable, 0));
+        query.addSnapshotListener((value, error) -> refreshListTasks());
+    }
+
+    private String getRoom() {
+        return new SettingsActivity().getRoom(this, this);
+    }
+
+    public void refreshListTasks() {
+
+        arrayList = new ArrayList<>();
+
+        db.collection(getRoom())
+                .orderBy("date", Query.Direction.DESCENDING)
+                .get()
+                .addOnCompleteListener(querySnapshotTask -> {
+                    if (querySnapshotTask.isSuccessful()) {
+                        progressBar.setVisibility(View.INVISIBLE);
+                        countTask = 0;
+
+                        // if no task
+                        if (Objects.requireNonNull(querySnapshotTask.getResult()).isEmpty()) {
+                            textViewCountTask.setVisibility(View.INVISIBLE);
+                            textViewNoCurrentTask.setVisibility(View.VISIBLE);
+                            listView.setVisibility(View.INVISIBLE);
+                        } else {
+                            textViewCountTask.setVisibility(View.VISIBLE);
+                            textViewNoCurrentTask.setVisibility(View.INVISIBLE);
+                            listView.setVisibility(View.VISIBLE);
+
+                            // Save data from database
+                            for (QueryDocumentSnapshot document : querySnapshotTask.getResult()) {
+                                // Get data
+                                String id = document.getId();
+                                String description = document.get("description").toString();
+                                String user = document.get("user").toString();
+                                Date date = document.getTimestamp("date").toDate();
+
+                                // Save data
+                                Task task = new Task(id, description, user, date);
+
+                                // Add data to array
+                                arrayList.add(task);
+
+                                // Increment count tasks
+                                countTask++;
+
+                                // Display tasks in ListView
+                                adapter = new TaskListAdapter(this, R.layout.tasks, arrayList);
+                                listView.setAdapter(adapter);
+                            }
+
+                            // Display count of current tasks
+                            if (countTask <= 1)
+                                textViewCountTask.setText(getString(R.string.current_task, countTask));
+                            else
+                                textViewCountTask.setText(getString(R.string.current_tasks, countTask));
+                        }
+
+                        // Error while getting tasks
+                    } else {
+                        error(querySnapshotTask.getException(), getString(R.string.error_while_deleting_task));
+                    }
+                });
+
     }
 
     public void error(Throwable error, String msg) {

@@ -13,7 +13,6 @@
     <string name="error_while_adding_task">Erreur lors de l\'ajout de la tâche</string>
     <string name="error_while_deleting_task">Erreur lors de la suppression de la tâche</string>
     <string name="edit_task">Editer la tâche</string>
-    <string name="created_by">Créé par</string>
     <string name="copy">Copier</string>
     <string name="task_copied">Tâche copié !</string>
     <string name="save">Sauvegarder</string>
@@ -30,4 +29,6 @@
     <string name="about">A propos</string>
     <string name="version">Version</string>
     <string name="developer">Développeur</string>
+    <string name="name">Editer la tâche</string>
+    <string name="room">Créer par</string>
 </resources>

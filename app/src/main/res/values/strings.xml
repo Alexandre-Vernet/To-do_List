@@ -13,7 +13,7 @@
     <string name="error_while_adding_task">Error while adding task</string>
     <string name="error_while_deleting_task">Error while deleting task</string>
     <string name="edit_task">Edit task</string>
-    <string name="created_by">Created by</string>
+    <string name="created_by">Created by %1$S \nThe %2$S at %3$S</string>
     <string name="copy">Copy</string>
     <string name="task_copied">Task copied !</string>
     <string name="save">Save</string>
