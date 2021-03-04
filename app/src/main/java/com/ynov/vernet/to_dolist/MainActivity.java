@@ -27,7 +27,6 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
@@ -93,13 +92,15 @@ public class MainActivity extends AppCompatActivity {
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                adapter.getFilter().filter(query);
+                MainActivity.this.adapter.getFilter().filter(query);
+                adapter.notifyDataSetChanged();
                 return false;
             }
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                adapter.getFilter().filter(newText);
+                MainActivity.this.adapter.getFilter().filter(newText);
+                adapter.notifyDataSetChanged();
                 return false;
             }
         });
@@ -125,7 +126,6 @@ public class MainActivity extends AppCompatActivity {
                                     Map<String, Object> map = new HashMap<>();
                                     map.put("description", task.getDescription());
 
-                                    Calendar.getInstance().getTime();
                                     map.put("date", task.getDate());
 
                                     map.put("user", task.getName());
@@ -260,7 +260,7 @@ public class MainActivity extends AppCompatActivity {
                                 countTask++;
 
                                 // Display tasks in ListView
-                                adapter = new TaskListAdapter(this, R.layout.tasks, arrayList);
+                                adapter = new TaskListAdapter(this, R.layout.list_tasks, arrayList);
                                 listView.setAdapter(adapter);
                             }
 
