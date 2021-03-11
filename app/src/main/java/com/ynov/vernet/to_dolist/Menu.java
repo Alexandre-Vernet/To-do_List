@@ -153,7 +153,7 @@ public class Menu extends Activity {
         shareFab.setOnClickListener(v -> {
             Intent intent = new Intent(Intent.ACTION_SEND);
             intent.setType("text/plain");
-            intent.putExtra(Intent.EXTRA_TEXT, room);
+            intent.putExtra(Intent.EXTRA_TEXT, "Hey ! Join my To-Do List with the code " + room + " !");
             this.activity.startActivity(Intent.createChooser(intent, "Share with"));
 
             hideMenu();
