@@ -127,7 +127,6 @@ public class Menu extends Activity {
                         // Add username
                         map.put("user", name);
 
-                        // Add date
                         Date date = Calendar.getInstance().getTime();
                         map.put("date", date);
 
@@ -147,6 +146,9 @@ public class Menu extends Activity {
 
             hideMenu();
         });
+
+
+
 
 
         // Share room
