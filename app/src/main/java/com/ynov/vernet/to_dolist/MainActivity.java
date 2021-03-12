@@ -258,7 +258,6 @@ public class MainActivity extends AppCompatActivity {
                         error(querySnapshotTask.getException(), getString(R.string.error_while_deleting_task));
                     }
                 });
-
     }
 
     public void error(Throwable error, String msg) {

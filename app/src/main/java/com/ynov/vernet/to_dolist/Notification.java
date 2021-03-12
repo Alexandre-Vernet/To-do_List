@@ -26,8 +26,8 @@ public class Notification extends BroadcastReceiver {
         this.intent = intent;
 
         // Get person who added the task
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        String name = prefs.getString("name", null);
+        SharedPreferences sharedPreferencesName = PreferenceManager.getDefaultSharedPreferences(context);
+        String name = sharedPreferencesName.getString("name", null);
 
         // Prepare onclick notification redirection
         Intent repeating_intent = new Intent(context, MainActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -56,7 +56,12 @@ public class Notification extends BroadcastReceiver {
         notificationManager.createNotificationChannel(notificationChannel);
         builder.setChannelId(channelId);
 
+        // Get notifications pref
+        SharedPreferences sharedPreferencesNotification = PreferenceManager.getDefaultSharedPreferences(context);
+        boolean notification = sharedPreferencesNotification.getBoolean("notification", true);
+
         // Send notification
-        notificationManager.notify(100, builder.build());
+        if (notification)
+            notificationManager.notify(100, builder.build());
     }
 }
