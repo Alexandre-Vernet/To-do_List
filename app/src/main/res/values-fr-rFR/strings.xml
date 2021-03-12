@@ -29,6 +29,7 @@
     <string name="about">A propos</string>
     <string name="version">Version</string>
     <string name="developer">Développeur</string>
-    <string name="name">Editer la tâche</string>
-    <string name="room">Créer par</string>
+    <string name="name">Nom</string>
+    <string name="room">Salon</string>
+    <string name="created_by">Créé par %1$S \nLe %2$S à %3$S</string>
 </resources>

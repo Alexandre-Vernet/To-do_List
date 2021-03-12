@@ -147,10 +147,6 @@ public class Menu extends Activity {
             hideMenu();
         });
 
-
-
-
-
         // Share room
         shareFab.setOnClickListener(v -> {
             Intent intent = new Intent(Intent.ACTION_SEND);

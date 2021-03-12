@@ -13,7 +13,6 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.ProgressBar;
-import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -36,7 +35,6 @@ public class MainActivity extends AppCompatActivity {
 
     ProgressBar progressBar;
     TextView textViewNoCurrentTask, textViewCountTask, textViewRoom, textViewUsers;
-    SearchView searchView;
     ListView listView;
 
     FirebaseFirestore db;
@@ -80,9 +78,6 @@ public class MainActivity extends AppCompatActivity {
         // Display room code
         textViewRoom.setText(room);
 
-        this.refreshListTasks();
-
-
         // List people who added task
         textViewUsers.setOnClickListener(v -> {
             startActivity(new Intent(getApplicationContext(), UsersActivity.class));
@@ -114,7 +109,7 @@ public class MainActivity extends AppCompatActivity {
                                     // Add task to database
                                     db.collection(room)
                                             .add(map)
-                                            .addOnSuccessListener(documentReference -> refreshListTasks())
+                                            .addOnSuccessListener(documentReference -> {})
 
                                             // Error adding task
                                             .addOnFailureListener(e -> error(e, getString(R.string.error_while_adding_task)));
@@ -180,7 +175,6 @@ public class MainActivity extends AppCompatActivity {
                         db.collection(room)
                                 .document(taskId)
                                 .update(map)
-                                .addOnSuccessListener(documentReference -> refreshListTasks())
 
                                 // Error updating database
                                 .addOnFailureListener(e -> error(e, getString(R.string.error_while_adding_task)));
@@ -195,7 +189,7 @@ public class MainActivity extends AppCompatActivity {
         // Listen new tasks
         Query query = db.collection(room);
         query.addSnapshotListener((value, error) -> {
-//            refreshListTasks();
+            refreshListTasks();
         });
     }
 
@@ -253,7 +247,6 @@ public class MainActivity extends AppCompatActivity {
 
                             // Display count of users who added task
                             textViewUsers.setText(getString(R.string.count_users_who_added_task, countUser));
-
 
                             // Display tasks in ListView
                             adapter = new TaskListAdapter(this, R.layout.list_tasks, arrayList);
