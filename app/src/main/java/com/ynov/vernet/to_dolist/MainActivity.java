@@ -31,14 +31,14 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity {
 
     ProgressBar progressBar;
-    TextView textViewNoCurrentTask, textViewCountTask, textViewRoom;
+    TextView textViewNoCurrentTask, textViewCountTask, textViewRoom, textViewUsers;
     SearchView searchView;
     ListView listView;
+
     FirebaseFirestore db;
 
     private int countTask;
@@ -57,15 +57,10 @@ public class MainActivity extends AppCompatActivity {
         textViewNoCurrentTask = findViewById(R.id.textViewNoCurrentTask);
         textViewCountTask = findViewById(R.id.textViewCountTask);
         textViewRoom = findViewById(R.id.textViewRoom);
-        searchView = findViewById(R.id.searchView);
+        textViewUsers = findViewById(R.id.textViewUsers);
         listView = findViewById(R.id.listView);
 
         db = FirebaseFirestore.getInstance();
-
-
-//        startActivity(new Intent(getApplicationContext(), UsersActivity.class));
-//        finish();
-
 
         // Check Internet connexion
         boolean internet = new Internet(this, this).internet();
@@ -76,40 +71,28 @@ public class MainActivity extends AppCompatActivity {
                     .show();
         }
 
-        // Get room
-        String room = getRoom();
-
         // Menu
         new Menu(this, this);
 
-        // Display current task
-        this.refreshListTasks();
+        // Get room
+        String room = this.getRoom();
 
         // Display room code
         textViewRoom.setText(room);
 
-        // Search bar
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                MainActivity.this.adapter.getFilter().filter(query);
-                adapter.notifyDataSetChanged();
-                return false;
-            }
+        this.refreshListTasks();
 
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                MainActivity.this.adapter.getFilter().filter(newText);
-                adapter.notifyDataSetChanged();
-                return false;
-            }
+
+        // List people who added task
+        textViewUsers.setOnClickListener(v -> {
+            startActivity(new Intent(getApplicationContext(), UsersActivity.class));
+            finish();
         });
-
 
         // Click task
         listView.setOnItemClickListener((parent, view, position, id) -> {
 
-            // Get data
+            // Get task
             Task task = arrayList.get(position);
             String taskId = task.getId();
 
@@ -125,9 +108,7 @@ public class MainActivity extends AppCompatActivity {
                                     // Restore content
                                     Map<String, Object> map = new HashMap<>();
                                     map.put("description", task.getDescription());
-
                                     map.put("date", task.getDate());
-
                                     map.put("user", task.getName());
 
                                     // Add task to database
@@ -153,12 +134,11 @@ public class MainActivity extends AppCompatActivity {
             Vibrator vibe = (Vibrator) MainActivity.this.getSystemService(Context.VIBRATOR_SERVICE);
             vibe.vibrate(80);
 
-            // Get data
+            // Get task
             Task task = arrayList.get(position);
             String taskId = task.getId();
             String taskDescription = task.getDescription();
             String taskName = task.getName();
-            Log.d(TAG, "onCreate: " + taskName);
             Date taskDate = task.getDate();
 
             // Get date of creation
@@ -192,6 +172,7 @@ public class MainActivity extends AppCompatActivity {
                         // Get edited task
                         String editedTask = editText.getText().toString();
 
+                        // Add edited task to map
                         Map<String, Object> map = new HashMap<>();
                         map.put("description", editedTask);
 
@@ -211,9 +192,11 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
-        // Listen tasks
+        // Listen new tasks
         Query query = db.collection(room);
-        query.addSnapshotListener((value, error) -> refreshListTasks());
+        query.addSnapshotListener((value, error) -> {
+//            refreshListTasks();
+        });
     }
 
     private String getRoom() {
@@ -233,7 +216,7 @@ public class MainActivity extends AppCompatActivity {
                         countTask = 0;
 
                         // if no task
-                        if (Objects.requireNonNull(querySnapshotTask.getResult()).isEmpty()) {
+                        if (querySnapshotTask.getResult().isEmpty()) {
                             textViewCountTask.setVisibility(View.INVISIBLE);
                             textViewNoCurrentTask.setVisibility(View.VISIBLE);
                             listView.setVisibility(View.INVISIBLE);
@@ -244,24 +227,20 @@ public class MainActivity extends AppCompatActivity {
 
                             // Save data from database
                             for (QueryDocumentSnapshot document : querySnapshotTask.getResult()) {
-                                // Get data
+                                // Get tasks
                                 String id = document.getId();
                                 String description = document.get("description").toString();
                                 String user = document.get("user").toString();
                                 Date date = document.getTimestamp("date").toDate();
 
-                                // Save data
+                                // Create task
                                 Task task = new Task(id, description, user, date);
 
-                                // Add data to array
+                                // Add task to array
                                 arrayList.add(task);
 
                                 // Increment count tasks
                                 countTask++;
-
-                                // Display tasks in ListView
-                                adapter = new TaskListAdapter(this, R.layout.list_tasks, arrayList);
-                                listView.setAdapter(adapter);
                             }
 
                             // Display count of current tasks
@@ -269,6 +248,16 @@ public class MainActivity extends AppCompatActivity {
                                 textViewCountTask.setText(getString(R.string.current_task, countTask));
                             else
                                 textViewCountTask.setText(getString(R.string.current_tasks, countTask));
+
+                            int countUser = 0;
+
+                            // Display count of users who added task
+                            textViewUsers.setText(getString(R.string.count_users_who_added_task, countUser));
+
+
+                            // Display tasks in ListView
+                            adapter = new TaskListAdapter(this, R.layout.list_tasks, arrayList);
+                            listView.setAdapter(adapter);
                         }
 
                         // Error while getting tasks

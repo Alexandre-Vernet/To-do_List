@@ -19,8 +19,6 @@ public class UsersActivity extends AppCompatActivity {
     FirebaseFirestore db;
     ListView listViewUsers;
     ArrayList<String> arrayListUsers;
-    ArrayList<Integer> arrayListUserCountTask;
-    int userCountTask = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,9 +48,7 @@ public class UsersActivity extends AppCompatActivity {
 
                             // Display users in ListView
                             ArrayAdapter<String> arrayAdapterUsers;
-                            ArrayAdapter<Integer> arrayAdapterUserCountTask;
-                            arrayAdapterUsers = new ArrayAdapter<>(this, R.layout.users, R.id.textViewCountUser, arrayListUsers);
-                            arrayAdapterUserCountTask = new ArrayAdapter<>(this, R.layout.users, R.id.textViewCountUser, arrayListUserCountTask);
+                            arrayAdapterUsers = new ArrayAdapter<>(this, android.R.layout.select_dialog_item, arrayListUsers);
                             listViewUsers.setAdapter(arrayAdapterUsers);
                         });
 
