@@ -38,10 +38,10 @@ public class MainActivity extends AppCompatActivity {
     ListView listView;
 
     FirebaseFirestore db;
+
     int countTask = 0;
 
     ArrayList<Task> arrayList;
-    TaskListAdapter adapter;
 
     private static final String TAG = "MainActivity";
 
@@ -71,7 +71,7 @@ public class MainActivity extends AppCompatActivity {
         new Menu(this, this);
 
         // Get room
-        String room = this.getRoom();
+        String room = new SettingsActivity().getRoom(this, this);
 
         // Display room code
         textViewRoom.setText(room);
@@ -178,21 +178,17 @@ public class MainActivity extends AppCompatActivity {
             return true;
         });
 
-
         // Listen new tasks
         Query query = db.collection(room);
         query.addSnapshotListener((value, error) -> refreshListTasks());
     }
 
-    private String getRoom() {
-        return new SettingsActivity().getRoom(this, this);
-    }
-
     public void refreshListTasks() {
 
         arrayList = new ArrayList<>();
+        String room = new SettingsActivity().getRoom(this, this);
 
-        db.collection(getRoom())
+        db.collection(room)
                 .orderBy("date", Query.Direction.DESCENDING)
                 .get()
                 .addOnCompleteListener(querySnapshotTask -> {
@@ -235,7 +231,7 @@ public class MainActivity extends AppCompatActivity {
                                 textViewCountTask.setText(getString(R.string.current_tasks, countTask));
 
                             // Display all tasks in ListView
-                            adapter = new TaskListAdapter(this, R.layout.list_tasks, arrayList);
+                            TaskListAdapter adapter = new TaskListAdapter(this, R.layout.list_tasks, arrayList);
                             listView.setAdapter(adapter);
                         }
 
@@ -259,4 +255,5 @@ public class MainActivity extends AppCompatActivity {
         // Display fab
         new Handler().postDelayed(() -> findViewById(R.id.fab).setVisibility(View.VISIBLE), 2800);
     }
+
 }

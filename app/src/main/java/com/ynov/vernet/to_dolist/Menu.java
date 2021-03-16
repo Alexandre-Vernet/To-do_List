@@ -53,13 +53,6 @@ public class Menu extends Activity {
         shareFab = this.activity.findViewById(R.id.shareFab);
         settingsFab = this.activity.findViewById(R.id.settingsFab);
 
-        // Get room code
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        String room = prefs.getString("room", null);
-
-        // Get name
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
-        String name = sharedPreferences.getString("name", null);
 
         // Hide widget
         addTaskFab.setVisibility(View.GONE);
@@ -100,61 +93,95 @@ public class Menu extends Activity {
         // Add a task
         addTaskFab.setOnClickListener(v -> {
 
-            // Open edit text
+            this.hideMenu();
+
+            // Get room code
+            String room = this.getRoom();
+
+            // Get name
+            String name = this.getName();
+
+            // If user has no name
             EditText editText = new EditText(context);
-            editText.setHint(R.string.add_some_text_here);
+            if (name == null) {
+                editText.setHint(R.string.your_name);
 
-            // First letter in uppercase
-            editText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
+                // Ask him
+                AlertDialog alertDialog = new AlertDialog.Builder(context)
+                        .setIcon(R.drawable.person)
+                        .setTitle(R.string.welcome)
+                        .setMessage(R.string.what_s_your_name)
+                        .setView(editText)
+                        .setPositiveButton(R.string.ok, (dialogInterface, i) -> {
 
-            new AlertDialog.Builder(context)
-                    .setIcon(R.drawable.add)
-                    .setTitle("Add a task")
-                    .setView(editText)
-                    .setPositiveButton(R.string.add, (dialogInterface, i) -> {
+                            // Get the name from EditText
+                            String editName = editText.getText().toString();
 
-                        // Get entered task
-                        String task = editText.getText().toString();
+                            // Save user's name
+                            SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(context).edit();
+                            editor.putString("name", editName);
+                            editor.apply();
+                        })
+                        .show();
+                alertDialog.setCanceledOnTouchOutside(false);
+                alertDialog.setCancelable(false);
+            } else {
 
-                        // Edit text can't be empty
-                        if (task.isEmpty())
-                            return;
+                // Open edit text
+                editText.setHint(R.string.add_some_text_here);
 
-                        // Add task
-                        Map<String, Object> map = new HashMap<>();
-                        map.put("description", task);
+                // First letter in uppercase
+                editText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
 
-                        // Add username
-                        map.put("user", name);
+                new AlertDialog.Builder(context)
+                        .setIcon(R.drawable.add)
+                        .setTitle(R.string.add_a_task)
+                        .setView(editText)
+                        .setPositiveButton(R.string.add, (dialogInterface, i) -> {
 
-                        Date date = Calendar.getInstance().getTime();
-                        map.put("date", date);
+                            // Get entered task
+                            String task = editText.getText().toString();
 
-                        // Add all to database
-                        db.collection(room)
-                                .add(map)
-                                .addOnFailureListener(e -> error(e, getString(R.string.error_while_adding_task)));
+                            // Edit text can't be empty
+                            if (task.isEmpty())
+                                return;
 
-                        // Send notification to other user's in same room
-                        AlarmManager manager = (AlarmManager) this.activity.getSystemService(Context.ALARM_SERVICE);
-                        Intent alarmIntent = new Intent(context, Notification.class);
-                        PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, alarmIntent, 0);
-                        manager.setInexactRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), 0, pendingIntent);
-                    })
-                    .setNegativeButton(R.string.cancel, null)
-                    .show();
+                            // Add task
+                            Map<String, Object> map = new HashMap<>();
+                            map.put("description", task);
 
-            hideMenu();
+                            // Add user's name
+                            map.put("user", name);
+
+                            Date date = Calendar.getInstance().getTime();
+                            map.put("date", date);
+
+                            // Add all to database
+                            db.collection(room)
+                                    .add(map)
+                                    .addOnFailureListener(e -> error(e, getString(R.string.error_while_adding_task)));
+
+                            // Send notification to other user's in same room
+                            AlarmManager manager = (AlarmManager) this.activity.getSystemService(Context.ALARM_SERVICE);
+                            Intent alarmIntent = new Intent(context, Notification.class);
+                            PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, alarmIntent, 0);
+                            manager.setInexactRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), 0, pendingIntent);
+                        })
+                        .setNegativeButton(R.string.cancel, null)
+                        .show();
+
+                this.hideMenu();
+            }
         });
 
         // Share room
         shareFab.setOnClickListener(v -> {
             Intent intent = new Intent(Intent.ACTION_SEND);
             intent.setType("text/plain");
-            intent.putExtra(Intent.EXTRA_TEXT, "Hey ! Join my To-Do List with the code " + room + " !");
+            intent.putExtra(Intent.EXTRA_TEXT, "Hey ! Join my To-Do List with the code " + this.getRoom() + " !");
             this.activity.startActivity(Intent.createChooser(intent, "Share with"));
 
-            hideMenu();
+            this.hideMenu();
         });
 
 
@@ -190,5 +217,16 @@ public class Menu extends Activity {
 
         // Display fab
         new Handler().postDelayed(() -> findViewById(R.id.fab).setVisibility(View.VISIBLE), 2800);
+    }
+
+
+    String getRoom() {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        return sharedPreferences.getString("room", null);
+    }
+
+    String getName() {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        return sharedPreferences.getString("name", null);
     }
 }

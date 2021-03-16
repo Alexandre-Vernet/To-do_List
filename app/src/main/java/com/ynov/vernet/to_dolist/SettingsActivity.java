@@ -27,46 +27,6 @@ public class SettingsActivity extends AppCompatActivity {
     Activity activity;
     private static final String TAG = "SettingsActivity";
 
-    String getName(Context context, Activity activity) {
-        this.context = context;
-        this.activity = activity;
-
-        // Check if user entered his name
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
-        String name = sharedPreferences.getString("name", "New user");
-
-        // Save user's name
-        SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(context).edit();
-        editor.putString("name", name);
-        editor.apply();
-
-        // if user has no name
-        if (name.equals("null")) {
-            EditText editText = new EditText(context);
-            editText.setHint(R.string.your_name);
-
-            // Ask him
-            AlertDialog alertDialog = new AlertDialog.Builder(context)
-                    .setIcon(R.drawable.person)
-                    .setTitle(R.string.welcome)
-                    .setMessage(R.string.what_s_your_name)
-                    .setView(editText)
-                    .setPositiveButton(R.string.ok, (dialogInterface, i) -> {
-
-                        // Get the name from EditText
-                        String editName = editText.getText().toString();
-
-                        // Update user's name
-                        editor.putString("name", editName);
-                        editor.apply();
-                    })
-                    .show();
-            alertDialog.setCanceledOnTouchOutside(false);
-            alertDialog.setCancelable(false);
-        }
-
-        return name;
-    }
 
     String getRoom(Context context, Activity activity) {
         this.context = context;
@@ -123,7 +83,6 @@ public class SettingsActivity extends AppCompatActivity {
             // Copy room
             Preference preferenceRoom = findPreference("room");
             preferenceRoom.setOnPreferenceClickListener(preference -> {
-
                 // Get room
                 SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getContext());
                 String room = prefs.getString("room", null);
@@ -141,19 +100,20 @@ public class SettingsActivity extends AppCompatActivity {
                 return true;
             });
 
-            // Redirect to Instagram
+            // View person in this room
+            Preference preferenceUsers = findPreference("person_in_room");
+            preferenceUsers.setOnPreferenceClickListener(preference -> {
+                startActivity(new Intent(getContext(), UsersActivity.class));
+                return true;
+            });
+
+
+            // About developer
             Preference preferenceDeveloper = findPreference("developer");
             preferenceDeveloper.setOnPreferenceClickListener(preference -> {
                 Intent intent = new Intent(Intent.ACTION_VIEW);
                 intent.setData(Uri.parse("https://www.instagram.com/alexandre_vernet/?hl=fr"));
                 startActivity(intent);
-                return true;
-            });
-
-            // View person in this room
-            Preference preferenceUsers = findPreference("person_in_room");
-            preferenceUsers.setOnPreferenceClickListener(preference -> {
-                startActivity(new Intent(getContext(), UsersActivity.class));
                 return true;
             });
         }
