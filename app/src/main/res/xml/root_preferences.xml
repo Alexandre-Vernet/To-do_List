@@ -12,7 +12,9 @@
             app:title="@string/room"
             app:useSimpleSummaryProvider="true" />
     </PreferenceCategory>
-
+    <Preference
+        android:key="person_in_room"
+        android:title="@string/view_people_who_added_task" />
 
     <PreferenceCategory app:title="@string/notification">
         <SwitchPreference

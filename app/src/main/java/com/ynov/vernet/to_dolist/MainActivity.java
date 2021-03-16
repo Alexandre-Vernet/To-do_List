@@ -34,12 +34,11 @@ import java.util.Map;
 public class MainActivity extends AppCompatActivity {
 
     ProgressBar progressBar;
-    TextView textViewNoCurrentTask, textViewCountTask, textViewRoom, textViewUsers;
+    TextView textViewNoCurrentTask, textViewCountTask, textViewRoom;
     ListView listView;
 
     FirebaseFirestore db;
-
-    private int countTask;
+    int countTask = 0;
 
     ArrayList<Task> arrayList;
     TaskListAdapter adapter;
@@ -55,7 +54,6 @@ public class MainActivity extends AppCompatActivity {
         textViewNoCurrentTask = findViewById(R.id.textViewNoCurrentTask);
         textViewCountTask = findViewById(R.id.textViewCountTask);
         textViewRoom = findViewById(R.id.textViewRoom);
-        textViewUsers = findViewById(R.id.textViewUsers);
         listView = findViewById(R.id.listView);
 
         db = FirebaseFirestore.getInstance();
@@ -77,12 +75,6 @@ public class MainActivity extends AppCompatActivity {
 
         // Display room code
         textViewRoom.setText(room);
-
-        // List people who added task
-        textViewUsers.setOnClickListener(v -> {
-            startActivity(new Intent(getApplicationContext(), UsersActivity.class));
-            finish();
-        });
 
         // Click task
         listView.setOnItemClickListener((parent, view, position, id) -> {
@@ -109,7 +101,8 @@ public class MainActivity extends AppCompatActivity {
                                     // Add task to database
                                     db.collection(room)
                                             .add(map)
-                                            .addOnSuccessListener(documentReference -> {})
+                                            .addOnSuccessListener(documentReference -> {
+                                            })
 
                                             // Error adding task
                                             .addOnFailureListener(e -> error(e, getString(R.string.error_while_adding_task)));
@@ -188,9 +181,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Listen new tasks
         Query query = db.collection(room);
-        query.addSnapshotListener((value, error) -> {
-            refreshListTasks();
-        });
+        query.addSnapshotListener((value, error) -> refreshListTasks());
     }
 
     private String getRoom() {
@@ -227,10 +218,10 @@ public class MainActivity extends AppCompatActivity {
                                 String user = document.get("user").toString();
                                 Date date = document.getTimestamp("date").toDate();
 
-                                // Create task
+                                // Create tasks
                                 Task task = new Task(id, description, user, date);
 
-                                // Add task to array
+                                // Add tasks to array
                                 arrayList.add(task);
 
                                 // Increment count tasks
@@ -243,12 +234,7 @@ public class MainActivity extends AppCompatActivity {
                             else
                                 textViewCountTask.setText(getString(R.string.current_tasks, countTask));
 
-                            int countUser = 0;
-
-                            // Display count of users who added task
-                            textViewUsers.setText(getString(R.string.count_users_who_added_task, countUser));
-
-                            // Display tasks in ListView
+                            // Display all tasks in ListView
                             adapter = new TaskListAdapter(this, R.layout.list_tasks, arrayList);
                             listView.setAdapter(adapter);
                         }

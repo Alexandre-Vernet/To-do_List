@@ -144,10 +144,16 @@ public class SettingsActivity extends AppCompatActivity {
             // Redirect to Instagram
             Preference preferenceDeveloper = findPreference("developer");
             preferenceDeveloper.setOnPreferenceClickListener(preference -> {
-
                 Intent intent = new Intent(Intent.ACTION_VIEW);
                 intent.setData(Uri.parse("https://www.instagram.com/alexandre_vernet/?hl=fr"));
                 startActivity(intent);
+                return true;
+            });
+
+            // View person in this room
+            Preference preferenceUsers = findPreference("person_in_room");
+            preferenceUsers.setOnPreferenceClickListener(preference -> {
+                startActivity(new Intent(getContext(), UsersActivity.class));
                 return true;
             });
         }

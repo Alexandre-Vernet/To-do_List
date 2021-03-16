@@ -58,15 +58,6 @@
             android:textAlignment="center"
             android:textSize="20sp" />
 
-        <!--Count of user who added task-->
-        <TextView
-            android:id="@+id/textViewUsers"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp"
-            android:textAlignment="center"
-            android:textSize="20sp" />
-
         <!--Display task-->
         <ListView
             android:id="@+id/listView"
