@@ -35,4 +35,6 @@
     <string name="count_users_who_added_task">%1$d people added a task</string>
     <string name="users_in_this_room">Users in this room</string>
     <string name="view_people_who_added_task">View person who added task</string>
+    <string name="receive_notification_when_people_add_task">Receive notification when people add task</string>
+    <string name="generate_new_room_code">Generate new random room code</string>
 </resources>

@@ -62,7 +62,7 @@ public class UsersActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        startActivity(new Intent(getApplicationContext(), MainActivity.class));
+        startActivity(new Intent(getApplicationContext(), SettingsActivity.class));
         finish();
     }
 }

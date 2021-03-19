@@ -6,21 +6,29 @@
             app:key="name"
             app:title="@string/name"
             app:useSimpleSummaryProvider="true" />
+    </PreferenceCategory>
 
+    <PreferenceCategory app:title="@string/room">
         <EditTextPreference
             app:key="room"
             app:title="@string/room"
             app:useSimpleSummaryProvider="true" />
+
+        <Preference
+            android:key="generate_new_room_code"
+            android:title="@string/generate_new_room_code" />
+
+        <Preference
+            android:key="person_in_room"
+            android:title="@string/view_people_who_added_task" />
     </PreferenceCategory>
-    <Preference
-        android:key="person_in_room"
-        android:title="@string/view_people_who_added_task" />
+
 
     <PreferenceCategory app:title="@string/notification">
         <SwitchPreference
             android:defaultValue="true"
             android:key="notification"
-            android:title="Receive notification when people add task" />
+            android:title="@string/receive_notification_when_people_add_task" />
     </PreferenceCategory>
 
 

@@ -9,11 +9,8 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Vibrator;
-import android.util.Log;
-import android.widget.EditText;
 
 import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
@@ -27,6 +24,22 @@ public class SettingsActivity extends AppCompatActivity {
     Activity activity;
     private static final String TAG = "SettingsActivity";
 
+    String generateRoom() {
+        // Generate code room
+        String characters = "1234567890AZERTYUIOPQSDFGHJKLMWXCVBN";
+        final Random random = new Random();
+        final StringBuilder sb = new StringBuilder(6);
+        for (int i = 0; i < 6; ++i)
+            sb.append(characters.charAt(random.nextInt(characters.length())));
+        String room = sb.toString();
+
+        // Save it in memory
+        SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(context).edit();
+        editor.putString("room", room);
+        editor.apply();
+
+        return room;
+    }
 
     String getRoom(Context context, Activity activity) {
         this.context = context;
@@ -35,23 +48,10 @@ public class SettingsActivity extends AppCompatActivity {
         // Check if user had room
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         String room = prefs.getString("room", null);
-        Log.d(TAG, "Room: " + room);
 
         // if no room
-        if (room == null) {
-            // Generate code room
-            String characters = "1234567890AZERTYUIOPQSDFGHJKLMWXCVBN";
-            final Random random = new Random();
-            final StringBuilder sb = new StringBuilder(6);
-            for (int i = 0; i < 6; ++i)
-                sb.append(characters.charAt(random.nextInt(characters.length())));
-            room = sb.toString();
-
-            // Save it in memory
-            SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(context).edit();
-            editor.putString("room", room);
-            editor.apply();
-        }
+        if (room == null)
+            room = this.generateRoom();
 
         return room;
     }
@@ -100,6 +100,17 @@ public class SettingsActivity extends AppCompatActivity {
                 return true;
             });
 
+
+            // Generate new random room code
+            Preference preferenceNewRoomCode = findPreference("generate_new_room_code");
+            preferenceNewRoomCode.setOnPreferenceClickListener(preference -> {
+                this.generateRoom();
+                startActivity(new Intent(getContext(), MainActivity.class));
+                return true;
+            });
+
+
+
             // View person in this room
             Preference preferenceUsers = findPreference("person_in_room");
             preferenceUsers.setOnPreferenceClickListener(preference -> {
@@ -116,6 +127,23 @@ public class SettingsActivity extends AppCompatActivity {
                 startActivity(intent);
                 return true;
             });
+        }
+
+        String generateRoom() {
+            // Generate code room
+            String characters = "1234567890AZERTYUIOPQSDFGHJKLMWXCVBN";
+            final Random random = new Random();
+            final StringBuilder sb = new StringBuilder(6);
+            for (int i = 0; i < 6; ++i)
+                sb.append(characters.charAt(random.nextInt(characters.length())));
+            String room = sb.toString();
+
+            // Save it in memory
+            SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(getContext()).edit();
+            editor.putString("room", room);
+            editor.apply();
+
+            return room;
         }
     }
 
