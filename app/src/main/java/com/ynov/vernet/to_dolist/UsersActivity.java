@@ -2,9 +2,10 @@ package com.ynov.vernet.to_dolist;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -16,9 +17,13 @@ import java.util.ArrayList;
 
 public class UsersActivity extends AppCompatActivity {
 
-    FirebaseFirestore db;
+    TextView textViewNoUser;
     ListView listViewUsers;
     ArrayList<String> arrayListUsers;
+    String room;
+
+    FirebaseFirestore db;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,36 +32,43 @@ public class UsersActivity extends AppCompatActivity {
 
         db = FirebaseFirestore.getInstance();
 
+        textViewNoUser = findViewById(R.id.textViewNoUser);
         listViewUsers = findViewById(R.id.listViewUsers);
 
         // Get current room
-        String room = new SettingsActivity().getRoom(this, this);
-
-        Handler handler = new Handler();
-        Runnable runnable = () ->
-                db.collection(room)
-                        .orderBy("date", Query.Direction.DESCENDING)
-                        .get()
-                        .addOnCompleteListener(task -> {
-                            // Get all users in ArrayList
-                            arrayListUsers = new ArrayList<>();
-
-                            for (QueryDocumentSnapshot document : task.getResult()) {
-                                if (!arrayListUsers.contains(document.get("user").toString()))
-                                    arrayListUsers.add(document.get("user").toString());
-                            }
-
-                            // Display users in ListView
-                            ArrayAdapter<String> arrayAdapterUsers;
-                            arrayAdapterUsers = new ArrayAdapter<>(this, android.R.layout.select_dialog_item, arrayListUsers);
-                            listViewUsers.setAdapter(arrayAdapterUsers);
-                        });
-
-        handler.postDelayed(runnable, 0);
+        room = new SettingsActivity().getRoom(this, this);
 
         // Listen database
         Query query = db.collection(room);
-        query.addSnapshotListener((value, error) -> handler.postDelayed(runnable, 0));
+        query.addSnapshotListener((value, error) -> this.getUsers());
+    }
+
+    public void getUsers() {
+        db.collection(room)
+                .orderBy("date", Query.Direction.DESCENDING)
+                .get()
+                .addOnCompleteListener(task -> {
+                    // Get all users in ArrayList
+                    arrayListUsers = new ArrayList<>();
+
+                    for (QueryDocumentSnapshot document : task.getResult()) {
+                        if (!arrayListUsers.contains(document.get("user").toString()))
+                            arrayListUsers.add(document.get("user").toString());
+                    }
+
+                    // Check count of users
+                    if (arrayListUsers.size() <= 0)
+                        textViewNoUser.setVisibility(View.VISIBLE);
+
+                    else {
+                        textViewNoUser.setVisibility(View.INVISIBLE);
+
+                        // Display users in ListView
+                        ArrayAdapter<String> arrayAdapterUsers;
+                        arrayAdapterUsers = new ArrayAdapter<>(this, android.R.layout.select_dialog_item, arrayListUsers);
+                        listViewUsers.setAdapter(arrayAdapterUsers);
+                    }
+                });
     }
 
     @Override
