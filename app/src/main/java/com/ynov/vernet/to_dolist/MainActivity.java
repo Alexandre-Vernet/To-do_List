@@ -106,7 +106,6 @@ public class MainActivity extends AppCompatActivity {
                 listView.setAdapter(taskListAdapter);
 
                 return false;
-
             }
         });
 
