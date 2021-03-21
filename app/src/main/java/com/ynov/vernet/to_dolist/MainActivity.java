@@ -65,9 +65,6 @@ public class MainActivity extends AppCompatActivity {
 
         db = FirebaseFirestore.getInstance();
 
-        arrayList = new ArrayList<>();
-
-
         // Check Internet connexion
         boolean internet = new Internet(this, this).internet();
         if (!internet) {
@@ -173,14 +170,9 @@ public class MainActivity extends AppCompatActivity {
                                     // Add task to database
                                     db.collection(room)
                                             .add(map)
-                                            .addOnSuccessListener(documentReference -> {
-                                            })
-
-                                            // Error adding task
                                             .addOnFailureListener(e -> error(e, getString(R.string.error_while_adding_task)));
                                 })
                                 .show();
-
                     })
 
                     // Error deleting task
@@ -241,8 +233,6 @@ public class MainActivity extends AppCompatActivity {
                         db.collection(room)
                                 .document(taskId)
                                 .update(map)
-
-                                // Error updating database
                                 .addOnFailureListener(e -> error(e, getString(R.string.error_while_adding_task)));
                     })
                     .setNegativeButton(R.string.cancel, null)
@@ -305,7 +295,7 @@ public class MainActivity extends AppCompatActivity {
 
                         // Error while getting tasks
                     } else {
-                        error(querySnapshotTask.getException(), getString(R.string.error_while_deleting_task));
+                        error(querySnapshotTask.getException(), getString(R.string.error_while_getting_tasks));
                     }
                 });
     }
