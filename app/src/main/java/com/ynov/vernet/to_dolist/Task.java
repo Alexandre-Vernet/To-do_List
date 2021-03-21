@@ -29,14 +29,6 @@ public class Task {
         this.description = description;
     }
 
-    public String getName() {
-        return creator;
-    }
-
-    public void setName(String creator) {
-        this.creator = creator;
-    }
-
     public Date getDate() {
         return date;
     }

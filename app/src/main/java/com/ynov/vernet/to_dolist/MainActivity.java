@@ -98,11 +98,9 @@ public class MainActivity extends AppCompatActivity {
 
                 ArrayList<Task> results = new ArrayList<>();
 
-                for (Task task: arrayList) {
-                    if (task.getDescription().toLowerCase().contains(newText.toLowerCase())) {
+                for (Task task: arrayList)
+                    if (task.getDescription().toLowerCase().contains(newText.toLowerCase()) || task.getCreator().toLowerCase().contains(newText.toLowerCase()))
                         results.add(task);
-                    }
-                }
 
                 TaskListAdapter taskListAdapter = new TaskListAdapter(getApplicationContext(), 0, results);
                 listView.setAdapter(taskListAdapter);
@@ -171,7 +169,7 @@ public class MainActivity extends AppCompatActivity {
                                     Map<String, Object> map = new HashMap<>();
                                     map.put("description", task.getDescription());
                                     map.put("date", task.getDate());
-                                    map.put("creator", task.getName());
+                                    map.put("creator", task.getCreator());
 
                                     // Add task to database
                                     db.collection(room)
@@ -202,7 +200,7 @@ public class MainActivity extends AppCompatActivity {
             Task task = arrayList.get(position);
             String taskId = task.getId();
             String taskDescription = task.getDescription();
-            String taskName = task.getName();
+            String taskName = task.getCreator();
             Date taskDate = task.getDate();
 
             // Get date of creation

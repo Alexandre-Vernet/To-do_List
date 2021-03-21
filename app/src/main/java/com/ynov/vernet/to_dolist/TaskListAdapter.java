@@ -35,7 +35,7 @@ public class TaskListAdapter extends ArrayAdapter<Task> {
         // Get info task
         String id = getItem(position).getId();
         String description = getItem(position).getDescription();
-        String creator = getItem(position).getName();
+        String creator = getItem(position).getCreator();
         Date date = getItem(position).getDate();
 
         // Create task
