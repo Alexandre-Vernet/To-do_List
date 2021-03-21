@@ -52,8 +52,8 @@ public class UsersActivity extends AppCompatActivity {
                     arrayListUsers = new ArrayList<>();
 
                     for (QueryDocumentSnapshot document : task.getResult()) {
-                        if (!arrayListUsers.contains(document.get("user").toString()))
-                            arrayListUsers.add(document.get("user").toString());
+                        if (!arrayListUsers.contains(document.get("creator").toString()))
+                            arrayListUsers.add(document.get("creator").toString());
                     }
 
                     // Check count of users

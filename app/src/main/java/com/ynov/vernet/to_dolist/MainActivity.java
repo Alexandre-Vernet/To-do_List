@@ -68,6 +68,9 @@ public class MainActivity extends AppCompatActivity {
 
         db = FirebaseFirestore.getInstance();
 
+        arrayList = new ArrayList<>();
+
+
         // Check Internet connexion
         boolean internet = new Internet(this, this).internet();
         if (!internet) {
