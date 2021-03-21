@@ -121,6 +121,10 @@ public class MainActivity extends AppCompatActivity {
         // Click task
         listView.setOnItemClickListener((parent, view, position, id) -> {
 
+            // Hide menu
+            findViewById(R.id.fab).setVisibility(View.INVISIBLE);
+            new Handler().postDelayed(() -> findViewById(R.id.fab).setVisibility(View.VISIBLE), 3100);
+
             // Get task
             Task task = arrayList.get(position);
             String taskId = task.getId();
@@ -150,6 +154,7 @@ public class MainActivity extends AppCompatActivity {
                                             .addOnFailureListener(e -> error(e, getString(R.string.error_while_adding_task)));
                                 })
                                 .show();
+
                     })
 
                     // Error deleting task
