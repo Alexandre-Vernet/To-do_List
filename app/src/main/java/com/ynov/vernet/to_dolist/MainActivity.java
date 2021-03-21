@@ -47,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
 
     FirebaseFirestore db;
 
-    ArrayList<Task> arrayList;
+    public static ArrayList<Task> arrayList;
     int countTask = 0;
 
     // Debug
@@ -98,13 +98,14 @@ public class MainActivity extends AppCompatActivity {
 
                 ArrayList<Task> results = new ArrayList<>();
 
-                for (Task x: arrayList) {
-                    if (x.getDescription().contains(newText)) {
-                        results.add(x);
+                for (Task task: arrayList) {
+                    if (task.getDescription().toLowerCase().contains(newText.toLowerCase())) {
+                        results.add(task);
                     }
                 }
 
-                ((TaskListAdapter)listView.getAdapter()).update(results);
+                TaskListAdapter taskListAdapter = new TaskListAdapter(getApplicationContext(), 0, results);
+                listView.setAdapter(taskListAdapter);
 
                 return false;
 

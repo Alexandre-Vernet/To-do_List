@@ -41,8 +41,8 @@ public class TaskListAdapter extends ArrayAdapter<Task> {
         // Create task
         new Task(id, description, creator, date);
 
-        LayoutInflater inflater = LayoutInflater.from(context);
-        convertView = inflater.inflate(resource, parent, false);
+        if (convertView == null)
+            convertView = LayoutInflater.from(getContext()).inflate(R.layout.list_tasks, parent, false);
 
         // Write data in layout
         TextView textViewTask = convertView.findViewById(R.id.textViewTask);
@@ -51,11 +51,5 @@ public class TaskListAdapter extends ArrayAdapter<Task> {
         textViewAddBy.setText(creator);
 
         return convertView;
-    }
-
-    public void update(ArrayList<Task> results) {
-        items = new ArrayList<>();
-        items.addAll(results);
-        notifyDataSetChanged();
     }
 }
