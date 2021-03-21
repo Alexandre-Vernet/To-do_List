@@ -45,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
 
     FirebaseFirestore db;
 
-    public static ArrayList<Task> arrayList;
+    ArrayList<Task> arrayList;
     int countTask = 0;
 
     // Debug
