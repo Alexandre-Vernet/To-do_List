@@ -14,7 +14,6 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.ProgressBar;
 import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -37,7 +36,6 @@ import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
 
-    ProgressBar progressBar;
     TextView textViewNoCurrentTask, textViewCountTask, textViewRoom;
     SearchView searchView;
     ImageView imageViewSort;
@@ -58,7 +56,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        progressBar = findViewById(R.id.progressBar);
         textViewNoCurrentTask = findViewById(R.id.textViewNoCurrentTask);
         textViewCountTask = findViewById(R.id.textViewCountTask);
         textViewRoom = findViewById(R.id.textViewRoom);
@@ -101,7 +98,7 @@ public class MainActivity extends AppCompatActivity {
 
                 ArrayList<Task> results = new ArrayList<>();
 
-                for (Task task: arrayList)
+                for (Task task : arrayList)
                     if (task.getDescription().toLowerCase().contains(newText.toLowerCase()) || task.getCreator().toLowerCase().contains(newText.toLowerCase()))
                         results.add(task);
 
@@ -266,7 +263,6 @@ public class MainActivity extends AppCompatActivity {
                 .get()
                 .addOnCompleteListener(querySnapshotTask -> {
                     if (querySnapshotTask.isSuccessful()) {
-                        progressBar.setVisibility(View.INVISIBLE);
                         countTask = 0;
 
                         // if no task
