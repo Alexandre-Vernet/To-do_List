@@ -11,6 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <!--Progress bar-->
         <ProgressBar
             android:id="@+id/progressBar"
             android:layout_width="75dp"
@@ -57,13 +58,36 @@
             android:textAlignment="center"
             android:textSize="20sp" />
 
-        <!--Order by-->
-        <ImageView
-            android:id="@+id/imageViewSort"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:src="@drawable/sort"
-            android:contentDescription="sort" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <!--Search bar-->
+            <SearchView
+                android:id="@+id/searchView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:queryHint="Search ..." />
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <!--Sort by-->
+                <ImageView
+                    android:id="@+id/imageViewSort"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
+                    android:layout_marginEnd="16dp"
+                    android:contentDescription="@string/sort"
+                    android:src="@drawable/sort"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </LinearLayout>
 
         <!--List tasks-->
         <ListView
@@ -73,11 +97,11 @@
     </LinearLayout>
 
 
-    <!--Floating Action Button-->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <!--Floating Action Button-->
         <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
             android:id="@+id/fab"
             android:layout_width="wrap_content"

@@ -19,6 +19,9 @@ public class TaskListAdapter extends ArrayAdapter<Task> {
     Context context;
     int resource;
 
+    ArrayList<Task> items;
+
+
     public TaskListAdapter(@NonNull Context context, int resource, @NonNull ArrayList<Task> objects) {
         super(context, resource, objects);
 
@@ -48,5 +51,11 @@ public class TaskListAdapter extends ArrayAdapter<Task> {
         textViewAddBy.setText(creator);
 
         return convertView;
+    }
+
+    public void update(ArrayList<Task> results) {
+        items = new ArrayList<>();
+        items.addAll(results);
+        notifyDataSetChanged();
     }
 }

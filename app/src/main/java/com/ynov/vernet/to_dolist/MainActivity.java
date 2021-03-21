@@ -15,6 +15,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -38,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
 
     ProgressBar progressBar;
     TextView textViewNoCurrentTask, textViewCountTask, textViewRoom;
+    SearchView searchView;
     ImageView imageViewSort;
     ListView listView;
 
@@ -60,6 +62,7 @@ public class MainActivity extends AppCompatActivity {
         textViewNoCurrentTask = findViewById(R.id.textViewNoCurrentTask);
         textViewCountTask = findViewById(R.id.textViewCountTask);
         textViewRoom = findViewById(R.id.textViewRoom);
+        searchView = findViewById(R.id.searchView);
         imageViewSort = findViewById(R.id.imageViewSort);
         listView = findViewById(R.id.listView);
 
@@ -83,6 +86,31 @@ public class MainActivity extends AppCompatActivity {
         // Display room code
         textViewRoom.setText(room);
 
+        // Search bar
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+
+                ArrayList<Task> results = new ArrayList<>();
+
+                for (Task x: arrayList) {
+                    if (x.getDescription().contains(newText)) {
+                        results.add(x);
+                    }
+                }
+
+                ((TaskListAdapter)listView.getAdapter()).update(results);
+
+                return false;
+
+            }
+        });
+
         // Get pref item checked
         SharedPreferences sharedPreferencesSort = PreferenceManager.getDefaultSharedPreferences(this);
         checkedItem = sharedPreferencesSort.getInt("checkedItem", 0);
@@ -94,7 +122,7 @@ public class MainActivity extends AppCompatActivity {
         Query query = db.collection(room);
         query.addSnapshotListener((value, error) -> refreshListTasks(sort[checkedItem]));
 
-        // Change sort
+        // Sort by
         imageViewSort.setOnClickListener(v -> {
             AlertDialog.Builder alertDialogSort = new AlertDialog.Builder(this);
             alertDialogSort.setIcon(R.drawable.sort);
@@ -298,5 +326,4 @@ public class MainActivity extends AppCompatActivity {
         // Display fab
         new Handler().postDelayed(() -> findViewById(R.id.fab).setVisibility(View.VISIBLE), 2800);
     }
-
 }
