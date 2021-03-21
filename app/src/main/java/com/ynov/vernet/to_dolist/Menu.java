@@ -101,7 +101,7 @@ public class Menu extends Activity {
             // Get name
             String name = this.getName();
 
-            // If user has no name
+            // If creator has no name
             EditText editText = new EditText(context);
             if (name == null) {
                 editText.setHint(R.string.your_name);
@@ -117,7 +117,7 @@ public class Menu extends Activity {
                             // Get the name from EditText
                             String editName = editText.getText().toString();
 
-                            // Save user's name
+                            // Save creator's name
                             SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(context).edit();
                             editor.putString("name", editName);
                             editor.apply();
@@ -150,8 +150,8 @@ public class Menu extends Activity {
                             Map<String, Object> map = new HashMap<>();
                             map.put("description", task);
 
-                            // Add user's name
-                            map.put("user", name);
+                            // Add creator's name
+                            map.put("creator", name);
 
                             Date date = Calendar.getInstance().getTime();
                             map.put("date", date);
@@ -161,7 +161,7 @@ public class Menu extends Activity {
                                     .add(map)
                                     .addOnFailureListener(e -> error(e, getString(R.string.error_while_adding_task)));
 
-                            // Send notification to other user's in same room
+                            // Send notification to other creator's in same room
                             AlarmManager manager = (AlarmManager) this.activity.getSystemService(Context.ALARM_SERVICE);
                             Intent alarmIntent = new Intent(context, Notification.class);
                             PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, alarmIntent, 0);

@@ -32,11 +32,11 @@ public class TaskListAdapter extends ArrayAdapter<Task> {
         // Get info task
         String id = getItem(position).getId();
         String description = getItem(position).getDescription();
-        String name = getItem(position).getName();
+        String creator = getItem(position).getName();
         Date date = getItem(position).getDate();
 
         // Create task
-        new Task(id, description, name, date);
+        new Task(id, description, creator, date);
 
         LayoutInflater inflater = LayoutInflater.from(context);
         convertView = inflater.inflate(resource, parent, false);
@@ -45,7 +45,7 @@ public class TaskListAdapter extends ArrayAdapter<Task> {
         TextView textViewTask = convertView.findViewById(R.id.textViewTask);
         TextView textViewAddBy = convertView.findViewById(R.id.textViewAddBy);
         textViewTask.setText(description);
-        textViewAddBy.setText(name);
+        textViewAddBy.setText(creator);
 
         return convertView;
     }

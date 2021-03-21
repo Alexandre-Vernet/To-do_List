@@ -4,6 +4,7 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Vibrator;
@@ -11,6 +12,7 @@ import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -18,6 +20,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.preference.PreferenceManager;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -35,14 +38,17 @@ public class MainActivity extends AppCompatActivity {
 
     ProgressBar progressBar;
     TextView textViewNoCurrentTask, textViewCountTask, textViewRoom;
+    ImageView imageViewSort;
     ListView listView;
+
+    int checkedItem;
 
     FirebaseFirestore db;
 
+    ArrayList<Task> arrayList;
     int countTask = 0;
 
-    ArrayList<Task> arrayList;
-
+    // Debug
     private static final String TAG = "MainActivity";
 
     @Override
@@ -54,6 +60,7 @@ public class MainActivity extends AppCompatActivity {
         textViewNoCurrentTask = findViewById(R.id.textViewNoCurrentTask);
         textViewCountTask = findViewById(R.id.textViewCountTask);
         textViewRoom = findViewById(R.id.textViewRoom);
+        imageViewSort = findViewById(R.id.imageViewSort);
         listView = findViewById(R.id.listView);
 
         db = FirebaseFirestore.getInstance();
@@ -76,6 +83,41 @@ public class MainActivity extends AppCompatActivity {
         // Display room code
         textViewRoom.setText(room);
 
+        // Get pref item checked
+        SharedPreferences sharedPreferencesSort = PreferenceManager.getDefaultSharedPreferences(this);
+        checkedItem = sharedPreferencesSort.getInt("checkedItem", 0);
+
+        // Sort tasks by
+        final String[] sort = {getString(R.string.date), getString(R.string.creator)};
+
+        // Get tasks from db
+        Query query = db.collection(room);
+        query.addSnapshotListener((value, error) -> refreshListTasks(sort[checkedItem]));
+
+        // Change sort
+        imageViewSort.setOnClickListener(v -> {
+            AlertDialog.Builder alertDialogSort = new AlertDialog.Builder(this);
+            alertDialogSort.setIcon(R.drawable.sort);
+            alertDialogSort.setTitle(R.string.sort_by);
+            alertDialogSort.setSingleChoiceItems(sort, checkedItem, (dialog, which) -> {
+
+                // Sort tasks
+                String selectedSort = sort[which];
+                refreshListTasks(selectedSort);
+                checkedItem = which;
+
+                // Write pref sort
+                SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(this).edit();
+                editor.putInt("checkedItem", which);
+                editor.apply();
+
+                // Dismiss dialog
+                dialog.dismiss();
+            });
+
+            alertDialogSort.show();
+        });
+
         // Click task
         listView.setOnItemClickListener((parent, view, position, id) -> {
 
@@ -96,7 +138,7 @@ public class MainActivity extends AppCompatActivity {
                                     Map<String, Object> map = new HashMap<>();
                                     map.put("description", task.getDescription());
                                     map.put("date", task.getDate());
-                                    map.put("user", task.getName());
+                                    map.put("creator", task.getName());
 
                                     // Add task to database
                                     db.collection(room)
@@ -177,19 +219,15 @@ public class MainActivity extends AppCompatActivity {
 
             return true;
         });
-
-        // Listen new tasks
-        Query query = db.collection(room);
-        query.addSnapshotListener((value, error) -> refreshListTasks());
     }
 
-    public void refreshListTasks() {
+    public void refreshListTasks(String field) {
 
         arrayList = new ArrayList<>();
         String room = new SettingsActivity().getRoom(this, this);
 
         db.collection(room)
-                .orderBy("date", Query.Direction.DESCENDING)
+                .orderBy(field, Query.Direction.DESCENDING)
                 .get()
                 .addOnCompleteListener(querySnapshotTask -> {
                     if (querySnapshotTask.isSuccessful()) {
@@ -211,11 +249,11 @@ public class MainActivity extends AppCompatActivity {
                                 // Get tasks
                                 String id = document.getId();
                                 String description = document.get("description").toString();
-                                String user = document.get("user").toString();
+                                String creator = document.get("creator").toString();
                                 Date date = document.getTimestamp("date").toDate();
 
                                 // Create tasks
-                                Task task = new Task(id, description, user, date);
+                                Task task = new Task(id, description, creator, date);
 
                                 // Add tasks to array
                                 arrayList.add(task);

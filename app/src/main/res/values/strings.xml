@@ -38,4 +38,7 @@
     <string name="receive_notification_when_people_add_task">Receive notification when people add task</string>
     <string name="generate_new_room_code">Generate new random room code</string>
     <string name="no_user_added_a_task">No user added a task</string>
+    <string name="sort_by">Sort by</string>
+    <string name="date">date</string>
+    <string name="creator">creator</string>
 </resources>

@@ -32,7 +32,6 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
-
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <LinearLayout
@@ -58,7 +57,15 @@
             android:textAlignment="center"
             android:textSize="20sp" />
 
-        <!--Display task-->
+        <!--Order by-->
+        <ImageView
+            android:id="@+id/imageViewSort"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:src="@drawable/sort"
+            android:contentDescription="sort" />
+
+        <!--List tasks-->
         <ListView
             android:id="@+id/listView"
             android:layout_width="match_parent"

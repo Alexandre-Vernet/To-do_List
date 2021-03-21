@@ -3,13 +3,13 @@ package com.ynov.vernet.to_dolist;
 import java.util.Date;
 
 public class Task {
-    private String id, description, name;
+    private String id, description, creator;
     private Date date;
 
-    public Task(String id, String description, String name, Date date) {
+    public Task(String id, String description, String creator, Date date) {
         this.id = id;
         this.description = description;
-        this.name = name;
+        this.creator = creator;
         this.date = date;
     }
 
@@ -30,11 +30,11 @@ public class Task {
     }
 
     public String getName() {
-        return name;
+        return creator;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setName(String creator) {
+        this.creator = creator;
     }
 
     public Date getDate() {
@@ -43,5 +43,13 @@ public class Task {
 
     public void setDate(Date date) {
         this.date = date;
+    }
+
+    public String getCreator() {
+        return creator;
+    }
+
+    public void setCreator(String creator) {
+        this.creator = creator;
     }
 }
