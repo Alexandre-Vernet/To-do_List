@@ -68,10 +68,16 @@ public class MainActivity extends AppCompatActivity {
         // Check Internet connexion
         boolean internet = new Internet(this, this).internet();
         if (!internet) {
+            // Hide fab
+            findViewById(R.id.fab).setVisibility(View.INVISIBLE);
+
             // Display message
             Snackbar.make(findViewById(R.id.relativeLayout), getString(R.string.no_internet_connection), Snackbar.LENGTH_LONG)
                     .setAction(R.string.activate, v -> startActivity(new Intent(Settings.ACTION_WIRELESS_SETTINGS)))
                     .show();
+
+            // Display fab
+            new Handler().postDelayed(() -> findViewById(R.id.fab).setVisibility(View.VISIBLE), 2800);
         }
 
         // Menu
