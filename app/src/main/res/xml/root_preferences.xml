@@ -6,6 +6,12 @@
             app:key="name"
             app:title="@string/name"
             app:useSimpleSummaryProvider="true" />
+
+        <com.rarepebble.colorpicker.ColorPreference
+            android:defaultValue="#ffff"
+            android:key="color"
+            android:title="Color" />
+
     </PreferenceCategory>
 
     <PreferenceCategory app:title="@string/room">

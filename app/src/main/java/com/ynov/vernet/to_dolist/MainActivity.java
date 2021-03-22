@@ -14,6 +14,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -36,6 +37,7 @@ import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
 
+    RelativeLayout relativeLayout;
     TextView textViewNoCurrentTask, textViewCountTask, textViewRoom;
     SearchView searchView;
     ImageView imageViewSort;
@@ -56,6 +58,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        relativeLayout = findViewById(R.id.relativeLayout);
         textViewNoCurrentTask = findViewById(R.id.textViewNoCurrentTask);
         textViewCountTask = findViewById(R.id.textViewCountTask);
         textViewRoom = findViewById(R.id.textViewRoom);
@@ -64,6 +67,11 @@ public class MainActivity extends AppCompatActivity {
         listView = findViewById(R.id.listView);
 
         db = FirebaseFirestore.getInstance();
+
+        // Set background color
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        int color = prefs.getInt("color", 0);
+        relativeLayout.setBackgroundColor(color);
 
         // Check Internet connexion
         boolean internet = new Internet(this, this).internet();
