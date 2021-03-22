@@ -25,9 +25,10 @@ public class Notification extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         this.intent = intent;
 
-        // Get person who added the task
-        SharedPreferences sharedPreferencesName = PreferenceManager.getDefaultSharedPreferences(context);
-        String name = sharedPreferencesName.getString("name", null);
+        // Get person who added task
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        String name = prefs.getString("name", null);
+        String task = prefs.getString("task", null);
 
         // Prepare onclick notification redirection
         Intent repeating_intent = new Intent(context, MainActivity.class).setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -36,7 +37,7 @@ public class Notification extends BroadcastReceiver {
         // Display notification
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CANAL)
                 .setContentTitle(name + " added a new task !")
-                .setContentText("Aller chercher le pain")
+                .setContentText(task)
                 .setContentIntent(pendingIntent)
                 .setSmallIcon(R.drawable.plus)
                 .setLargeIcon(BitmapFactory.decodeResource(context.getResources(), R.drawable.icon))

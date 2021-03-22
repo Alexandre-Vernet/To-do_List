@@ -161,6 +161,12 @@ public class Menu extends Activity {
                                     .add(map)
                                     .addOnFailureListener(e -> error(e, getString(R.string.error_while_adding_task)));
 
+                            // Save data to notification
+                            SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(context).edit();
+                            editor.putString("name", name);
+                            editor.putString("task", task);
+                            editor.apply();
+
                             // Send notification to other creator's in same room
                             AlarmManager manager = (AlarmManager) this.activity.getSystemService(Context.ALARM_SERVICE);
                             Intent alarmIntent = new Intent(context, Notification.class);
