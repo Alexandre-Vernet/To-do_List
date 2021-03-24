@@ -43,4 +43,5 @@
     <string name="creator">creator</string>
     <string name="sort">Sort</string>
     <string name="search">Search ...</string>
+    <string name="room_code">Room code</string>
 </resources>

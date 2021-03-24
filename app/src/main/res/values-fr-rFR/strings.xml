@@ -42,4 +42,5 @@
     <string name="date">date</string>
     <string name="sort">Trier</string>
     <string name="search">Rechercher ...</string>
+    <string name="room_code">Code de salon</string>
 </resources>

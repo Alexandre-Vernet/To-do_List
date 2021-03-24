@@ -17,7 +17,7 @@
     <PreferenceCategory app:title="@string/room">
         <EditTextPreference
             app:key="room"
-            app:title="@string/room"
+            app:title="@string/room_code"
             app:useSimpleSummaryProvider="true" />
 
         <Preference
