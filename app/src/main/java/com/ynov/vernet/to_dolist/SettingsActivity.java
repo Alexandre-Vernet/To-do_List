@@ -128,16 +128,6 @@ public class SettingsActivity extends AppCompatActivity {
                 startActivity(new Intent(getContext(), UsersActivity.class));
                 return true;
             });
-
-
-            // About developer
-            Preference preferenceDeveloper = findPreference("developer");
-            preferenceDeveloper.setOnPreferenceClickListener(preference -> {
-                Intent intent = new Intent(Intent.ACTION_VIEW);
-                intent.setData(Uri.parse("https://www.instagram.com/alexandre_vernet/?hl=fr"));
-                startActivity(intent);
-                return true;
-            });
         }
 
         String generateRoom() {

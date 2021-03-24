@@ -45,7 +45,6 @@
             android:title="@string/version" />
 
         <PreferenceScreen
-            android:key="developer"
             android:summary="Alexandre Vernet"
             android:title="@string/developer" />
     </PreferenceCategory>
