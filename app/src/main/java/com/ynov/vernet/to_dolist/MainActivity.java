@@ -125,7 +125,7 @@ public class MainActivity extends AppCompatActivity {
         checkedItem = sharedPreferencesSort.getInt("checkedItem", 0);
 
         // Sort tasks by
-        final String[] sort = {getString(R.string.date), getString(R.string.creator)};
+        final String[] sort = {getString(R.string.date), getString(R.string.creator), getString(R.string.description)};
 
         // Get tasks from db
         Query query = db.collection(room);
@@ -262,7 +262,7 @@ public class MainActivity extends AppCompatActivity {
         String room = new SettingsActivity().getRoom(this, this);
 
         db.collection(room)
-                .orderBy(field, Query.Direction.DESCENDING)
+                .orderBy(field, getDescending(field))
                 .get()
                 .addOnCompleteListener(querySnapshotTask -> {
                     if (querySnapshotTask.isSuccessful()) {
@@ -312,6 +312,13 @@ public class MainActivity extends AppCompatActivity {
                         error(querySnapshotTask.getException(), getString(R.string.error_while_getting_tasks));
                     }
                 });
+    }
+
+    private Query.Direction getDescending(String field) {
+        if (field.equals(getString(R.string.description)) || field.equals(getString(R.string.creator)))
+            return Query.Direction.ASCENDING;
+        else
+            return Query.Direction.DESCENDING;
     }
 
     public void error(Throwable error, String msg) {
