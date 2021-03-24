@@ -7,7 +7,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Handler;
+import android.text.Editable;
 import android.text.InputType;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.view.animation.OvershootInterpolator;
@@ -77,10 +79,9 @@ public class Menu extends Activity {
             // If creator has no name
             EditText editText = new EditText(context);
             if (name == null) {
-                editText.setHint(R.string.your_name);
 
                 // Ask him
-                AlertDialog alertDialog = new AlertDialog.Builder(context)
+                AlertDialog.Builder builder = new AlertDialog.Builder(context)
                         .setIcon(R.drawable.person)
                         .setTitle(R.string.welcome)
                         .setMessage(R.string.what_s_your_name)
@@ -101,11 +102,32 @@ public class Menu extends Activity {
 
                             // Add a task
                             this.addTask();
+                        });
 
-                        })
-                        .show();
-                alertDialog.setCanceledOnTouchOutside(false);
-                alertDialog.setCancelable(false);
+                AlertDialog btnPositive = builder.show();
+                btnPositive.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
+
+                editText.setHint(R.string.your_name);
+
+                editText.addTextChangedListener(new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+                    }
+
+                    @Override
+                    public void onTextChanged(CharSequence s, int start, int before, int count) {
+                        // Enable positive button if edit text is not empty
+                        btnPositive.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(s.length() >= 1);
+
+                    }
+
+                    @Override
+                    public void afterTextChanged(Editable s) {
+
+                    }
+                });
+
 
                 // If user already has a name
             } else {
@@ -142,13 +164,7 @@ public class Menu extends Activity {
 
         EditText editText = new EditText(context);
 
-        // Open edit text
-        editText.setHint(R.string.add_some_text_here);
-
-        // First letter in uppercase
-        editText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
-
-        new AlertDialog.Builder(context)
+        AlertDialog.Builder builder = new AlertDialog.Builder(context)
                 .setIcon(R.drawable.add)
                 .setTitle(R.string.add_a_task)
                 .setView(editText)
@@ -156,10 +172,6 @@ public class Menu extends Activity {
 
                     // Get entered task
                     String task = editText.getText().toString();
-
-                    // Edit text can't be empty
-                    if (task.isEmpty())
-                        return;
 
                     // Add task
                     Map<String, Object> map = new HashMap<>();
@@ -188,8 +200,36 @@ public class Menu extends Activity {
                     PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, alarmIntent, 0);
                     manager.setInexactRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), 0, pendingIntent);
                 })
-                .setNegativeButton(R.string.cancel, null)
-                .show();
+                .setNegativeButton(R.string.cancel, null);
+
+        // Show AlertDialog
+        AlertDialog btnPositive = builder.show();
+        btnPositive.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
+
+        // Open edit text
+        editText.setHint(R.string.add_some_text_here);
+
+        // First letter in uppercase
+        editText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
+
+        editText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                // Enable positive button if edit text is not empty
+                btnPositive.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(s.length() >= 1);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+
 
         this.hideMenu();
     }
