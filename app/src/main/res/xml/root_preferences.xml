@@ -10,7 +10,7 @@
         <com.rarepebble.colorpicker.ColorPreference
             android:defaultValue="#ffff"
             android:key="color"
-            android:title="Color" />
+            android:title="@string/background_color" />
 
     </PreferenceCategory>
 
