@@ -230,7 +230,6 @@ public class Menu extends Activity {
             }
         });
 
-
         this.hideMenu();
     }
 
