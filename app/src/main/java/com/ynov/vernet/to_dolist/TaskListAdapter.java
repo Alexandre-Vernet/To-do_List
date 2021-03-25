@@ -1,6 +1,10 @@
 package com.ynov.vernet.to_dolist;
 
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.graphics.Typeface;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,18 +13,17 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.preference.PreferenceManager;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Locale;
 
 public class TaskListAdapter extends ArrayAdapter<Task> {
 
     Context context;
     int resource;
 
-    ArrayList<Task> items;
-
+    private static final String TAG = "TaskListAdapter";
 
     public TaskListAdapter(@NonNull Context context, int resource, @NonNull ArrayList<Task> objects) {
         super(context, resource, objects);
@@ -47,6 +50,20 @@ public class TaskListAdapter extends ArrayAdapter<Task> {
         // Write data in layout
         TextView textViewTask = convertView.findViewById(R.id.textViewTask);
         TextView textViewAddBy = convertView.findViewById(R.id.textViewAddBy);
+
+        // Get name of user
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
+        String name = prefs.getString("name", null);
+
+        // Get color of user
+        int text_color = prefs.getInt("text_color", 0);
+
+        // Set custom color & font for user logged
+        if (creator.equals(name)) {
+            textViewTask.setText(description);
+            textViewAddBy.setTextColor(text_color);
+            textViewAddBy.setTypeface(Typeface.DEFAULT_BOLD);
+        }
         textViewTask.setText(description);
         textViewAddBy.setText(creator);
 

@@ -70,7 +70,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Set background color
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        int color = prefs.getInt("color", 0);
+        int color = prefs.getInt("background_color", 0);
         relativeLayout.setBackgroundColor(color);
 
         // Check Internet connexion
@@ -96,6 +96,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Display room code
         textViewRoom.setText(room);
+
 
         // Search bar
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
