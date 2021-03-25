@@ -2,9 +2,7 @@ package com.ynov.vernet.to_dolist;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.graphics.Typeface;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -45,7 +43,7 @@ public class TaskListAdapter extends ArrayAdapter<Task> {
         new Task(id, description, creator, date);
 
         if (convertView == null)
-            convertView = LayoutInflater.from(getContext()).inflate(R.layout.list_tasks, parent, false);
+            convertView = LayoutInflater.from(getContext()).inflate(R.layout.activity_main_list_tasks, parent, false);
 
         // Write data in layout
         TextView textViewTask = convertView.findViewById(R.id.textViewTask);

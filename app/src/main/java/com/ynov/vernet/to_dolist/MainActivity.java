@@ -304,7 +304,7 @@ public class MainActivity extends AppCompatActivity {
                                 textViewCountTask.setText(getString(R.string.current_tasks, countTask));
 
                             // Display all tasks in ListView
-                            TaskListAdapter adapter = new TaskListAdapter(this, R.layout.list_tasks, arrayList);
+                            TaskListAdapter adapter = new TaskListAdapter(this, R.layout.activity_main_list_tasks, arrayList);
                             listView.setAdapter(adapter);
                         }
 
