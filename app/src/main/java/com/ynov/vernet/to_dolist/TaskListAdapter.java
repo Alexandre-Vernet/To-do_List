@@ -2,6 +2,7 @@ package com.ynov.vernet.to_dolist;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -54,7 +55,7 @@ public class TaskListAdapter extends ArrayAdapter<Task> {
         String name = prefs.getString("name", null);
 
         // Get color of user
-        int text_color = prefs.getInt("text_color", 0);
+        int text_color = prefs.getInt("text_color", Color.parseColor("#BF0000"));
 
         // Set custom color & font for user logged
         if (creator.equals(name)) {

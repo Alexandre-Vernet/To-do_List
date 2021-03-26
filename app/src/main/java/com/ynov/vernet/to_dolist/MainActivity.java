@@ -5,6 +5,7 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Vibrator;
@@ -70,7 +71,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Set background color
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        int color = prefs.getInt("background_color", 0);
+        int color = prefs.getInt("background_color", Color.parseColor("#FFFFFF"));
         relativeLayout.setBackgroundColor(color);
 
         // Check Internet connexion

@@ -25,7 +25,7 @@ public class Notification extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         this.intent = intent;
 
-        // Get person who added task
+        // Get name & task
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         String name = prefs.getString("name", null);
         String task = prefs.getString("task", null);
@@ -44,7 +44,6 @@ public class Notification extends BroadcastReceiver {
                 .setColor(ContextCompat.getColor(context, R.color.blue))
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                 .setAutoCancel(true);
-
 
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 
