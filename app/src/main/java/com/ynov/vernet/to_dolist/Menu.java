@@ -266,7 +266,7 @@ public class Menu extends Activity {
         findViewById(R.id.fab).setVisibility(View.INVISIBLE);
 
         // Display error
-        Snackbar.make(findViewById(R.id.relativeLayout), msg, Snackbar.LENGTH_LONG)
+        Snackbar.make(findViewById(R.id.fab), msg, Snackbar.LENGTH_LONG)
                 .show();
         Log.w(TAG, "onCreate: ", error);
 

@@ -77,16 +77,11 @@ public class MainActivity extends AppCompatActivity {
         // Check Internet connexion
         boolean internet = new Internet(this, this).internet();
         if (!internet) {
-            // Hide fab
-            findViewById(R.id.fab).setVisibility(View.INVISIBLE);
 
             // Display message
-            Snackbar.make(findViewById(R.id.relativeLayout), getString(R.string.no_internet_connection), Snackbar.LENGTH_LONG)
+            Snackbar.make(findViewById(R.id.fab), getString(R.string.no_internet_connection), Snackbar.LENGTH_LONG)
                     .setAction(R.string.activate, v -> startActivity(new Intent(Settings.ACTION_WIRELESS_SETTINGS)))
                     .show();
-
-            // Display fab
-            new Handler().postDelayed(() -> findViewById(R.id.fab).setVisibility(View.VISIBLE), 2800);
         }
 
         // Menu
@@ -160,10 +155,6 @@ public class MainActivity extends AppCompatActivity {
         // Click task
         listView.setOnItemClickListener((parent, view, position, id) -> {
 
-            // Hide menu
-            findViewById(R.id.fab).setVisibility(View.INVISIBLE);
-            new Handler().postDelayed(() -> findViewById(R.id.fab).setVisibility(View.VISIBLE), 3100);
-
             // Get task
             Task task = arrayList.get(position);
             String taskId = task.getId();
@@ -174,7 +165,7 @@ public class MainActivity extends AppCompatActivity {
                     .delete()
                     .addOnSuccessListener(aVoid -> {
                         // Restore task with snackbar
-                        Snackbar.make(findViewById(R.id.relativeLayout), getString(R.string.deleted_task), Snackbar.LENGTH_LONG)
+                        Snackbar.make(findViewById(R.id.fab), getString(R.string.deleted_task), Snackbar.LENGTH_LONG)
                                 .setAction(R.string.undo, v -> {
 
                                     // Restore content
@@ -325,15 +316,10 @@ public class MainActivity extends AppCompatActivity {
 
     public void error(Throwable error, String msg) {
 
-        // Hide fab
-        findViewById(R.id.fab).setVisibility(View.INVISIBLE);
-
         // Display error
-        Snackbar.make(findViewById(R.id.relativeLayout), msg, Snackbar.LENGTH_LONG)
+        Snackbar.make(findViewById(R.id.fab), msg, Snackbar.LENGTH_LONG)
                 .show();
         Log.w(TAG, "onCreate: ", error);
 
-        // Display fab
-        new Handler().postDelayed(() -> findViewById(R.id.fab).setVisibility(View.VISIBLE), 2800);
     }
 }
