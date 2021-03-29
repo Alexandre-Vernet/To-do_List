@@ -31,7 +31,7 @@ Vous pourrez ensuite ajouter de nouvelles tâches
 
 
 ## Editer une tâche
-A l'appui long sur une tâche, vous entrerez en mode édition pour pouvoir modifier le contenu d'une tâche. Vous pourrez aussi copier son contenu dans votre presse papier
+A l'appui long sur une tâche, vous entrerez en mode édition pour pouvoir modifier le contenu d'une tâche. Vous pourrez aussi copier son contenu dans votre presse papier.
 
 
 ![edit_task](https://user-images.githubusercontent.com/72151831/112854893-972dc300-90ae-11eb-8f47-d9d9fe6fc4cf.png)
@@ -52,7 +52,7 @@ Une barre de recherche est disponible pour pouvoir rechercher une tâche ou un u
 ![search_name](https://user-images.githubusercontent.com/72151831/112856981-aada2900-90b0-11eb-9d2d-4dc0d0943403.png)
 
 
-L'utilisateur peut également trier ses tâches par date de création, par utilisateur ou par ordre alphabétique
+L'utilisateur peut également trier ses tâches par date de création, par utilisateur ou par ordre alphabétique.
 
 
 ![sort_by](https://user-images.githubusercontent.com/72151831/112857105-ce9d6f00-90b0-11eb-9428-1ee5c237ffe8.png)
