@@ -91,10 +91,6 @@ public class Menu extends Activity {
                             // Get the name from EditText
                             String editName = editText.getText().toString();
 
-                            // Name can't be empty
-                            if (editName.isEmpty())
-                                return;
-
                             // Save creator's name
                             SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(context).edit();
                             editor.putString("name", editName);

@@ -61,7 +61,7 @@ public class Notification extends BroadcastReceiver {
         boolean notification = sharedPreferencesNotification.getBoolean("notification", true);
 
         // Send notification
-        if (notification)
-            notificationManager.notify(100, builder.build());
+//        if (notification)
+//            notificationManager.notify(100, builder.build());
     }
 }
