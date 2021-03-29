@@ -73,3 +73,11 @@ Dans les paramètres, vous pouvez changer d'écran pour afficher une liste des p
 ## Personnalisation
 L'écran des paramètres permet également de changer le fond de l'application ou la couleur de vos tâches.
 
+
+## Responsive
+
+![Screenshot_1616884116](https://user-images.githubusercontent.com/72151831/112861081-c21b1580-90b4-11eb-84fc-4383ea4b6cda.png)
+![Screenshot_1616884177](https://user-images.githubusercontent.com/72151831/112861078-c1827f00-90b4-11eb-9804-85a9ac0f746f.png)
+
+![Screenshot_1616885201](https://user-images.githubusercontent.com/72151831/112861170-d95a0300-90b4-11eb-845c-25ae948e2f3c.png)
+![Screenshot_1616885228](https://user-images.githubusercontent.com/72151831/112861173-d9f29980-90b4-11eb-9a59-ee4be618d8c5.png)
