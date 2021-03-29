@@ -43,7 +43,7 @@ Au clic d'une tâche, la tâche se supprime en affichant une boîte de dialogue 
 Cette boîte de dialogue contient un bouton pour pouvoir la restaurer en cas d'erreur.
 
 
-![task_deleted](https://user-images.githubusercontent.com/72151831/112858216-f17c5300-90b1-11eb-85c3-ce843cc00457.png)
+![task_deleted](https://user-images.githubusercontent.com/72151831/112858357-12dd3f00-90b2-11eb-869a-cc8895a45b82.png)
 
 
 
