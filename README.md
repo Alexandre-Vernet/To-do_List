@@ -63,7 +63,7 @@ L'utilisateur peut également trier ses tâches par date de création, par utili
 
 
 ## Voir les utilisateurs dans notre salon
-Dans les paramètres, vous pouvez changer d'écran pour afficher une liste des personnes présente dans votre salon 
+Dans les paramètres, vous pouvez changer d'écran pour afficher une liste des personnes présente dans votre salon.
 
 
 ![user_in_room](https://user-images.githubusercontent.com/72151831/112857217-eaa11080-90b0-11eb-98d9-d1ff7d75ed95.png)
