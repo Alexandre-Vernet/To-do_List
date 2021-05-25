@@ -1,20 +1,25 @@
 package com.ynov.vernet.to_dolist;
 
+import android.app.Activity;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Vibrator;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.SearchView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -24,10 +29,14 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends Activity {
 
     Context context;
 
@@ -109,7 +118,7 @@ public class MainActivity extends AppCompatActivity {
                             task.getCreator().toLowerCase().contains(newText.toLowerCase()))
                         results.add(task);
 
-                TaskAdapter taskAdapter = new TaskAdapter(context, results);
+                TaskAdapter taskAdapter = new TaskAdapter(context, results, null, null);
                 recyclerView.setAdapter(taskAdapter);
 
                 return false;
@@ -123,7 +132,7 @@ public class MainActivity extends AppCompatActivity {
         // Sort tasks by
         final String[] sort = {getString(R.string.date), getString(R.string.creator), getString(R.string.description)};
 
-        // Get tasks from fStore
+        // Get tasks from database
         Query query = fStore.collection(room);
         query.addSnapshotListener((value, error) -> refreshListTasks(sort[checkedItem]));
 
@@ -199,7 +208,112 @@ public class MainActivity extends AppCompatActivity {
                                 textViewCountTask.setText(getString(R.string.current_tasks, countTask));
 
                             // Display all tasks in ListView
-                            TaskAdapter adapter = new TaskAdapter(this, arrayList);
+                            TaskAdapter adapter = new TaskAdapter(this, arrayList, v -> {
+
+                                // On click
+
+                                // Get task
+                                int position = recyclerView.getChildLayoutPosition(v);
+                                Task task = arrayList.get(position);
+
+                                // Delete the task in database
+                                fStore.collection(room)
+                                        .document(task.getId())
+                                        .delete()
+                                        .addOnSuccessListener(aVoid -> {
+
+                                            // Restore task with snackbar
+                                            Snackbar.make(findViewById(R.id.fab), getString(R.string.deleted_task), Snackbar.LENGTH_LONG)
+                                                    .setAction(getString(R.string.undo), view -> {
+
+                                                        // Restore content
+                                                        Map<String, Object> map = new HashMap<>();
+                                                        map.put("description", task.getDescription());
+                                                        map.put("date", task.getDate());
+                                                        map.put("creator", task.getCreator());
+
+                                                        // Add task to database
+                                                        fStore.collection(room)
+                                                                .add(map)
+                                                                .addOnFailureListener(e -> {
+                                                                    Snackbar.make(findViewById(R.id.fab), getString(R.string.error_while_adding_task), Snackbar.LENGTH_LONG)
+                                                                            .show();
+                                                                    Log.w(TAG, "onCreate: ", e);
+                                                                });
+                                                    })
+                                                    .show();
+                                        }).addOnFailureListener(e -> {
+                                    Snackbar.make(findViewById(R.id.fab), getString(R.string.error_while_adding_task), Snackbar.LENGTH_LONG)
+                                            .show();
+                                    Log.w(TAG, "onCreate: ", e);
+                                });
+
+                                // Long press
+                            }, v -> {
+
+                                // Vibrate
+                                Vibrator vibe = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
+                                vibe.vibrate(80);
+
+                                // Get task
+                                int position = recyclerView.getChildLayoutPosition(v);
+                                Task task = arrayList.get(position);
+                                String taskId = task.getId();
+                                String taskDescription = task.getDescription();
+                                String taskName = task.getCreator();
+                                Date taskDate = task.getDate();
+
+                                // Get date of creation
+                                String taskDateDay = new SimpleDateFormat("d/MM/y", Locale.getDefault()).format(taskDate);
+                                String taskDateHour = new SimpleDateFormat("HH:mm", Locale.getDefault()).format(taskDate);
+
+                                // Keyboard
+                                EditText editText = new EditText(context);
+                                editText.setText(taskDescription);
+
+                                new AlertDialog.Builder(this)
+                                        .setIcon(R.drawable.edit_task)
+                                        .setTitle(R.string.edit_task)
+                                        .setMessage(getString(R.string.created_by, taskName, taskDateDay, taskDateHour))
+                                        .setView(editText)
+                                        .setNeutralButton(R.string.copy, (dialog, which) -> {
+
+                                            // Copy task
+                                            ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+                                            ClipData clip = ClipData.newPlainText("task", taskDescription);
+                                            clipboard.setPrimaryClip(clip);
+
+                                            // Vibrate
+                                            long[] pattern = {0, 100};
+                                            vibe.vibrate(pattern, -1);
+
+                                            // Display Toast
+                                            Toast.makeText(context, getString(R.string.task_copied), Toast.LENGTH_SHORT).show();
+                                        })
+                                        .setPositiveButton(R.string.save, (dialogInterface, i) -> {
+
+                                            // Get edited task
+                                            String editedTask = editText.getText().toString();
+
+                                            // Add edited task to map
+                                            Map<String, Object> map = new HashMap<>();
+                                            map.put("description", editedTask);
+
+                                            // Update database
+                                            fStore.collection(room)
+                                                    .document(taskId)
+                                                    .update(map)
+                                                    .addOnFailureListener(e -> {
+                                                        Snackbar.make(findViewById(R.id.fab), getString(R.string.error_while_adding_task), Snackbar.LENGTH_LONG)
+                                                                .show();
+                                                        Log.w(TAG, "onCreate: ", e);
+                                                    });
+                                        })
+                                        .setNegativeButton(R.string.cancel, null)
+                                        .show();
+
+                                return true;
+                            });
                             recyclerView.setAdapter(adapter);
                         }
 

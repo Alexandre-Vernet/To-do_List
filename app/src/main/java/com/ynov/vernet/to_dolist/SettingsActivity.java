@@ -1,12 +1,10 @@
 package com.ynov.vernet.to_dolist;
 
-import android.app.Activity;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Vibrator;
 
@@ -23,7 +21,6 @@ import java.util.Random;
 public class SettingsActivity extends AppCompatActivity {
 
     Context context;
-    Activity activity;
     private static final String TAG = "SettingsActivity";
 
     String generateRoom() {
@@ -86,6 +83,7 @@ public class SettingsActivity extends AppCompatActivity {
                 ((ColorPreference) preference).showDialog(this, 0);
             } else super.onDisplayPreferenceDialog(preference);
         }
+
         @Override
         public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
             setPreferencesFromResource(R.xml.root_preferences, rootKey);
@@ -118,7 +116,6 @@ public class SettingsActivity extends AppCompatActivity {
                 startActivity(new Intent(getContext(), MainActivity.class));
                 return true;
             });
-
 
 
             // View person in this room
