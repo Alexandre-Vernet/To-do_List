@@ -61,6 +61,7 @@ public class MainActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.recyclerView);
 
         context = getApplicationContext();
+        arrayList = new ArrayList<>();
 
         fStore = FirebaseFirestore.getInstance();
 
@@ -104,10 +105,11 @@ public class MainActivity extends AppCompatActivity {
                 ArrayList<Task> results = new ArrayList<>();
 
                 for (Task task : arrayList)
-                    if (task.getDescription().toLowerCase().contains(newText.toLowerCase()) || task.getCreator().toLowerCase().contains(newText.toLowerCase()))
+                    if (task.getDescription().toLowerCase().contains(newText.toLowerCase()) ||
+                            task.getCreator().toLowerCase().contains(newText.toLowerCase()))
                         results.add(task);
 
-                TaskAdapter taskAdapter = new TaskAdapter(context, arrayList);
+                TaskAdapter taskAdapter = new TaskAdapter(context, results);
                 recyclerView.setAdapter(taskAdapter);
 
                 return false;
