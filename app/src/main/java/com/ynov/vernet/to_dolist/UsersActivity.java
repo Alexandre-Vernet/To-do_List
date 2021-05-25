@@ -36,7 +36,7 @@ public class UsersActivity extends AppCompatActivity {
         listViewUsers = findViewById(R.id.listViewUsers);
 
         // Get current room
-        room = new SettingsActivity().getRoom(this, this);
+        room = new SettingsActivity().getRoom(this);
 
         // Listen database
         Query query = db.collection(room);

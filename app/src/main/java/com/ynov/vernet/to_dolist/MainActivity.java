@@ -1,52 +1,45 @@
 package com.ynov.vernet.to_dolist;
 
-import android.content.ClipData;
-import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Vibrator;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.SearchView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.preference.PreferenceManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
+
+    Context context;
 
     RelativeLayout relativeLayout;
     TextView textViewNoCurrentTask, textViewCountTask, textViewRoom;
     SearchView searchView;
     ImageView imageViewSort;
-    ListView listView;
+    RecyclerView recyclerView;
 
     int checkedItem;
 
-    FirebaseFirestore db;
+    FirebaseFirestore fStore;
 
     ArrayList<Task> arrayList;
     int countTask = 0;
@@ -65,9 +58,12 @@ public class MainActivity extends AppCompatActivity {
         textViewRoom = findViewById(R.id.textViewRoom);
         searchView = findViewById(R.id.searchView);
         imageViewSort = findViewById(R.id.imageViewSort);
-        listView = findViewById(R.id.listView);
+        recyclerView = findViewById(R.id.recyclerView);
 
-        db = FirebaseFirestore.getInstance();
+        context = getApplicationContext();
+
+        fStore = FirebaseFirestore.getInstance();
+
 
         // Set background color
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
@@ -87,12 +83,13 @@ public class MainActivity extends AppCompatActivity {
         // Menu
         new Menu(this, this);
 
+        recyclerView.setLayoutManager(new LinearLayoutManager(context));
+
         // Get room
-        String room = new SettingsActivity().getRoom(this, this);
+        String room = new SettingsActivity().getRoom(this);
 
         // Display room code
         textViewRoom.setText(room);
-
 
         // Search bar
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
@@ -110,8 +107,8 @@ public class MainActivity extends AppCompatActivity {
                     if (task.getDescription().toLowerCase().contains(newText.toLowerCase()) || task.getCreator().toLowerCase().contains(newText.toLowerCase()))
                         results.add(task);
 
-                TaskListAdapter taskListAdapter = new TaskListAdapter(getApplicationContext(), 0, results);
-                listView.setAdapter(taskListAdapter);
+                TaskAdapter taskAdapter = new TaskAdapter(context, arrayList);
+                recyclerView.setAdapter(taskAdapter);
 
                 return false;
             }
@@ -124,13 +121,13 @@ public class MainActivity extends AppCompatActivity {
         // Sort tasks by
         final String[] sort = {getString(R.string.date), getString(R.string.creator), getString(R.string.description)};
 
-        // Get tasks from db
-        Query query = db.collection(room);
+        // Get tasks from fStore
+        Query query = fStore.collection(room);
         query.addSnapshotListener((value, error) -> refreshListTasks(sort[checkedItem]));
 
         // Sort by
         imageViewSort.setOnClickListener(v -> {
-            AlertDialog.Builder alertDialogSort = new AlertDialog.Builder(this);
+            AlertDialog.Builder alertDialogSort = new AlertDialog.Builder(context);
             alertDialogSort.setIcon(R.drawable.sort);
             alertDialogSort.setTitle(R.string.sort_by);
             alertDialogSort.setSingleChoiceItems(sort, checkedItem, (dialog, which) -> {
@@ -151,110 +148,14 @@ public class MainActivity extends AppCompatActivity {
 
             alertDialogSort.show();
         });
-
-        // Click task
-        listView.setOnItemClickListener((parent, view, position, id) -> {
-
-            // Get task
-            Task task = arrayList.get(position);
-            String taskId = task.getId();
-
-            // Delete the task in database
-            db.collection(room)
-                    .document(taskId)
-                    .delete()
-                    .addOnSuccessListener(aVoid -> {
-                        // Restore task with snackbar
-                        Snackbar.make(findViewById(R.id.fab), getString(R.string.deleted_task), Snackbar.LENGTH_LONG)
-                                .setAction(R.string.undo, v -> {
-
-                                    // Restore content
-                                    Map<String, Object> map = new HashMap<>();
-                                    map.put("description", task.getDescription());
-                                    map.put("date", task.getDate());
-                                    map.put("creator", task.getCreator());
-
-                                    // Add task to database
-                                    db.collection(room)
-                                            .add(map)
-                                            .addOnFailureListener(e -> error(e, getString(R.string.error_while_adding_task)));
-                                })
-                                .show();
-                    })
-
-                    // Error deleting task
-                    .addOnFailureListener(e -> error(e, getString(R.string.error_while_deleting_task)));
-        });
-
-
-        // Long press task
-        listView.setOnItemLongClickListener((parent, view, position, id) -> {
-
-            // Vibrate
-            Vibrator vibe = (Vibrator) MainActivity.this.getSystemService(Context.VIBRATOR_SERVICE);
-            vibe.vibrate(80);
-
-            // Get task
-            Task task = arrayList.get(position);
-            String taskId = task.getId();
-            String taskDescription = task.getDescription();
-            String taskName = task.getCreator();
-            Date taskDate = task.getDate();
-
-            // Get date of creation
-            String taskDateDay = new SimpleDateFormat("d/MM/y", Locale.getDefault()).format(taskDate);
-            String taskDateHour = new SimpleDateFormat("HH:mm", Locale.getDefault()).format(taskDate);
-
-            // Keyboard
-            EditText editText = new EditText(this);
-            editText.setText(taskDescription);
-
-            new AlertDialog.Builder(this)
-                    .setIcon(R.drawable.edit_task)
-                    .setTitle(R.string.edit_task)
-                    .setMessage(getString(R.string.created_by, taskName, taskDateDay, taskDateHour))
-                    .setView(editText)
-                    .setNeutralButton(R.string.copy, (dialog, which) -> {
-                        // Copy task
-                        ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-                        ClipData clip = ClipData.newPlainText("task", taskDescription);
-                        clipboard.setPrimaryClip(clip);
-
-                        // Vibrate
-                        long[] pattern = {0, 100};
-                        vibe.vibrate(pattern, -1);
-
-                        // Display Toast
-                        Toast.makeText(this, getString(R.string.task_copied), Toast.LENGTH_SHORT).show();
-                    })
-                    .setPositiveButton(R.string.save, (dialogInterface, i) -> {
-
-                        // Get edited task
-                        String editedTask = editText.getText().toString();
-
-                        // Add edited task to map
-                        Map<String, Object> map = new HashMap<>();
-                        map.put("description", editedTask);
-
-                        // Update database
-                        db.collection(room)
-                                .document(taskId)
-                                .update(map)
-                                .addOnFailureListener(e -> error(e, getString(R.string.error_while_adding_task)));
-                    })
-                    .setNegativeButton(R.string.cancel, null)
-                    .show();
-
-            return true;
-        });
     }
 
     public void refreshListTasks(String field) {
 
         arrayList = new ArrayList<>();
-        String room = new SettingsActivity().getRoom(this, this);
+        String room = new SettingsActivity().getRoom(this);
 
-        db.collection(room)
+        fStore.collection(room)
                 .orderBy(field, getDescending(field))
                 .get()
                 .addOnCompleteListener(querySnapshotTask -> {
@@ -265,11 +166,11 @@ public class MainActivity extends AppCompatActivity {
                         if (querySnapshotTask.getResult().isEmpty()) {
                             textViewCountTask.setVisibility(View.INVISIBLE);
                             textViewNoCurrentTask.setVisibility(View.VISIBLE);
-                            listView.setVisibility(View.INVISIBLE);
+                            recyclerView.setVisibility(View.INVISIBLE);
                         } else {
                             textViewCountTask.setVisibility(View.VISIBLE);
                             textViewNoCurrentTask.setVisibility(View.INVISIBLE);
-                            listView.setVisibility(View.VISIBLE);
+                            recyclerView.setVisibility(View.VISIBLE);
 
                             // Save data from database
                             for (QueryDocumentSnapshot document : querySnapshotTask.getResult()) {
@@ -296,8 +197,8 @@ public class MainActivity extends AppCompatActivity {
                                 textViewCountTask.setText(getString(R.string.current_tasks, countTask));
 
                             // Display all tasks in ListView
-                            TaskListAdapter adapter = new TaskListAdapter(this, R.layout.activity_main_list_tasks, arrayList);
-                            listView.setAdapter(adapter);
+                            TaskAdapter adapter = new TaskAdapter(this, arrayList);
+                            recyclerView.setAdapter(adapter);
                         }
 
                         // Error while getting tasks

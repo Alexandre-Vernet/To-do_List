@@ -43,9 +43,8 @@ public class SettingsActivity extends AppCompatActivity {
         return room;
     }
 
-    String getRoom(Context context, Activity activity) {
+    String getRoom(Context context) {
         this.context = context;
-        this.activity = activity;
 
         // Check if user had room
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);

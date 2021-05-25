@@ -21,7 +21,10 @@
         <include layout="@layout/activity_main_search" />
 
         <!--List tasks-->
-        <include layout="@layout/activity_main_list_view" />
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
 
     </LinearLayout>
 
