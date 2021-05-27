@@ -78,6 +78,17 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.ViewHolder> {
         return arrayList.size();
     }
 
+    @Override
+    public long getItemId(int position) {
+        super.getItemId(position);
+        return position;
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        super.getItemViewType(position);
+        return position;
+    }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         TextView textViewTask, textViewAddBy;
