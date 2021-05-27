@@ -20,6 +20,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -138,7 +139,7 @@ public class MainActivity extends Activity {
 
         // Sort by
         imageViewSort.setOnClickListener(v -> {
-            AlertDialog.Builder alertDialogSort = new AlertDialog.Builder(context);
+            AlertDialog.Builder alertDialogSort = new AlertDialog.Builder(this);
             alertDialogSort.setIcon(R.drawable.sort);
             alertDialogSort.setTitle(R.string.sort_by);
             alertDialogSort.setSingleChoiceItems(sort, checkedItem, (dialog, which) -> {
