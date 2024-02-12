@@ -193,7 +193,7 @@ public class Menu extends Activity {
                     // Send notification to other creator's in same room
                     AlarmManager manager = (AlarmManager) this.activity.getSystemService(Context.ALARM_SERVICE);
                     Intent alarmIntent = new Intent(context, Notification.class);
-                    PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, alarmIntent, 0);
+                    PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, alarmIntent, PendingIntent.FLAG_IMMUTABLE);
                     manager.setInexactRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), 0, pendingIntent);
                 })
                 .setNegativeButton(R.string.cancel, null);

@@ -7,15 +7,11 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Vibrator;
-
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceManager;
-
-import com.rarepebble.colorpicker.ColorPreference;
-
 import java.util.Random;
 
 public class SettingsActivity extends AppCompatActivity {
@@ -76,12 +72,8 @@ public class SettingsActivity extends AppCompatActivity {
     public static class SettingsFragment extends PreferenceFragmentCompat {
 
         public void onDisplayPreferenceDialog(Preference preference) {
+            super.onDisplayPreferenceDialog(preference);
             PreferenceManager.getDefaultSharedPreferences(getContext()).getInt("color", 0xffff0000);
-
-
-            if (preference instanceof ColorPreference) {
-                ((ColorPreference) preference).showDialog(this, 0);
-            } else super.onDisplayPreferenceDialog(preference);
         }
 
         @Override

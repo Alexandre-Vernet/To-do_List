@@ -7,16 +7,6 @@
             app:title="@string/name"
             app:useSimpleSummaryProvider="true" />
 
-        <com.rarepebble.colorpicker.ColorPreference
-            android:defaultValue="#BF0000"
-            android:key="text_color"
-            android:title="@string/text_color" />
-
-        <com.rarepebble.colorpicker.ColorPreference
-            android:defaultValue="#ffff"
-            android:key="background_color"
-            android:title="@string/background_color" />
-
     </PreferenceCategory>
 
     <PreferenceCategory app:title="@string/room">
