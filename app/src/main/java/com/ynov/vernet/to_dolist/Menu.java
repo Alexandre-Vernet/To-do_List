@@ -1,8 +1,6 @@
 package com.ynov.vernet.to_dolist;
 
 import android.app.Activity;
-import android.app.AlarmManager;
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -184,17 +182,11 @@ public class Menu extends Activity {
                             .add(map)
                             .addOnFailureListener(e -> error(e, getString(R.string.error_while_adding_task)));
 
-                    // Save data to notification
+                    // Save data
                     SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(context).edit();
                     editor.putString("name", name);
                     editor.putString("task", task);
                     editor.apply();
-
-                    // Send notification to other creator's in same room
-                    AlarmManager manager = (AlarmManager) this.activity.getSystemService(Context.ALARM_SERVICE);
-                    Intent alarmIntent = new Intent(context, Notification.class);
-                    PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, alarmIntent, PendingIntent.FLAG_IMMUTABLE);
-                    manager.setInexactRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), 0, pendingIntent);
                 })
                 .setNegativeButton(R.string.cancel, null);
 

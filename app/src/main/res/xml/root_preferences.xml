@@ -24,15 +24,6 @@
             android:title="@string/view_people_who_added_task" />
     </PreferenceCategory>
 
-
-    <PreferenceCategory app:title="@string/notification">
-        <SwitchPreference
-            android:defaultValue="true"
-            android:key="notification"
-            android:title="@string/receive_notification_when_people_add_task" />
-    </PreferenceCategory>
-
-
     <PreferenceCategory app:title="@string/about">
         <PreferenceScreen
             android:key="version"

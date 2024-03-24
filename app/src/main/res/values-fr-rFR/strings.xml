@@ -25,7 +25,6 @@
     <string name="what_s_your_name">Quel est votre nom ?</string>
     <string name="ok">OK</string>
     <string name="general">Général</string>
-    <string name="notification">Notification</string>
     <string name="about">A propos</string>
     <string name="version">Version</string>
     <string name="developer">Développeur</string>
@@ -34,7 +33,6 @@
     <string name="created_by">Créé par %1$S \nLe %2$S à %3$S</string>
     <string name="users_in_this_room">Personnes dans ce salon</string>
     <string name="view_people_who_added_task">Voir les personnes qui ont ajouté des tâches</string>
-    <string name="receive_notification_when_people_add_task">Recevoir une notification quand une personne ajoute une tâche</string>
     <string name="generate_new_room_code">Générer un nouveau code de salon</string>
     <string name="no_user_added_a_task">Personne n\'a ajouté de tâche</string>
     <string name="count_users_who_added_task">%1$d personnes ont ajouté une tâche</string>

@@ -26,7 +26,6 @@
     <string name="what_s_your_name">What\'s your name ?</string>
     <string name="ok">OK</string>
     <string name="general">General</string>
-    <string name="notification">Notification</string>
     <string name="about">About</string>
     <string name="version">Version</string>
     <string name="developer">Developer</string>
@@ -35,16 +34,15 @@
     <string name="count_users_who_added_task">%1$d people added a task</string>
     <string name="users_in_this_room">Users in this room</string>
     <string name="view_people_who_added_task">View person who added task</string>
-    <string name="receive_notification_when_people_add_task">Receive notification when people add task</string>
     <string name="generate_new_room_code">Generate new random room code</string>
     <string name="no_user_added_a_task">No user added a task</string>
     <string name="sort_by">Sort by</string>
-    <string name="date">date</string>
-    <string name="creator">creator</string>
+    <string name="date" translatable="false">date</string>
+    <string name="creator" translatable="false">creator</string>
     <string name="sort">Sort</string>
     <string name="search">Search ...</string>
     <string name="room_code">Room code</string>
-    <string name="description">description</string>
+    <string name="description" translatable="false">description</string>
     <string name="background_color">Background color</string>
     <string name="text_color">Text color</string>
 </resources>
